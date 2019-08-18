@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Spectrum, a step towards usable secure computing</title>
+
+<body>
+
+<h1>Spectrum — a step towards <em>usable</em> secure computing</h1>
+
+<p>
+<a href="mailto:hi@alyssa.is">Alyssa Ross</a>, 2018-2019.
+
+<p>
+You may distribute this work under the terms of either
+the <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA</a>
+license (version 4.0 or later), or
+the <a href="https://www.gnu.org/licenses/gfdl.html">GNU Free
+Documentation License</a> (version 1.2 or later), at your option.
+
+<h2>Motivation</h2>
+
+<p>
+Existing attempts to improve on the security of Unix-like operating
+systems for everyday personal use have been hampered by complexity,
+bugs, and security theatre. The concept of isolating applications by
+giving them what appears to be a dedicated computer to run in is a
+solid one, because it allows virtually all existing software to run
+without modification. However, allowing all these isolated computers
+to persist state leads to large maintenance costs — you now
+have <var>n</var> stateful computers to maintain, not one.
+
+<p>
+By minimizing the persistent state these computers are allowed to
+store to a well-defined absolute minimum required by the software
+running inside them, not only do we improve maintainability by
+minimising side effects and even allowing the computers to be
+regenerated without data loss if required, we also massively reduce
+the avenues to persisting malware.
+
+<p>
+Mutable state across the whole system isolated into two locations on
+the host: a global state store, which is broken down by application
+instance, and a global configuration file defining all configuration
+for the host, and the isolated environments for each application
+instance. Aside from these two locations, the host computer should
+prevent persistent state as much as possible. This means that it is
+possible to restore the host computer, along with all the isolated
+application environments, simply by restoring a copy of the global
+state store and configuration file. After an audit of the global
+configuration, a potentially compromised host could be safely restored
+onto a new computer without risk of the new host inheriting the
+infection from the old one, since the only mutable data affecting the
+host is the global configuration file. (Of course, this does not
+prevent the new host from being compromised shortly afterward through
+the same methods.)
+
+<h3>Existing implementations of security by compartmentalization</h3>
+
+<h4>Qubes OS</h4>
+
+<p>
+Qubes OS is a distribution of the Xen hypervisor that isolates IO and
+user applications inside their own dedicated virtual machines. Many
+people interested in secure computing are aware of Qubes, however they
+are often hampered by usability issues:
+
+<ul>
+
+  <li>
+  Hardware compatibility is extremely limited. People often have
+  to buy a new computer just to use Qubes, and even then it can be a
+  struggle to set up.
+
+  <li>
+  People are reluctant to use Xen on their computer for power
+  management etc. reasons.
+
+  <li>
+  VMs are heavy, and there is no isolation between applications in the
+  same domain (VM).
+
+  <li>
+  GUI applications are buggy, command line tools are mostly
+  undocumented.
+
+  <li>
+  Maintaining many different TemplateVMs with persistent state is
+  difficult. (Qubes can use Salt to mitigate this.)
+
+</ul>
+
+<p>
+However, the Qubes developers have created utilities for using
+compartmentalized environments that could be very useful to other
+implementations. For example, Qubes allows clipboard data to be safely
+shared between isolated environments with explicit user action on both
+ends, and Qubes Split GPG allows one environment to perform operations
+using a GPG key stored in another environment, with permission granted
+on a per-operation basis.
+
+<h4>Subgraph OS</h4>
+
+<p>
+Subgraph only provides isolation to the 22 applications they have
+manually containerized. Any other software is still run as normal. We
+consider this a major security issue.
+
+<p>
+The last release of SubgraphOS was an alpha in 2017.
+
+<h2>Implementation</h2>
+
+<p>
+Because of the explosion of interest in compartmentalized computing in
+recent years, there exists a plethora of existing work that can be
+harnessed to implement these concepts.
+
+<h3>Containers</h3>
+
+<p>
+A container is an isolated computing environment created using a
+variety of features of the Linux kernel. A container can
+be <em>almost</em> entirely isolated from the host system, and those
+components that <em>are</em> shared can likely be made inaccessible to
+isolated applications by denying them root access to their isolated
+environments. Unlike virtual machines, containers share a kernel with
+the host operating system, and do not require specially allocated
+resources (although it is still possible to limit resource use by a
+container). This makes containers able to deliver good performance
+with far looser hardware requirements than virtual machines.
+
+<p>
+In the proof of concept implementation, Docker, a popular
+implementation of containers, is used. However, there is probably
+not any tight coupling to Docker-specific features, and so Docker
+could most likely be easily swapped out for another container
+implementation, or even for virtual machines.
+
+<h4>Containers for personal computing</h4>
+
+<p>
+Containers have mostly been designed for isolating headless server
+applications. Additional challenges present themselves when applying
+container-based application isolation to personal computing.
+
+<h5>Graphical User Interfaces</h5>
+
+<p>
+The X11 protocol provides no isolation between applications
+whatsoever. Any application (including one running on a remote server
+using SSH X forwarding) can capture windows of other applications,
+read from them, and even send events to them freely. The solution to
+this problem is to use a separate X server for each container, and
+then forward them over another protocol (such as VNC) to the window
+manager running either on the host or, preferably, in a dedicated
+container of its own. The pre-existing Xpra software provides this
+capability. Doing this inevitably gives rise to yet more problems,
+mostly around performance, although these should be solvable also:
+
+<ul>
+
+  <li>
+  The current implementation of Xpra window forwarding causes
+  noticeable lag in high frame rate operations such as video playback
+  or gradual window resizing. This implementation uses a Unix socket
+  inside a tmpfs on the host, which is then mounted into the
+  container. However, Xpra also supports communicating over mapped
+  memory, and this should be significantly faster.
+
+  <li>
+  An Xpra server (of which there must be one for every isolated
+  application instance) takes most of a minute to start. This
+  means that the delay before a window appears is extremely long
+  compared to traditional personal computing systems. One promising
+  solution to this takes advantage of the fact that Xpra servers do
+  not require any application specific configuration (at least for
+  most applications), and so while each application instance requires
+  its own Xpra server, the server does not need to have been created
+  specifically for this application. This allows us to create several
+  Xpra servers ahead of time (in containers of themselves), and then
+  assign them to application instances on demand, starting the process
+  of generating the next Xpra server in the background.
+
+</ul>
+
+<p>
+Given the fundamental shortcomings in X, it might seem obvious to use
+Wayland instead. Unlike X, Wayland was designed with security and
+isolation between applications in mind. However, existing Wayland
+implementations have no way of controlling isolation between
+applications. A single Wayland compositor could provide e.g. clipboard
+isolation in a similar way to Qubes or Xpra, but this doesn't exist
+yet. Writing a Wayland compositor is not a simple task, even with a
+library like wlroots that does a lot of heavy lifting, and it would
+also couple a user to a single window manager or desktop
+environment. While Wayland is extremely usable for general-purpose
+desktop computing at this point, until a solution for these issues is
+reached, Wayland is not suitable for a compartmentalized operating
+system.
+
+<h3>NixOS</h3>
+
+<p>
+The proof of concept implementation is built on top of NixOS Linux, an
+operating system which is itself built on Nix, a purely functional
+package manager. Nix provides pure packages (meaning packages will be
+built from identical inputs each time — their outputs will not
+necessarily be byte-identical). NixOS makes it possible to define an
+entire GNU/Linux system in this manner.
+
+<p>
+However, NixOS does not attempt to completely eliminate undeclared
+state — it even allows for imperative package installation, which
+makes a Nix package that has not been defined in the global
+configuration available in the current environment. Responsibility for
+eliminating this sort of mutable state lies with the Spectrum
+implementation.
+
+<p>
+The nixpkgs repository provides functions for generating Docker
+containers from Nix expressions, using existing Nix package
+definitions. These containers are not full NixOS installations — in
+fact, they don't even have Nix or coreutils installed by default. This
+ensures only the minimum software required for the isolated
+application to run is available, reducing attack surface.
+
+<p>
+NixOS provides its own container implementation, based on
+systemd-nspawn however this is not suitable for security by
+compartmentalization. Firstly, it is designed to contain full
+installations of NixOS, rather than single applications. Further, it
+has apparently proven to be unreliable and suffer breakages, and its
+focus is not on providing truly isolated computing environments. By
+contrast, other container implementations (such as, but not
+exclusively, Docker), have reached a point of relative stability, and
+had extensive resources put into making them as isolated as possible
+from the host system.
+
+<h2>Current status</h2>
+
+<p>
+Getting Spectrum to the point it needs to be for other people to be
+able to use it is a large undertaking, that requires my full
+attention. To this end, I am currently actively seeking funding to
+work on Spectrum full time. Once this is completed, I can begin work
+on Spectrum in earnest. Source code repositories and discussion
+channels will be made available immediately, and I will publish
+regular status updates. As soon as funding is sorted out (and I am
+confident it will be), I want it to be as clear as possible that
+Spectrum is not vapourware, and that progress is rapidly being made.
+
+<h2>Changelog</h2>
+
+<h3><time>2019-07-06</time></h3>
+
+<p>
+Add current status section.
+
+<h3><time>2019-05-01</time></h3>
+
+<p>
+Fix typo: "thins" → "this".
+
+<h3><time>2019-03-31</time></h3>
+
+<ul>
+
+  <li>
+  Explain why Wayland isn't (yet) the answer
+
+  <li>
+  Project name updated
+
+  <li>
+  Converted to HTML
+
+  <li>
+  Removed explicit GPLv3 license, because CC-BY-SA 4.0 is
+  GPLv3-compatible
+
+  <li>
+  Minor copy editing
+
+</ul>
