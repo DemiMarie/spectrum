@@ -1,0 +1,19 @@
+/*
+Less is more.
+*/
+
+body {
+    max-width: 65ch;
+    padding: 0 2em;
+    margin: 2em auto;
+    line-height: 1.4;
+    font-family: sans-serif;
+}
+
+h1, h2, h3, h4 {
+    line-height: 1.1;
+}
+
+var {
+    font-family: serif;
+}
