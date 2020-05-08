@@ -23,7 +23,7 @@ automatically prepend a prefix to the subject line of every patch
 message sent by it in a given repository.  You can configure it by
 running the following command in this Git repository:
 
-	git config sendemail.subjectPrefix "PATCH www"
+	git config format.subjectPrefix "PATCH www"
 
 From now on, git-send-email(1) will automatically add "[PATCH www]" to
 the start of every patch sent for this repository, instead of the
