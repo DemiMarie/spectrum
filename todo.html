@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link rel="stylesheet" href="style.css">
+
+<title>Spectrum contribution ideas</title>
+
+<body>
+
+<nav>
+  <a href="..">Spectrum</a>
+</nav>
+
+<h1>Contribution ideas</h1>
+
+<p>
+Spectrum is currently under heavy development.  This means there are a
+lot of opportunities for contribution, but it can be difficult to
+figure out where to start, especially since there's not a complete
+system available to experiment with yet.
+
+<p>
+Here are some ideas for contributions, roughly ordered by priority.
+If working on any of these appears to you, even if you don't
+understand all the parts involved, we'd be happy to provide mentorship
+and support.  Just reach out
+on <a href="participating.html#irc">IRC</a> or email
+<a href="mailto:devel@spectrum-os.org">devel@spectrum-os.org</a>.
+
+<p>
+This list is nowhere near exhaustive.  If there's anything else you're
+interested in working on, or just nothing on this list appeals to you
+or fits your skillset, get in touch, and we can advise you on how you
+might be able to help out.
+
+<ol>
+  <li>
+  Implement
+  <a href="https://wayland.freedesktop.org/docs/html/apa.html#protocol-spec-wl_compositor">wl_compositor
+  v4</a> in
+  <a href="https://spectrum-os.org/doc/developer-manual.html#_sommelier">Sommelier</a>.
+  This will mean we no longer have to
+  <a href="https://spectrum-os.org/git/nixpkgs/tree/pkgs/development/libraries/wlroots/0001-backend-wayland-downgrade-to-wl_compositor-v3.patch">patch</a>
+  wlroots to downgrade it to an older protocol.
+
+  <li>
+  Create a minimal VM kernel configuration.  This will make it much
+  easier to iterate on the VM kernel, by substantially reducing clean
+  build times.
+
+  <li>
+  Explain the utility of
+  <a href="https://spectrum-os.org/git/nixpkgs/tree/pkgs/os-specific/linux/spectrum/spectrum-vm/spectrum-vm.in">spectrum-vm</a>
+  in the
+  <a href="https://spectrum-os.org/doc/developer-manual.html">developer
+  manual</a>.
+</ol>
+  
+<p>
+<small>You may distribute this content under the terms of either
+the <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA</a>
+license (version 4.0 or later), or
+the <a href="https://www.gnu.org/licenses/gfdl.html">GNU Free
+Documentation License</a> (version 1.2 or later), at your
+option.</small>
