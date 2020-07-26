@@ -1,3 +1,6 @@
+SPDX-FileCopyrightText: 2019 Alyssa Ross <hi@alyssa.is>
+SPDX-License-Identifier: CC0-1.0
+
 These files contain the static portion of the website accessible at
 <https://spectrum-os.org/>.  CGit, Mailman, etc, are run seperately.
 
@@ -10,7 +13,3 @@ Documentation License (version 1.2 or later), at your option.
 
 The source code of these web pages may be redistributed under the
 terms of the GNU General Public License (version 3.0 or later).
-
-CC-BY-SA: <https://creativecommons.org/licenses/by-sa/4.0/>
-GNU Free Documentation License: <https://www.gnu.org/licenses/gfdl.html>
-GNU General Public License: <https://www.gnu.org/licenses/gpl-3.0.en.html>
