@@ -17,6 +17,14 @@ self-close?), and CSS to a minimum.  We want to optimise for the
 website being as nice as possible to navigate in a text editor, to
 encourage people to edit and improve the website.
 
+For any changes that are likely to be copyrightable (i.e. those that
+involve any amount of creative input from you), please add an
+SPDX-FileCopyrightText header to the file so we can keep track of
+copyright holders.  Every file should already have at least one
+example of these that you can use as a template.  If you'd rather not
+list your email address in the copyright notice, it's fine to omit
+that.
+
 Please send patches to devel@spectrum-os.org.  Instructions for how to
 do this are provided in the contributing.html file.
 
