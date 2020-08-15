@@ -1,5 +1,6 @@
 <!doctype html>
 <!-- SPDX-FileCopyrightText: 2019-2020 Alyssa Ross <hi@alyssa.is> -->
+<!-- SPDX-FileCopyrightText: 2020 Philipp Steinpaß <philipp@xndr.de -->
 <!-- SPDX-License-Identifier: CC-BY-SA-4.0 OR GFDL-1.3-or-later -->
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <html lang="en">
@@ -78,13 +79,18 @@ the web.
 <h3>Note for Matrix users</h3>
 
 <p>
-There appears to be an issue with Matrix's IRC bridge that prevents
-Matrix users from joining #spectrum.  The workaround is as follows:
+There appears to be an issue with Matrix's IRC bridged room that prevents
+Matrix users from joining the channel with the normal alias
+#freenode_#spectrum:matrix.org. There are the following workarounds:
 
-<ol>
-  <li>Post <q>!join #spectrum</q> in your "Freenode IRC Bridge" chat.</li>
-  <li>Accept the invitation you are sent.</li>
-</ol>
+<ul>
+  <li>Join the room via it's internal name:
+    <kbd>/join !ZsIiqZmCTSWHpTQWaw:matrix.org</kbd>.
+  <li>Join the room via
+    <a href="https://matrix.to/#/!ZsIiqZmCTSWHpTQWaw:matrix.org">matrix.to link</a>.
+  <li>Ask the bridges appservice to invite you to the room:
+    <kbd>/msg @appservice-irc:matrix.org !join #spectrum</kbd> and accept the invite.
+</ul>
 
 <p>
 If you experience this issue, kindly report it to the people who run
