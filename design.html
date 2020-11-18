@@ -128,18 +128,26 @@ Management Engine</a>
 / <a href="https://en.wikipedia.org/wiki/AMD_Platform_Security_Processor">AMD
 Platform Security Processor</a>.
 
-<p>So, Spectrum will additionally have
-first class support for at least ppc64le.  This architecture has been
-chosen because it is the only other architecture that can come close
-to the sheer performance x86_64 can offer at the high end, and
-because, in stark contrast to x86_64, it is possible to buy a new
-ppc64le (POWER9) system that does not require any proprietary firmware
-that cannot be inspected and audited.  It is a goal of the project to
-build all packages, x86_64 and ppc64le, on POWER9 hardware.  Even if a
-user has to trust the x86_64 computer available to them, anti-freedom
-firmware, undocumented backdoors and all, it would be a disservice to
-them to force them to use packages built on other such untrustworthy
-hardware.
+<p>
+I would like Spectrum to additionally have first class support for at
+least ppc64le.  This is the only other architecture that can come
+close to the sheer performance x86_64 can offer at the high end, and
+in stark contrast to x86_64, it is possible to buy a new ppc64le
+(POWER9) system that does not require any proprietary firmware that
+cannot be inspected and audited.  A blocker for POWER9 support is an
+support in crosvm for virtualizing that architecture, which is outside
+the expertise of anybody currently working on Spectrum but would be a
+very welcome contribution.
+
+<p>
+Ideally, all Spectrum packages, x86_64 and ppc64le, would be built on
+POWER9 hardware.  Even if a user has to trust the x86_64 computer
+available to them, anti-freedom firmware, undocumented backdoors and
+all, they would be able to benefit from binary packages that were
+built on trustworthy hardware without these limitations.
+Unfortunately, preliminary research has shown that x86_64
+virtualization on POWER9 is not currently sufficiantly performant for
+this to be feasible.
 
 <p>
 <small>Permission is granted to copy, distribute and/or modify this
