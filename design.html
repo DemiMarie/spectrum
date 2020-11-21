@@ -114,19 +114,28 @@ configuration file.  This use case should be kept in mind when writing
 the Nix API for Spectrum.
 
 <p>
-While Spectrum is expected to largely run on personal computers, most
-of which will almost certainly use the x86_64 architecture, this will
-not be the only architecture given first class support by Spectrum.
-One of the advantages to Spectrum's Linux base is the extremely wide
-hardware support that Linux offers, and, beyond that, x86_64
-is <a href="https://blog.invisiblethings.org/papers/2015/x86_harmful.pdf">notably
-untrustworthy</a>, especially with
-the <a href="https://invidio.us/watch?v=_eSAF_qT_FY">huge attack
-surface</a> of
+Spectrum is expected to largely run on personal computers, most of
+which will almost certainly use the x86_64 or aarch64 architectures.
+Unfortunately, these common architectures are the most lacking in
+terms of trustworthiness.  All require unauditable proprietary blogs
+to boot, and
 the <a href="https://en.wikipedia.org/wiki/Intel_Management_Engine">Intel
-Management Engine</a>
-/ <a href="https://en.wikipedia.org/wiki/AMD_Platform_Security_Processor">AMD
-Platform Security Processor</a>.
+Management
+Engine</a>, <a href="https://en.wikipedia.org/wiki/AMD_Platform_Security_Processor">AMD
+Platform Security Processer</a>,
+and <a href="https://en.wikipedia.org/wiki/ARM_architecture#Security_extensions">ARM
+TrustZone</a>, all of which are constantly running highly privileged,
+unauditable code.  A backdoor or compromise in any of this code could
+give complete access to the system, invisibly to running the operating
+system.  As more functionality is moved into these environments, the
+attack surfaces grow larger and larger, and
+already <a href="https://en.wikipedia.org/wiki/Intel_Management_Engine#Security_vulnerabilities">many
+vulnerabilities</a> have been demonstrated in the most studied of
+these systems, Intel's Management Engine.  Fears of backdoors are not
+unjustified either — VIA C3 x86 CPUs used in personal computers have
+been found to contain
+a <a href="https://i.blackhat.com/us-18/Thu-August-9/us-18-Domas-God-Mode-Unlocked-Hardware-Backdoors-In-x86-CPUs-wp.pdf">hardware
+backdoor</a> allowing local privilege escalation.
 
 <p>
 I would like Spectrum to additionally have first class support for at
@@ -134,13 +143,15 @@ least ppc64le.  This is the only other architecture that can come
 close to the sheer performance x86_64 can offer at the high end, and
 in stark contrast to x86_64, it is possible to buy a new ppc64le
 (POWER9) system that does not require any proprietary firmware that
-cannot be inspected and audited.  A blocker for POWER9 support is an
-support in crosvm for virtualizing that architecture, which is outside
-the expertise of anybody currently working on Spectrum but would be a
-very welcome contribution.
+cannot be inspected and audited.  One of the advantages of Spectrum's
+Linux base is the extremely wide hardware support that Linux offers,
+so the only blocker for POWER9 support is support in crosvm for
+virtualizing that architecture, which is outside the expertise of
+anybody currently working on Spectrum but would be a very welcome
+contribution.
 
 <p>
-Ideally, all Spectrum packages, x86_64 and ppc64le, would be built on
+Ideally, all Spectrum packages, for all architectures, would be built on
 POWER9 hardware.  Even if a user has to trust the x86_64 computer
 available to them, anti-freedom firmware, undocumented backdoors and
 all, they would be able to benefit from binary packages that were
