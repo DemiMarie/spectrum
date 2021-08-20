@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- SPDX-FileCopyrightText: 2019-2020 Alyssa Ross <hi@alyssa.is> -->
+<!-- SPDX-FileCopyrightText: 2019-2021 Alyssa Ross <hi@alyssa.is> -->
 <!-- SPDX-License-Identifier: CC-BY-SA-4.0 OR GFDL-1.3-or-later -->
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <html lang="en">
@@ -44,23 +44,12 @@ might be able to help out.
 
 <ol>
   <li>
-  Implement
-  <a href="https://wayland.freedesktop.org/docs/html/apa.html#protocol-spec-wl_compositor">wl_compositor
-  v4</a> in
-  <a href="https://spectrum-os.org/doc/developer-manual.html#_sommelier">Sommelier</a>.
-  This will mean we no longer have to
-  <a href="https://spectrum-os.org/git/nixpkgs/tree/pkgs/development/libraries/wlroots/0001-backend-wayland-downgrade-to-wl_compositor-v3.patch">patch</a>
-  wlroots to downgrade it to an older protocol.
-
-  <li>
-  Implement a ceiling for host memory allocated by the
-  crosvm <a href="https://spectrum-os.org/doc/developer-manual.html#_the_memfd_server">memfd
-  server</a>.
-
-  <li>
-  Create a minimal VM kernel configuration.  This will make it much
-  easier to iterate on the VM kernel, by substantially reducing clean
-  build times.
+  <a href="https://github.com/NixOS/nixpkgs/issues/134948">nixpkgs
+  #134984</a>: cryptsetup cannot be built statically.  This would let
+  us massively reduce the size of Spectrum's initramfs.  For Spectrum,
+  we only need the <code>veritysetup</code> program from that package
+  at the moment, so it's okay for us if other features have to be
+  disabled to make static linking work.
 </ol>
   
 <p>
