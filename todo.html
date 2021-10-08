@@ -44,18 +44,18 @@ might be able to help out.
 
 <ol>
   <li>
+  <a href="https://github.com/NixOS/nixpkgs/issues/140851">nixpkgs
+  #140851</a>: ZFS kernel modules have ballooned in size.  This is
+  blocking updating the server hosting the Spectrum website, mailing
+  lists, etc.
+
+  <li>
   <a href="https://github.com/NixOS/nixpkgs/issues/134948">nixpkgs
   #134984</a>: cryptsetup cannot be built statically.  This would let
   us massively reduce the size of Spectrum's initramfs.  For Spectrum,
   we only need the <code>veritysetup</code> program from that package
   at the moment, so it's okay for us if other features have to be
   disabled to make static linking work.
-
-  <li>
-  <a href="https://github.com/NixOS/nixpkgs/issues/140851">nixpkgs
-  #140851</a>: ZFS kernel modules have ballooned in size.  This is
-  blocking updating the server hosting the Spectrum website, mailing
-  lists, etc.
 </ol>
   
 <p>
