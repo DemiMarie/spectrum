@@ -44,7 +44,8 @@ might be able to help out.
 
 <ol>
   <li>
-  Make the Spectrum <a href="https://spectrum-os.org/git/rootfs/">root
+  <p>Make the
+  Spectrum <a href="https://spectrum-os.org/git/rootfs/">root
   filesystem</a>
   use <a href="https://skarnet.org/software/s6-linux-init/">s6-linux-init</a>
   instead of a
@@ -54,13 +55,13 @@ might be able to help out.
   much more robust.
 
   <li>
-  <a href="https://github.com/NixOS/nixpkgs/issues/140851">nixpkgs
+  <p><a href="https://github.com/NixOS/nixpkgs/issues/140851">nixpkgs
   #140851</a>: ZFS kernel modules have ballooned in size.  This is
   blocking updating the server hosting the Spectrum website, mailing
   lists, etc.
 
   <li>
-  <a href="https://github.com/NixOS/nixpkgs/issues/134948">nixpkgs
+  <p><a href="https://github.com/NixOS/nixpkgs/issues/134948">nixpkgs
   #134984</a>: cryptsetup cannot be built statically.  This would let
   us massively reduce the size of Spectrum's initramfs.  For Spectrum,
   we only need the <code>veritysetup</code> program from that package
