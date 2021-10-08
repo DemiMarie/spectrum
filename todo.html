@@ -44,6 +44,16 @@ might be able to help out.
 
 <ol>
   <li>
+  Make the Spectrum <a href="https://spectrum-os.org/git/rootfs/">root
+  filesystem</a>
+  use <a href="https://skarnet.org/software/s6-linux-init/">s6-linux-init</a>
+  instead of a
+  custom <a href="https://skarnet.org/software/execline/">execline</a>
+  <a href="https://skarnet.org/software/s6/s6-svscan-1.html#stage1">stage1</a>.
+  The custom stage1 has known timing issues.  s6-linux-init should be
+  much more robust.
+
+  <li>
   <a href="https://github.com/NixOS/nixpkgs/issues/140851">nixpkgs
   #140851</a>: ZFS kernel modules have ballooned in size.  This is
   blocking updating the server hosting the Spectrum website, mailing
