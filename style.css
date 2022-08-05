@@ -20,16 +20,3 @@ h1, h2, h3, h4 {
 var {
 	font-family: serif;
 }
-
-/*
-Firefox only supports conic gradients as of 83.0, so for the time
-being, we need to provide a fallback for the logo.
-*/
-
-.logo { display: none; }
-.no-logo { display: block; }
-
-@supports (background: conic-gradient(from 0.25turn, red, magenta, blue, aqua, lime, yellow, red)) {
-	.logo { display: block; }
-	.no-logo { display: none; }
-}
