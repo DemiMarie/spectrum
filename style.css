@@ -1,4 +1,5 @@
 /* SPDX-FileCopyrightText: 2019 Alyssa Ross <hi@alyssa.is> */
+/* SPDX-FileCopyrightText: 2022 Unikie */
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 
 /*
@@ -19,4 +20,8 @@ h1, h2, h3, h4 {
 
 var {
 	font-family: serif;
+}
+
+:target {
+    background: yellow;
 }
