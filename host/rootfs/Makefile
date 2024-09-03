@@ -149,6 +149,8 @@ S6_RC_FILES = \
 	etc/s6-rc/static-nodes/up \
 	etc/s6-rc/vm-env/contents \
 	etc/s6-rc/vm-env/type \
+	etc/s6-rc/vmm-env/contents \
+	etc/s6-rc/vmm-env/type \
 	etc/s6-rc/weston/dependencies \
 	etc/s6-rc/weston/notification-fd \
 	etc/s6-rc/weston/type \
