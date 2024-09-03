@@ -5,7 +5,7 @@ import ../../lib/call-package.nix (
 { callSpectrumPackage, lib, firefox }:
 
 callSpectrumPackage ../make-vm.nix {} {
-  providers.net = [ "user.netvm" ];
+  providers.net = [ "sys.netvm" ];
   type = "nix";
   run = lib.getExe firefox;
 }) (_: {})

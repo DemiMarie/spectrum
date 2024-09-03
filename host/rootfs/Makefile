@@ -147,6 +147,9 @@ S6_RC_FILES = \
 	etc/s6-rc/ok-all/type \
 	etc/s6-rc/static-nodes/type \
 	etc/s6-rc/static-nodes/up \
+	etc/s6-rc/sys-vmms/dependencies \
+	etc/s6-rc/sys-vmms/type \
+	etc/s6-rc/sys-vmms/up \
 	etc/s6-rc/vm-env/contents \
 	etc/s6-rc/vm-env/type \
 	etc/s6-rc/vmm-env/contents \

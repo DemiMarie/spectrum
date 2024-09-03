@@ -16,9 +16,7 @@ rootfs.overrideAttrs (
   ];
 
   env = env // {
-    EXT_FS = pkgsStatic.callPackage ../initramfs/extfs.nix {
-      inherit callSpectrumPackage;
-    };
+    EXT_FS = pkgsStatic.callPackage ../initramfs/extfs.nix {};
     INITRAMFS = callSpectrumPackage ../initramfs {};
     KERNEL = "${passthru.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     LINUX_SRC = srcOnly passthru.kernel;

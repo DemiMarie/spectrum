@@ -10,7 +10,7 @@ let
   live = callSpectrumPackage ../../live {};
 
   vm = callSpectrumPackage ../../../vm/make-vm.nix {} {
-    providers.net = [ "user.netvm" ];
+    providers.net = [ "sys.netvm" ];
     type = "nix";
     run = writeShellScript "run" ''
       set -x

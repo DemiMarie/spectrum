@@ -7,9 +7,7 @@ import ../../lib/call-package.nix (
 }:
 
 let
-  extfs = pkgsStatic.callPackage ./extfs.nix {
-    inherit callSpectrumPackage;
-  };
+  extfs = pkgsStatic.callPackage ./extfs.nix { };
   initramfs = callSpectrumPackage ./. {};
 in
 

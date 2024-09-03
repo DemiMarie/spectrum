@@ -19,9 +19,7 @@ let
     mesonFlags = mesonFlags ++ [ "-Defi-stub-extra-sections=3000" ];
   });
 
-  extfs = pkgsStatic.callPackage ../../host/initramfs/extfs.nix {
-    inherit callSpectrumPackage;
-  };
+  extfs = pkgsStatic.callPackage ../../host/initramfs/extfs.nix { };
   initramfs = callSpectrumPackage ../../host/initramfs {};
   efiArch = stdenv.hostPlatform.efiArch;
 in

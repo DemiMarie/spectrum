@@ -3,4 +3,5 @@
 #
 ext-vmms
 mdevd-coldplug
+sys-vmms
 vm-env

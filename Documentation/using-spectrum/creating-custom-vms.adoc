@@ -7,9 +7,9 @@
 
 == Configuration
 
-Each VM is configured using a directory under svc/data/ on the
-xref:../development/user-partition.adoc[user partition].  The name of the directory
-determines the name of the VM.
+Custom VMs can be configured using a directory under svc/data/ on the
+xref:../development/user-partition.adoc[user partition].  The name of
+the directory determines the name of the VM.
 
 The directory can contain the following files:
 

@@ -16,7 +16,8 @@ pkgsStatic.callPackage (
 let
   inherit (nixosAllHardware.config.hardware) firmware;
   inherit (lib)
-    concatMapStringsSep escapeShellArgs fileset optionalAttrs systems trivial;
+    concatMapStringsSep concatStrings escapeShellArgs fileset optionalAttrs
+    mapAttrsToList systems trivial;
 
   pkgsGui = pkgsMusl.extend (
     final: super:
@@ -175,12 +176,19 @@ let
   kernel = linux_latest;
 
   appvm = callSpectrumPackage ../../img/app { inherit (foot) terminfo; };
+  netvm = callSpectrumPackage ../../vm/sys/net { inherit (foot) terminfo; };
 
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
   usrPackages = [
-    appvm kernel firmware
+    appvm kernel firmware netvm
   ] ++ (with pkgsGui; [ mesa dejavu_fonts westonLite ]);
+
+  appvms = {
+    appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};
+    appvm-foot = callSpectrumPackage ../../vm/app/foot.nix {};
+    appvm-gnome-text-editor = callSpectrumPackage ../../vm/app/gnome-text-editor.nix {};
+  };
 
   packagesSysroot = runCommand "packages-sysroot" {
     depsBuildBuild = [ inkscape ];
@@ -206,6 +214,10 @@ let
     for pkg in ${escapeShellArgs usrPackages}; do
         lndir -ignorelinks -silent "$pkg" "$out/usr"
     done
+
+    ${concatStrings (mapAttrsToList (name: path: ''
+      ln -s ${path} $out/usr/lib/spectrum/vm/${name}
+    '') appvms)}
 
     # TODO: this is a hack and we should just build the util-linux
     # programs we want.

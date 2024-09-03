@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
 
-if -t { test -d /ext/svc/data }
-vm-import user /ext/svc/data
+vm-import sys /usr/lib/spectrum/vm
