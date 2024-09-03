@@ -14,8 +14,9 @@ pkgsStatic.callPackage (
 }:
 
 let
-  inherit (lib) concatMapStringsSep optionalAttrs systems;
   inherit (nixosAllHardware.config.hardware) firmware;
+  inherit (lib)
+    concatMapStringsSep escapeShellArgs fileset optionalAttrs systems trivial;
 
   pkgsGui = pkgsMusl.extend (
     final: super:
@@ -168,7 +169,7 @@ let
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
 
-    system.stateVersion = lib.trivial.release;
+    system.stateVersion = trivial.release;
   });
 
   kernel = linux_latest;
@@ -202,7 +203,7 @@ let
     ln -st $out/usr/share/dbus-1/services \
         ${pkgsGui.xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
 
-    for pkg in ${lib.escapeShellArgs usrPackages}; do
+    for pkg in ${escapeShellArgs usrPackages}; do
         lndir -ignorelinks -silent "$pkg" "$out/usr"
     done
 
@@ -216,9 +217,9 @@ in
 stdenvNoCC.mkDerivation {
   name = "spectrum-rootfs";
 
-  src = lib.fileset.toSource {
+  src = fileset.toSource {
     root = ../..;
-    fileset = lib.fileset.intersection src (lib.fileset.unions [
+    fileset = fileset.intersection src (fileset.unions [
       ./.
       ../../lib/common.mk
       ../../scripts/make-erofs.sh
