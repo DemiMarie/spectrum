@@ -30,7 +30,7 @@ foreground {
 # will deadlock.
 background {
   # Wait for the VM to be up.
-  foreground { s6-rc -bu change ext-rc-init }
+  foreground { s6-rc -bu change ext-vmms }
   if { s6-svwait -U /run/service/vmm/instance/user.netvm }
 
   ch-remote --api-socket /run/vm/user.netvm/vmm add-device path=/sys${devpath}

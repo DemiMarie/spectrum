@@ -129,11 +129,9 @@ S6_RC_FILES = \
 	etc/s6-rc/card0/up \
 	etc/s6-rc/core/type \
 	etc/s6-rc/core/up \
-	etc/s6-rc/ext-rc-init/dependencies \
-	etc/s6-rc/ext-rc-init/type \
-	etc/s6-rc/ext-rc-init/up \
-	etc/s6-rc/ext-rc/contents \
-	etc/s6-rc/ext-rc/type \
+	etc/s6-rc/ext-vmms/dependencies \
+	etc/s6-rc/ext-vmms/type \
+	etc/s6-rc/ext-vmms/up \
 	etc/s6-rc/ext/type \
 	etc/s6-rc/ext/up \
 	etc/s6-rc/kvm/timeout-up \
@@ -149,6 +147,8 @@ S6_RC_FILES = \
 	etc/s6-rc/ok-all/type \
 	etc/s6-rc/static-nodes/type \
 	etc/s6-rc/static-nodes/up \
+	etc/s6-rc/vm-env/contents \
+	etc/s6-rc/vm-env/type \
 	etc/s6-rc/weston/dependencies \
 	etc/s6-rc/weston/notification-fd \
 	etc/s6-rc/weston/type \
