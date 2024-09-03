@@ -5,32 +5,24 @@
 
 include ../../../lib/common.mk
 
-prefix = build/svc
+prefix = build/host
+libdir = $(prefix)/lib
+vmdir = $(libdir)/spectrum/vm
 
 VMM = cloud-hypervisor
 
 HOST_BUILD_FILES = \
-	build/host/data/netvm/blk/root.img \
-	build/host/data/netvm/vmlinux
+	$(vmdir)/netvm/blk/root.img \
+	$(vmdir)/netvm/vmlinux
 
-# We produce a directory, but that doesn't play nice with Make,
-# because it won't know to update if some file in the directory is
-# changed, or a file is created or removed in a subdirectory.  Using
-# the whole directory could also end up including files that aren't
-# intended to be part of the input, like temporary editor files or
-# .license files.  So for all these reasons, only explicitly listed
-# files are included in the build result.
-$(prefix): $(HOST_BUILD_FILES)
-	rm -rf $@
-	mkdir -p $@
+all: $(HOST_BUILD_FILES)
+.PHONY: all
 
-	tar -c $(HOST_BUILD_FILES) | tar -C $@ -x --strip-components 2
-
-build/host/data/netvm/vmlinux: $(KERNEL)
+$(vmdir)/netvm/vmlinux: $(KERNEL)
 	mkdir -p $$(dirname $@)
 	cp $(KERNEL) $@
 
-build/host/data/netvm/blk/root.img: ../../../scripts/make-gpt.sh ../../../scripts/sfdisk-field.awk build/rootfs.erofs
+$(vmdir)/netvm/blk/root.img: ../../../scripts/make-gpt.sh ../../../scripts/sfdisk-field.awk build/rootfs.erofs
 	mkdir -p $$(dirname $@)
 	../../../scripts/make-gpt.sh $@.tmp \
 	    build/rootfs.erofs:root:ea21da27-0391-48da-9235-9d2ab2ca7844:root
@@ -106,9 +98,9 @@ start-vhost-user-net:
 	mkdir -p build
 	../../../scripts/start-passt.elb
 
-run-qemu: build/host/data/netvm/blk/root.img
+run-qemu: $(vmdir)/netvm/blk/root.img
 	@../../../scripts/run-qemu.sh -m 256 -cpu host -kernel $(KERNEL) -vga none \
-	    -drive file=build/host/data/netvm/blk/root.img,if=virtio,format=raw,readonly=on \
+	    -drive file=$(vmdir)/netvm/blk/root.img,if=virtio,format=raw,readonly=on \
 	    -append "root=PARTLABEL=root nokaslr" \
 	    -gdb unix:build/gdb.sock,server,nowait \
 	    -netdev user,id=net0 \
@@ -121,13 +113,13 @@ run-qemu: build/host/data/netvm/blk/root.img
 	    -device virtconsole,chardev=virtiocon0
 .PHONY: run-qemu
 
-run-cloud-hypervisor: build/host/data/netvm/blk/root.img start-vhost-user-net
+run-cloud-hypervisor: $(vmdir)/netvm/blk/root.img start-vhost-user-net
 	rm -f build/vmm.sock
 	@../../../scripts/with-taps.elb \
 	    ../../../scripts/run-cloud-hypervisor.sh \
 	    --api-socket path=build/vmm.sock \
 	    --memory size=256M,shared=on \
-	    --disk path=build/host/data/netvm/blk/root.img,readonly=on \
+	    --disk path=$(vmdir)/netvm/blk/root.img,readonly=on \
 	    --net vhost_user=on,socket=build/vhost-user-net.sock tap=tap1,mac=0A:B3:EC:80:00:00 \
 	    --kernel $(KERNEL) \
 	    --cmdline "root=PARTLABEL=root" \
@@ -135,9 +127,9 @@ run-cloud-hypervisor: build/host/data/netvm/blk/root.img start-vhost-user-net
 	    --serial file=build/serial.log
 .PHONY: run-cloud-hypervisor
 
-run-crosvm: build/host/data/netvm/blk/root.img
+run-crosvm: $(vmdir)/netvm/blk/root.img
 	../../../scripts/with-taps.elb $(CROSVM_RUN) \
-	    --disk build/host/data/netvm/blk/root.img \
+	    --disk $(vmdir)/netvm/blk/root.img \
 	    -p "console=ttyS0 root=PARTLABEL=root" \
 	    --net tap-name=tap0 \
 	    --net tap-name=tap1,mac=0A:B3:EC:80:00:00 \

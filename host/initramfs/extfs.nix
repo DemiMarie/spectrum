@@ -18,12 +18,10 @@ runCommand "ext.ext4" {
   __structuredAttrs = true;
   unsafeDiscardReferences = { out = true; };
 } ''
-  mkdir -p root/svc/data/appvm-{firefox,foot,gnome-text-editor}
+  mkdir -p root/svc/data/{appvm-{firefox,foot,gnome-text-editor},netvm}
   cd root
 
-  tar -C ${netvm} -c data | tar -C svc -x
-  chmod +w svc/data
-
+  tar -C ${netvm}/lib/spectrum/vm/netvm -c . | tar -C svc/data/netvm -x
   tar -C ${appvm-firefox} -c . | tar -C svc/data/appvm-firefox -x
   tar -C ${appvm-foot} -c . | tar -C svc/data/appvm-foot -x
   tar -C ${appvm-gnome-text-editor} -c . | tar -C svc/data/appvm-gnome-text-editor -x

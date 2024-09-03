@@ -53,7 +53,7 @@ runCommand "spectrum-vm" {
 
   popd
 
-  ln -s /usr/img/appvm/blk/root.img "$out/blk"
-  ln -s /usr/img/appvm/vmlinux "$out"
+  ln -s /usr/lib/spectrum/img/appvm/blk/root.img "$out/blk"
+  ln -s /usr/lib/spectrum/img/appvm/vmlinux "$out"
 ''
 ) {}

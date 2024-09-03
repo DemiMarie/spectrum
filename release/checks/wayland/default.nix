@@ -32,13 +32,13 @@ nixosTest ({ lib, pkgs, ... }: {
     systemd.services.cloud-hypervisor = {
       after = [ "crosvm-gpu.service" "weston.service" ];
       requires = [ "crosvm-gpu.service" "weston.service" ];
-      serviceConfig.ExecStart = "${lib.getExe pkgs.cloud-hypervisor} --memory shared=on --disk path=${appvm}/img/appvm/blk/root.img,readonly=on --cmdline \"console=ttyS0 root=PARTLABEL=root\" --fs socket=/run/virtiofsd.sock,tag=virtiofs0 --gpu socket=/run/crosvm-gpu.sock --vsock cid=3,socket=/run/vsock.sock --serial tty --console null --kernel ${appvm}/img/appvm/vmlinux";
+      serviceConfig.ExecStart = "${lib.getExe pkgs.cloud-hypervisor} --memory shared=on --disk path=${appvm}/lib/spectrum/img/appvm/blk/root.img,readonly=on --cmdline \"console=ttyS0 root=PARTLABEL=root\" --fs socket=/run/virtiofsd.sock,tag=virtiofs0 --gpu socket=/run/crosvm-gpu.sock --vsock cid=3,socket=/run/vsock.sock --serial tty --console null --kernel ${appvm}/lib/spectrum/img/appvm/vmlinux";
     };
 
     systemd.services.crosvm = {
       after = [ "crosvm-gpu.service" "weston.service" ];
       requires = [ "crosvm-gpu.service" "weston.service" ];
-      serviceConfig.ExecStart = "${lib.getExe pkgs.crosvm} run -s /run/crosvm --disk ${appvm}/img/appvm/blk/root.img -p \"console=ttyS0 root=PARTLABEL=root\" --vhost-user fs,socket=/run/virtiofsd.sock --vhost-user gpu,socket=/run/crosvm-gpu.sock --vsock cid=3 --serial type=stdout,hardware=virtio-console,stdin=true ${appvm}/img/appvm/vmlinux";
+      serviceConfig.ExecStart = "${lib.getExe pkgs.crosvm} run -s /run/crosvm --disk ${appvm}/lib/spectrum/img/appvm/blk/root.img -p \"console=ttyS0 root=PARTLABEL=root\" --vhost-user fs,socket=/run/virtiofsd.sock --vhost-user gpu,socket=/run/crosvm-gpu.sock --vsock cid=3 --serial type=stdout,hardware=virtio-console,stdin=true ${appvm}/lib/spectrum/img/appvm/vmlinux";
       serviceConfig.ExecStop = "${lib.getExe pkgs.crosvm} stop /run/crosvm";
     };
 

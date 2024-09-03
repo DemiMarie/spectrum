@@ -7,7 +7,8 @@
 include ../../lib/common.mk
 
 prefix = build/host
-imgdir = $(prefix)/img
+libdir = $(prefix)/lib
+imgdir = $(libdir)/spectrum/img
 
 VMM = cloud-hypervisor
 
