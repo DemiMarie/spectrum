@@ -12,4 +12,5 @@ foreground {
   vm-start $provider
 }
 
+if { s6-svwait -U /run/service/vmm/instance/${1} }
 ch-remote --api-socket /run/vm/${1}/vmm boot

@@ -13,5 +13,4 @@ if { ln -s ${2}/${name} /run/vm/${1}.${name}/config }
 
 if { create-vm-dependencies ${1}.${name} }
 
-if { s6-instance-create /run/service/vmm ${1}.${name} }
-s6-svwait -U /run/service/vmm/instance/${1}.${name}
+s6-instance-create /run/service/vmm ${1}.${name}
