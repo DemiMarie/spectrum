@@ -74,7 +74,7 @@ run: $(dest) build/rootfs.verity.roothash $(RUN_IMAGE)
 	    -machine virtualization=on \
 	    -kernel $(KERNEL) \
 	    -initrd $(dest) \
-	    -append "ro console=hvc0 ext=vda intel_iommu=on roothash=$$(< build/rootfs.verity.roothash) nokaslr" \
+	    -append "ro console=hvc0 intel_iommu=on roothash=$$(< build/rootfs.verity.roothash) nokaslr" \
 	    -cpu max \
 	    -gdb unix:build/gdb.sock,server,nowait \
 	    -parallel none \

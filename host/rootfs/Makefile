@@ -14,7 +14,6 @@ FILES = \
 	etc/init \
 	etc/login \
 	etc/mdev.conf \
-	etc/mdev/block/add \
 	etc/mdev/listen \
 	etc/mdev/net/add \
 	etc/mdev/wait \
@@ -129,11 +128,6 @@ S6_RC_FILES = \
 	etc/s6-rc/card0/up \
 	etc/s6-rc/core/type \
 	etc/s6-rc/core/up \
-	etc/s6-rc/ext-vmms/dependencies \
-	etc/s6-rc/ext-vmms/type \
-	etc/s6-rc/ext-vmms/up \
-	etc/s6-rc/ext/type \
-	etc/s6-rc/ext/up \
 	etc/s6-rc/kvm/timeout-up \
 	etc/s6-rc/kvm/type \
 	etc/s6-rc/kvm/up \
@@ -230,7 +224,7 @@ run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
 	    -device virtconsole,chardev=virtiocon0 \
 	    -drive file=build/live.img,if=virtio,format=raw,readonly=on \
 	    -drive file=/proc/self/fd/3,if=virtio,format=raw \
-	    -append "console=hvc0 roothash=$$(< build/rootfs.verity.roothash) ext=/dev/vdb intel_iommu=on nokaslr" \
+	    -append "console=hvc0 roothash=$$(< build/rootfs.verity.roothash) intel_iommu=on nokaslr" \
 	    -device virtio-keyboard \
 	    -device virtio-mouse \
 	    -device virtio-gpu \

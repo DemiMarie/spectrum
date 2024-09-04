@@ -7,9 +7,14 @@
 
 == Configuration
 
-Custom VMs can be configured using a directory under svc/data/ on the
-xref:../development/user-partition.adoc[user partition].  The name of
-the directory determines the name of the VM.
+Custom VMs can be configured on
+xref:../development/persistent-storage.adoc[persistent storage].  VMs
+configurations are directories under a dedicated parent directory, and
+the name of each configuration directory determines the name of
+the VM.  After mounting the persistent storage partition, the
+configured VMs can be made available by running `vm-import user
+/ext/vms`, replacing /ext/vms with the directory containing the VM
+definitions.
 
 The directory can contain the following files:
 

@@ -45,10 +45,6 @@ Specification].
 https://uapi-group.org/specifications/specs/discoverable_partitions_specification/[Discoverable Partitions
 Specification].
 
-=== `9293e1ff-cee4-4658-88be-898ec863944f`
-
-xref:user-partition.adoc[Spectrum user partition].
-
 === `56a3bbc3-aefa-43d9-a64d-7b3fd59bbc4e`
 
 https://github.com/endlessm/eos-installer["eosimages"] partition on the
