@@ -88,6 +88,5 @@ run: $(dest) build/rootfs.verity.roothash $(RUN_IMAGE)
 	    -vga none \
 	    -device qemu-xhci \
 	    -device usb-storage,drive=drive1,removable=true \
-	    -drive file=$(RUN_IMAGE),id=drive1,format=raw,if=none,readonly=true \
-	    -drive file=$(EXT_FS),format=raw,if=virtio,readonly=true
+	    -drive file=$(RUN_IMAGE),id=drive1,format=raw,if=none,readonly=true
 .PHONY: run

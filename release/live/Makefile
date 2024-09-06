@@ -9,12 +9,11 @@ DTBS ?= build/empty
 
 dest = build/live.img
 
-$(dest): ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat build/rootfs.verity.superblock build/rootfs.verity.roothash $(ROOT_FS) $(EXT_FS)
+$(dest): ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat build/rootfs.verity.superblock build/rootfs.verity.roothash $(ROOT_FS)
 	../../scripts/make-gpt.sh $@.tmp \
 	    build/boot.fat:c12a7328-f81f-11d2-ba4b-00a0c93ec93b \
 	    build/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(ROOT_FS):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)") \
-	    $(EXT_FS):9293e1ff-cee4-4658-88be-898ec863944f
+	    $(ROOT_FS):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)")
 	mv $@.tmp $@
 
 build/empty:

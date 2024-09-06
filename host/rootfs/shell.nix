@@ -4,7 +4,7 @@
 
 import ../../lib/call-package.nix (
 { callSpectrumPackage, rootfs, pkgsStatic, srcOnly, stdenv
-, cryptsetup, jq, netcat, qemu_kvm, reuse, util-linux
+, cryptsetup, e2fsprogs, jq, netcat, qemu_kvm, reuse, util-linux
 }:
 
 rootfs.overrideAttrs (
@@ -12,11 +12,10 @@ rootfs.overrideAttrs (
 
 {
   nativeBuildInputs = nativeBuildInputs ++ [
-    cryptsetup jq netcat qemu_kvm reuse util-linux
+    cryptsetup e2fsprogs jq netcat qemu_kvm reuse util-linux
   ];
 
   env = env // {
-    EXT_FS = pkgsStatic.callPackage ../initramfs/extfs.nix {};
     INITRAMFS = callSpectrumPackage ../initramfs {};
     KERNEL = "${passthru.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     LINUX_SRC = srcOnly passthru.kernel;

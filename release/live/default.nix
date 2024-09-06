@@ -19,7 +19,6 @@ let
     mesonFlags = mesonFlags ++ [ "-Defi-stub-extra-sections=3000" ];
   });
 
-  extfs = pkgsStatic.callPackage ../../host/initramfs/extfs.nix { };
   initramfs = callSpectrumPackage ../../host/initramfs {};
   efiArch = stdenv.hostPlatform.efiArch;
 in
@@ -44,7 +43,6 @@ stdenv.mkDerivation {
   ];
 
   env = {
-    EXT_FS = extfs;
     INITRAMFS = initramfs;
     KERNEL = "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     ROOT_FS = rootfs;

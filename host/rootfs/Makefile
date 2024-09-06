@@ -205,10 +205,10 @@ debug:
 run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
-	cp $(EXT_FS) "$$ext" && \
+	truncate -s 10G "$$ext" && \
+	mkfs.ext4 "$$ext" && \
 	exec 3<>"$$ext" && \
 	rm -f "$$ext" && \
-	truncate -s +10G /proc/self/fd/3 && \
 	set +x && \
 	exec ../../scripts/run-qemu.sh -cpu max -m 4G \
 	    -machine virtualization=on \

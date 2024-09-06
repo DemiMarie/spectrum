@@ -7,7 +7,6 @@ import ../../lib/call-package.nix (
 }:
 
 let
-  extfs = pkgsStatic.callPackage ./extfs.nix { };
   initramfs = callSpectrumPackage ./. {};
 in
 
@@ -17,7 +16,6 @@ initramfs.overrideAttrs ({ nativeBuildInputs ? [], env ? {}, ... }: {
   ];
 
   env = env // {
-    EXT_FS = extfs;
     KERNEL = "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     ROOT_FS = rootfs;
   };
