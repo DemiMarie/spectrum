@@ -8,7 +8,8 @@
 Spectrum's root filesystem is immutable, so if you want to be able to
 persist data between sessions, you'll need to create a persistent
 storage partition.  Spectrum comes with command line tools for working
-with ext4.
+with bcachefs, and in future might assume that bcachefs-specific
+features are available.
 
 Conventionally, the persistent storage partition is mounted on /ext
 after booting.  It's not mounted automatically, because generally the

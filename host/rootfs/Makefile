@@ -206,7 +206,7 @@ run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$ext" && \
-	mkfs.ext4 "$$ext" && \
+	mkfs.bcachefs "$$ext" && \
 	exec 3<>"$$ext" && \
 	rm -f "$$ext" && \
 	set +x && \

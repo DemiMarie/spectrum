@@ -4,7 +4,7 @@
 
 import ../../lib/call-package.nix (
 { callSpectrumPackage, rootfs, pkgsStatic, srcOnly, stdenv
-, cryptsetup, e2fsprogs, jq, netcat, qemu_kvm, reuse, util-linux
+, bcachefs-tools, cryptsetup, jq, netcat, qemu_kvm, reuse, util-linux
 }:
 
 rootfs.overrideAttrs (
@@ -12,7 +12,7 @@ rootfs.overrideAttrs (
 
 {
   nativeBuildInputs = nativeBuildInputs ++ [
-    cryptsetup e2fsprogs jq netcat qemu_kvm reuse util-linux
+    bcachefs-tools cryptsetup jq netcat qemu_kvm reuse util-linux
   ];
 
   env = env // {
