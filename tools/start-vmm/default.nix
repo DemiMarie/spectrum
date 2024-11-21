@@ -57,9 +57,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = lib.fileset.toSource {
     root = ../..;
-    fileset = lib.fileset.intersection src ./.;
+    fileset = lib.fileset.intersection src ./..;
   };
-  sourceRoot = "source/tools/start-vmm";
+  sourceRoot = "source/tools";
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ meson ninja rustc ];
@@ -69,7 +69,13 @@ stdenv.mkDerivation (finalAttrs: {
     ln -s ${crate} subprojects/packagecache/${crate.name}
   '') packageCache;
 
-  mesonFlags = [ "-Dtests=false" "-Dunwind=false" "-Dwerror=true" ];
+  mesonFlags = [
+    "-Dguest=false"
+    "-Dhost=true"
+    "-Dtests=false"
+    "-Dunwind=false"
+    "-Dwerror=true"
+  ];
 
   passthru.tests = {
     clang-tidy = finalAttrs.finalPackage.overrideAttrs (
@@ -85,7 +91,7 @@ stdenv.mkDerivation (finalAttrs: {
         nativeBuildInputs = nativeBuildInputs ++ [ clang-tools ];
 
         buildPhase = ''
-          clang-tidy --warnings-as-errors='*' -p . ../*.c ../*.h
+          clang-tidy --warnings-as-errors='*' -p . ../start-vmm/*.[ch]
           touch $out
           exit 0
         '';

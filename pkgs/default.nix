@@ -53,7 +53,7 @@ let
     srcWithNix = fileset.difference
       (fileset.fromSource (cleanSource ../.))
       (fileset.unions ([
-        (subprojects ../tools/start-vmm)
+        (subprojects ../tools)
       ] ++ map fileset.maybeMissing [
         ../Documentation/.jekyll-cache
         ../Documentation/_site

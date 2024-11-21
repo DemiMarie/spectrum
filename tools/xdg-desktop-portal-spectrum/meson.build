@@ -1,12 +1,6 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
 
-project('xdg-desktop-portal-spectrum', 'c',
-  default_options : {
-    'c_std': 'c23',
-    'warning_level': '3',
-  })
-
 dbus = dependency('dbus-1')
 
 install_data('spectrum.portal',

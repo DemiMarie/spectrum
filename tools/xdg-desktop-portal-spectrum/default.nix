@@ -9,11 +9,12 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = lib.fileset.toSource {
     root = ../..;
-    fileset = lib.fileset.intersection src ./.;
+    fileset = lib.fileset.intersection src ../.;
   };
-  sourceRoot = "source/tools/xdg-desktop-portal-spectrum";
+  sourceRoot = "source/tools";
 
   mesonFlags = [
+    "-Dguest=true"
     "-Dhostfsrootdir=/run/virtiofs/virtiofs0"
   ];
 
@@ -29,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
         nativeBuildInputs = nativeBuildInputs ++ [ clang-tools ];
 
         buildPhase = ''
-          clang-tidy --warnings-as-errors='*' ../*.c
+          clang-tidy --warnings-as-errors='*' ../xdg-desktop-portal-spectrum/*.c
           touch $out
           exit 0
         '';

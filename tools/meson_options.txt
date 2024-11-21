@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
+
+option('host', type : 'boolean', value : false,
+  description : 'Build tools for the Spectrum host')
+
+option('guest', type : 'boolean',
+  description : 'Build tools for Spectrum guests')
+
+option('hostfsrootdir', type : 'string', value : '/run/host',
+  description : 'Path where the virtio-fs provided by the host will be mounted')
+
+option('tests',
+  type : 'boolean',
+  description : 'Build tests')
+
+option('unwind',
+  type : 'boolean',
+  description : 'Build Rust code with -C panic=unwind')
