@@ -19,6 +19,7 @@ if get_option('host')
 
   miniserde_dep = dependency('miniserde-rs')
 
+  subdir('lsvm')
   subdir('start-vmm')
 endif
 

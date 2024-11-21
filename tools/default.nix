@@ -67,6 +67,7 @@ stdenv.mkDerivation (finalAttrs: {
     ] ++ lib.optionals guestSupport [
       ./xdg-desktop-portal-spectrum
     ] ++ lib.optionals hostSupport [
+      ./lsvm
       ./start-vmm
       ./subprojects
     ]));

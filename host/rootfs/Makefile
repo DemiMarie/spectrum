@@ -56,7 +56,6 @@ FILES = \
 	etc/xdg/weston/weston.ini \
 	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service \
 	usr/bin/create-vm-dependencies \
-	usr/bin/lsvm \
 	usr/bin/run-appimage \
 	usr/bin/vm-console \
 	usr/bin/vm-import \
