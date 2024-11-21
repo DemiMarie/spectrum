@@ -8,7 +8,7 @@ pkgsStatic.callPackage (
 { lib, stdenvNoCC, runCommand, writeClosure
 , erofs-utils, jq, s6-rc, util-linux
 , busybox, cacert, dejavu_fonts, execline, kmod, linux_latest, mdevd, s6
-, s6-linux-init, xdg-desktop-portal-spectrum,
+, s6-linux-init, spectrum-guest-tools
 }:
 
 let
@@ -37,8 +37,8 @@ let
       s6
       s6-linux-init
       s6-rc
+      spectrum-guest-tools
       terminfo
-      xdg-desktop-portal-spectrum
 
       # Some packages can't (currently?) be built statically.
 

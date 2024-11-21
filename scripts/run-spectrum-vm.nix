@@ -4,7 +4,7 @@
 { run ? ../vm/app/poweroff.nix, ... } @ args:
 
 import ../lib/call-package.nix (
-{ callSpectrumPackage, start-vmm, lib, runCommand, runCommandCC
+{ callSpectrumPackage, spectrum-host-tools, lib, runCommand, runCommandCC
 , clang-tools, cloud-hypervisor, crosvm, virtiofsd
 }:
 
@@ -15,7 +15,7 @@ let
     ''-DCONFIG_PATH="${callSpectrumPackage run {}}"''
     ''-DCLOUD_HYPERVISOR_BINDIR="${lib.getBin cloud-hypervisor}/bin"''
     ''-DCROSVM_PATH="${lib.getExe crosvm}"''
-    ''-DSTART_VMM_PATH="${lib.getExe start-vmm}"''
+    ''-DSTART_VMM_PATH="${lib.getExe' spectrum-host-tools "start-vmm"}"''
     ''-DVIRTIOFSD_PATH="${lib.getExe virtiofsd}"''
   ];
 in

@@ -6,12 +6,11 @@ import ../../lib/call-package.nix (
 { callSpectrumPackage, lseek, src, pkgsMusl, pkgsStatic, linux_latest }:
 pkgsStatic.callPackage (
 
-{ start-vmm
+{ spectrum-host-tools
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
 , bcachefs-tools, busybox, cloud-hypervisor, cryptsetup, dbus, execline
-, e2fsprogs, inkscape, inotify-tools, jq, kmod, mdevd, s6
-, s6-linux-init, socat, util-linuxMinimal, virtiofsd, xorg
-, xdg-desktop-portal-spectrum-host
+, inkscape, inotify-tools, jq, kmod, mdevd, s6, s6-linux-init, socat
+, util-linuxMinimal, virtiofsd, xorg, xdg-desktop-portal-spectrum-host
 }:
 
 let
@@ -138,7 +137,7 @@ let
 
   packages = [
     bcachefs-tools cloud-hypervisor dbus execline inotify-tools jq
-    kmod mdevd s6 s6-linux-init s6-rc socat start-vmm virtiofsd
+    kmod mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools virtiofsd
     xdg-desktop-portal-spectrum-host
 
     (cryptsetup.override {

@@ -37,12 +37,14 @@ let
 
     lseek = self.callSpectrumPackage ../tools/lseek {};
     rootfs = self.callSpectrumPackage ../host/rootfs {};
-    start-vmm = self.callSpectrumPackage ../tools/start-vmm {};
+    spectrum-guest-tools = self.callSpectrumPackage ../tools {};
+    spectrum-host-tools = self.callSpectrumPackage ../tools {
+      guestSupport = false;
+      hostSupport = true;
+    };
     run-spectrum-vm = self.callSpectrumPackage ../scripts/run-spectrum-vm.nix {};
     xdg-desktop-portal-spectrum-host =
       self.callSpectrumPackage ../tools/xdg-desktop-portal-spectrum-host {};
-    xdg-desktop-portal-spectrum =
-      self.callSpectrumPackage ../tools/xdg-desktop-portal-spectrum {};
 
     # Packages from the overlay, so it's possible to build them from
     # the CLI easily.

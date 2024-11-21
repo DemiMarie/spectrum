@@ -1,9 +1,13 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2022-2025 Alyssa Ross <hi@alyssa.is>
 
-import ../../lib/call-package.nix (
+import ../lib/call-package.nix (
 { src, lib, stdenv, fetchCrate, fetchurl, runCommand, buildPackages
-, meson, ninja, rustc, clang-tools, clippy, run-spectrum-vm
+, meson, ninja, pkg-config, rustc
+, clang-tools, clippy, run-spectrum-vm
+, dbus
+, guestSupport ? true
+, hostSupport ? false
 }:
 
 let
@@ -53,25 +57,37 @@ let
 in
 
 stdenv.mkDerivation (finalAttrs: {
-  name = "start-vmm";
+  name = "spectrum-tools";
 
   src = lib.fileset.toSource {
-    root = ../..;
-    fileset = lib.fileset.intersection src ./..;
+    root = ../.;
+    fileset = lib.fileset.intersection src (lib.fileset.unions ([
+      ./meson.build
+      ./meson_options.txt
+    ] ++ lib.optionals guestSupport [
+      ./xdg-desktop-portal-spectrum
+    ] ++ lib.optionals hostSupport [
+      ./start-vmm
+      ./subprojects
+    ]));
   };
   sourceRoot = "source/tools";
 
-  depsBuildBuild = [ buildPackages.stdenv.cc ];
-  nativeBuildInputs = [ meson ninja rustc ];
+  depsBuildBuild = lib.optionals hostSupport [ buildPackages.stdenv.cc ];
+  nativeBuildInputs = [ meson ninja ]
+    ++ lib.optionals guestSupport [ pkg-config ]
+    ++ lib.optionals hostSupport [ rustc ];
+  buildInputs = lib.optionals guestSupport [ dbus ];
 
-  postPatch = lib.concatMapStringsSep "\n" (crate: ''
+  postPatch = lib.optionals hostSupport (lib.concatMapStringsSep "\n" (crate: ''
     mkdir -p subprojects/packagecache
     ln -s ${crate} subprojects/packagecache/${crate.name}
-  '') packageCache;
+  '') packageCache);
 
   mesonFlags = [
-    "-Dguest=false"
-    "-Dhost=true"
+    (lib.mesonBool "guest" guestSupport)
+    (lib.mesonBool "host" hostSupport)
+    "-Dhostfsrootdir=/run/virtiofs/virtiofs0"
     "-Dtests=false"
     "-Dunwind=false"
     "-Dwerror=true"
@@ -84,19 +100,34 @@ stdenv.mkDerivation (finalAttrs: {
         name = "${name}-clang-tidy";
 
         src = lib.fileset.toSource {
-          root = ../..;
-          fileset = lib.fileset.union (lib.fileset.fromSource src) ../../.clang-tidy;
+          root = ../.;
+          fileset = lib.fileset.union (lib.fileset.fromSource src) ../.clang-tidy;
         };
 
         nativeBuildInputs = nativeBuildInputs ++ [ clang-tools ];
 
         buildPhase = ''
-          clang-tidy --warnings-as-errors='*' -p . ../start-vmm/*.[ch]
+          clang-tidy --warnings-as-errors='*' ../**/*.[ch]
           touch $out
           exit 0
         '';
       }
     );
+
+    tests = finalAttrs.finalPackage.overrideAttrs (
+      { name, mesonFlags ? [], ... }:
+      {
+        name = "${name}-tests";
+
+        mesonFlags = mesonFlags ++ [
+          "-Dunwind=true"
+          "-Dtests=true"
+        ];
+
+        doCheck = true;
+      }
+    );
+  } // lib.optionalAttrs hostSupport {
     clippy = finalAttrs.finalPackage.overrideAttrs (
       { name, nativeBuildInputs ? [], ... }:
       {
@@ -112,27 +143,17 @@ stdenv.mkDerivation (finalAttrs: {
 
     run = runCommand "start-vmm-test" {} ''
       ${run-spectrum-vm.override {
-        start-vmm = finalAttrs.finalPackage;
+        spectrum-host-tools = finalAttrs.finalPackage;
       }} > $out
     '';
-
-    tests = finalAttrs.finalPackage.overrideAttrs (
-      { name, mesonFlags ? [], ... }:
-      {
-        name = "${name}-tests";
-
-        mesonFlags = mesonFlags ++ [
-          "-Dunwind=true"
-          "-Dtests=true"
-        ];
-
-        doCheck = true;
-      }
-    );
   };
 
-  meta = {
-    mainProgram = "start-vmm";
+  meta = with lib; {
+    description = "First-party Spectrum programs";
+    license = licenses.eupl12;
+    maintainers = with maintainers; [ qyliss ];
+    platforms = platforms.linux;
   };
 })
 ) (_: {})
+
