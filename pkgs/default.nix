@@ -37,7 +37,7 @@ let
 
     lseek = self.callSpectrumPackage ../tools/lseek {};
     rootfs = self.callSpectrumPackage ../host/rootfs {};
-    start-vmm = self.callSpectrumPackage ../host/start-vmm {};
+    start-vmm = self.callSpectrumPackage ../tools/start-vmm {};
     run-spectrum-vm = self.callSpectrumPackage ../scripts/run-spectrum-vm.nix {};
     xdg-desktop-portal-spectrum-host =
       self.callSpectrumPackage ../tools/xdg-desktop-portal-spectrum-host {};
@@ -53,7 +53,7 @@ let
     srcWithNix = fileset.difference
       (fileset.fromSource (cleanSource ../.))
       (fileset.unions ([
-        (subprojects ../host/start-vmm)
+        (subprojects ../tools/start-vmm)
       ] ++ map fileset.maybeMissing [
         ../Documentation/.jekyll-cache
         ../Documentation/_site

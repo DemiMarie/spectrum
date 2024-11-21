@@ -59,7 +59,7 @@ stdenv.mkDerivation (finalAttrs: {
     root = ../..;
     fileset = lib.fileset.intersection src ./.;
   };
-  sourceRoot = "source/host/start-vmm";
+  sourceRoot = "source/tools/start-vmm";
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ meson ninja rustc ];
