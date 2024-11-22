@@ -7,10 +7,13 @@ elglob -0 names *
 
 forx -po0 -E name { $names }
 
-if -tn { test -d /run/vm/${1}.${name} }
-if { mkdir /run/vm/${1}.${name} }
-if { ln -s ${2}/${name} /run/vm/${1}.${name}/config }
+backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
+backtick -E id { basename -- $dir }
 
-if { create-vm-dependencies ${1}.${name} }
+if { ln -s -- ${dir} /run/vm/by-name/${1}.${name} }
+if { ln -s -- ${2}/${name} ${dir}/config }
+if { ln -s -- /run/service/vmm/instance/${id} ${dir}/service }
 
-s6-instance-create /run/service/vmm ${1}.${name}
+if { create-vm-dependencies $id }
+
+s6-instance-create -- /run/service/vmm $id

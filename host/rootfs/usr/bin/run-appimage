@@ -2,21 +2,21 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
 
-backtick -E vm_name { uuidgen }
+backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
+backtick -E id { basename -- $dir }
 
-if { mkdir -p /run/configs/${vm_name}/fs }
-if { redirfd -w 1 /run/configs/${vm_name}/fs/type echo appimage }
-if { touch /run/configs/${vm_name}/fs/run }
-if { mount --rbind $1 /run/configs/${vm_name}/fs/run }
+if { mkdir -p /run/configs/${id}/fs }
+if { redirfd -w 1 /run/configs/${id}/fs/type echo appimage }
+if { touch /run/configs/${id}/fs/run }
+if { mount --rbind $1 /run/configs/${id}/fs/run }
 if {
   ln -s /usr/lib/spectrum/img/appvm/blk /usr/lib/spectrum/img/appvm/vmlinux
-    /run/configs/${vm_name}
+    /run/configs/${id}
 }
 
-if { mkdir /run/vm/run.${vm_name} }
-if { ln -s /run/configs/${vm_name} /run/vm/run.${vm_name}/config }
+if { ln -s /run/configs/${id} ${dir}/config }
 
-if { create-vm-dependencies run.${vm_name} }
+if { create-vm-dependencies $id }
 
 piperw 4 3
 background {
@@ -25,11 +25,11 @@ background {
 
   # Wait for the VMM to be up, then start the VM.
   if { redirfd -w 1 /dev/null head -1 }
-  vm-start run.${vm_name}
+  vm-start $id
 }
 fdclose 4
 
-foreground { start-vmm run.${vm_name} }
+foreground { start-vmm $id }
 fdclose 3
 
 if {
@@ -39,16 +39,16 @@ if {
     vhost-user-gpu
     xdg-desktop-portal-spectrum-host
   }
-  s6-instance-delete /run/service/${service} run.${vm_name}
+  s6-instance-delete /run/service/${service} $id
 }
 
 if {
-  forx -E dir {
-    /run/configs/${vm_name}/fs/run
-    /run/vm/run.${vm_name}/fs/config
-    /run/vm/run.${vm_name}/fs/doc
+  forx -E mount {
+    /run/configs/${id}/fs/run
+    ${dir}/fs/config
+    ${dir}/fs/doc
   }
-  umount $dir
+  umount $mount
 }
 
-rm -r /run/vm/run.${vm_name} /run/configs/${vm_name}
+rm -r $dir /run/configs/${id}

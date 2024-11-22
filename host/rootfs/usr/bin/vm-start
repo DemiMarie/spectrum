@@ -1,19 +1,23 @@
 #!/bin/execlineb -S1
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2022-2023 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2022-2023, 2025 Alyssa Ross <hi@alyssa.is>
 
 foreground { s6-rc -bu change vm-env }
 
 foreground {
   redirfd -w 2 /dev/null
-  cd /run/vm/${1}/config/providers/net
+  cd /run/vm/by-id/${1}/config/providers/net
   elglob -0 providers *
   forx -pE provider { $providers }
-  vm-start $provider
+  backtick -E provider_id {
+    backtick -E id_path { readlink /run/vm/by-name/${provider} }
+    basename -- $id_path
+  }
+  vm-start $provider_id
 }
 
 foreground {
   redirfd -w 2 /dev/null
   s6-svwait -U /run/service/vmm/instance/${1}
 }
-ch-remote --api-socket /run/vm/${1}/vmm boot
+ch-remote --api-socket /run/vm/by-id/${1}/vmm boot

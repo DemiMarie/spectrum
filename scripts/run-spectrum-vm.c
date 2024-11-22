@@ -121,7 +121,7 @@ static void spawn_vhost_user(const char *path, char *const argv[])
 static char *const boot_argv[] = {
 	"ch-remote",
 	"--api-socket",
-	"run/vm/vm/vmm",
+	"run/vm/by-id/vm/vmm",
 	"boot",
 	NULL
 };
@@ -201,11 +201,13 @@ int main(void)
 		err(EXIT_FAILURE, "mkdir run/service/vhost-user-gpu/instance/vm/env");
 	if (mkdir("run/vm", 0777) == -1)
 		err(EXIT_FAILURE, "mkdir run/vm");
-	if (mkdir("run/vm/vm", 0777) == -1)
-		err(EXIT_FAILURE, "mkdir run/vm/vm");
+	if (mkdir("run/vm/by-id", 0777) == -1)
+		err(EXIT_FAILURE, "mkdir run/vm/by-id");
+	if (mkdir("run/vm/by-id/vm", 0777) == -1)
+		err(EXIT_FAILURE, "mkdir run/vm/by-id/vm");
 
-	if (symlink(CONFIG_PATH, "run/vm/vm/config") == -1)
-		err(EXIT_FAILURE, "symlink run/vm/vm/config -> " CONFIG_PATH);
+	if (symlink(CONFIG_PATH, "run/vm/by-id/vm/config") == -1)
+		err(EXIT_FAILURE, "symlink run/vm/by-id/vm/config -> " CONFIG_PATH);
 	if (symlink(APPVM_PATH, "usr") == -1)
 		err(EXIT_FAILURE, "symlink usr -> " APPVM_PATH);
 

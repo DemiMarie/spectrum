@@ -3,9 +3,9 @@
 # SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
 
 # Let D-Bus-activated services know which VM they're for.
-export VM /run/vm/${1}
+export VM /run/vm/by-id/${1}
 
 dbus-daemon
   --config-file /usr/share/dbus-1/session.conf
   --print-address 3
-  --address unix:path=/run/vm/${1}/portal-bus
+  --address unix:path=/run/vm/by-id/${1}/portal-bus

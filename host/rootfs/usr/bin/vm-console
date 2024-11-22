@@ -4,7 +4,7 @@
 
 backtick -E pty {
   pipeline -w { jq -r .config.console.file }
-  ch-remote --api-socket /run/vm/${1}/vmm info
+  ch-remote --api-socket /run/vm/by-id/${1}/vmm info
 }
 
 foreground {

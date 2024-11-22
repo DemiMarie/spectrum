@@ -27,7 +27,7 @@ unsafe fn run() -> String {
         ex_usage();
     }
 
-    let vm_dir = Path::new("/run/vm").join(vm_name);
+    let vm_dir = Path::new("/run/vm/by-id").join(vm_name);
 
     let api_socket = match create_api_socket(&vm_dir) {
         Ok(api_socket) => api_socket,

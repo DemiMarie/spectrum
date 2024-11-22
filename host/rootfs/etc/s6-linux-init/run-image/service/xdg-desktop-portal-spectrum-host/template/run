@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
 
-export DBUS_SESSION_BUS_ADDRESS unix:path=/run/vm/${1}/portal-bus
+export DBUS_SESSION_BUS_ADDRESS unix:path=/run/vm/by-id/${1}/portal-bus
 
-s6-ipcserver-socketbinder -a 0700 /run/vm/${1}/vsock_219
+s6-ipcserver-socketbinder -a 0700 /run/vm/by-id/${1}/vsock_219
 
 # Notify readiness.
 if { fdmove 1 3 echo }

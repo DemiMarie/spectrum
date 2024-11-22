@@ -130,7 +130,13 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                         .into_string()
                         .map_err(|name| format!("provider name {:?} is not UTF-8", name))?;
 
-                    let provider_dir = vm_dir.parent().unwrap().join(provider_name);
+                    let provider_dir = vm_dir
+                        .parent()
+                        .unwrap()
+                        .parent()
+                        .unwrap()
+                        .join("by-name")
+                        .join(provider_name);
 
                     // SAFETY: we check the result.
                     let net = unsafe { net_setup(&provider_dir.as_path()) };

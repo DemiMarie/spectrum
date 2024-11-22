@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
 
 use std::borrow::Cow;
-use std::cmp::max;
+use std::collections::HashMap;
 use std::env::args_os;
 use std::ffi::{OsStr, OsString};
 use std::fs::read_dir;
@@ -27,6 +27,7 @@ fn prog_name() -> String {
 
 struct Vm {
     id: OsString,
+    names: Vec<OsString>,
     running: Option<bool>,
 }
 
@@ -38,7 +39,7 @@ fn vm_running(id: &OsStr) -> Result<bool, String> {
 
     let output = Command::new("ch-remote")
         .arg("--api-socket")
-        .arg(Path::new("/run/vm").join(id).join("vmm"))
+        .arg(Path::new("/run/vm/by-id").join(id).join("vmm"))
         .arg("info")
         .stderr(Stdio::inherit())
         .output()
@@ -56,44 +57,69 @@ fn vm_running(id: &OsStr) -> Result<bool, String> {
     Ok(state != "Created")
 }
 
-fn write_vm(mut out: impl Write, name_col_len: usize, vm: &Vm) -> io::Result<()> {
-    let id = vm.id.as_bytes();
-
-    out.write_all(id)?;
-    write!(out, "{:1$}", "", name_col_len - id.len())?;
+fn write_vm(mut out: impl Write, vm: &Vm) -> io::Result<()> {
+    out.write_all(vm.id.as_bytes())?;
 
     match vm.running {
-        Some(true) => writeln!(out, "\x1B[32;1mRUNNING\x1B[0m"),
-        Some(false) => writeln!(out, "\x1B[31mSTOPPED\x1B[0m"),
-        None => writeln!(out, "\x1B[33mUNKNOWN\x1B[0m"),
+        Some(true) => write!(out, " \x1B[32;1mRUNNING\x1B[0m ")?,
+        Some(false) => write!(out, " \x1B[31mSTOPPED\x1B[0m ")?,
+        None => write!(out, " \x1B[33mUNKNOWN\x1B[0m ")?,
     }
+
+    out.write_all(
+        &vm.names
+            .iter()
+            .map(|n| n.as_bytes())
+            .collect::<Vec<_>>()
+            .join(&b" "[..]),
+    )?;
+
+    writeln!(out)
 }
 
 fn run() -> Result<(), String> {
-    let mut ids = Vec::new();
+    let mut names = HashMap::new();
 
-    for entry in read_dir("/run/vm").map_err(|e| format!("reading /run/vm: {e}"))? {
-        let id = entry
-            .map_err(|e| format!("iterating /run/vm: {e}"))?
-            .file_name();
-        ids.push(id);
+    for entry in read_dir("/run/vm/by-id").map_err(|e| format!("reading /run/vm/by-id: {e}"))? {
+        let entry = entry.map_err(|e| format!("iterating /run/vm/by-id: {e}"))?;
+        if entry
+            .file_type()
+            .map_err(|e| format!("getting type of {:?}: {e}", entry.path()))?
+            .is_dir()
+            && entry.file_name() != "by-name"
+        {
+            names.insert(entry.file_name(), Vec::new());
+        }
+    }
+
+    for entry in read_dir("/run/vm/by-name").map_err(|e| format!("reading /run/vm/by-name: {e}"))? {
+        let entry = entry.map_err(|e| format!("iterating /run/vm/by-name: {e}"))?;
+        let target = entry
+            .path()
+            .read_link()
+            .map_err(|e| format!("readlink {:?}: {e}", entry.path()))?;
+        let vm = target
+            .file_name()
+            .ok_or_else(|| format!("target of {:?} has no name", entry.path()))?;
+
+        names
+            .get_mut(vm)
+            .ok_or_else(|| format!("{:?} links to non-existent VM {:?}", entry.path(), vm))?
+            .push(entry.file_name());
     }
 
     let mut stdout = stdout();
 
-    let name_col_len = max(ids.iter().map(|s| s.len()).max().unwrap_or(0), 4) + 2;
+    writeln!(stdout, "ID     STATUS  NAMES").map_err(|e| format!("writing output: {e}"))?;
 
-    writeln!(stdout, "{:name_col_len$}STATUS", "NAME")
-        .map_err(|e| format!("writing output: {e}"))?;
-
-    for id in ids {
+    for (id, names) in names {
         let running = vm_running(&id)
             .inspect_err(|e| eprintln!("{}: getting state of {:?}: {e}", prog_name(), id))
             .ok();
 
-        let vm = Vm { running, id };
+        let vm = Vm { running, id, names };
 
-        write_vm(&mut stdout, name_col_len, &vm).map_err(|e| format!("writing output: {e}"))?;
+        write_vm(&mut stdout, &vm).map_err(|e| format!("writing output: {e}"))?;
     }
 
     Ok(())

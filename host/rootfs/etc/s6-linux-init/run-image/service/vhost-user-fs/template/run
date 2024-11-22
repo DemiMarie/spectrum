@@ -12,6 +12,6 @@ export TMPDIR /run
 # The VM should not be able to write directly into a tmpfs, but there
 # can be writable block-based bind mounted subdirectories.
 unshare -m --propagation slave
-if { mount --rbind -o ro /run/vm/${1}/fs /run/vm/${1}/fs }
+if { mount --rbind -o ro /run/vm/by-id/${1}/fs /run/vm/by-id/${1}/fs }
 
-virtiofsd --fd 0 --shared-dir /run/vm/${1}/fs
+virtiofsd --fd 0 --shared-dir /run/vm/by-id/${1}/fs

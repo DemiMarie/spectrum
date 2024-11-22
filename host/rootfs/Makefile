@@ -88,7 +88,8 @@ DIRS = \
 	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/instances \
 	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/data \
 	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/env \
-	etc/s6-linux-init/run-image/vm \
+	etc/s6-linux-init/run-image/vm/by-id \
+	etc/s6-linux-init/run-image/vm/by-name \
 	ext \
 	run \
 	proc \
