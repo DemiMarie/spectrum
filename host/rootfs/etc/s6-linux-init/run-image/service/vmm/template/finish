@@ -9,8 +9,8 @@ forx -pE net_provider { $net_providers }
 
 if {
   ch-remote --api-socket /run/vm/by-name/${net_provider}/vmm
-    remove-device router${4}
+    remove-device client${4}
 }
 
-if { ip link set router${4} down name _dead${4} nomaster }
-ip link del br${4}
+if { ip link set router-${3} down name _dead${4} nomaster }
+ip link del br-${3}

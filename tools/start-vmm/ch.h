@@ -3,14 +3,12 @@
 
 #include <stdint.h>
 
-#include <net/if.h>
-
 struct ch_device;
 struct vm_dir;
 
 struct net_config {
 	int fd;
-	char id[IFNAMSIZ];
+	char id[18];
 	uint8_t mac[6];
 };
 

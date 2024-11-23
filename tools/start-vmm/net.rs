@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
 
 use std::borrow::Cow;
+use std::ffi::{c_char, c_int};
 use std::fmt::{self, Display, Formatter};
 use std::path::Path;
 
@@ -43,7 +44,7 @@ extern "C" {
     // SAFETY: &Path is sized, so it's okay to pass a reference to it
     // to C, as long as it's opaque to C.
     #[allow(improper_ctypes)]
-    pub fn net_setup(provider_vm_dir: &&Path) -> NetConfigC;
+    pub fn net_setup(name: *const c_char, len: c_int, provider_vm_dir: &&Path) -> NetConfigC;
 }
 
 #[cfg(test)]

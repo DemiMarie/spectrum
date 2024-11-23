@@ -110,8 +110,18 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                         .join("by-name")
                         .join(provider_name);
 
+                    let name_bytes = vm_name.as_bytes();
                     // SAFETY: we check the result.
-                    let net = unsafe { net_setup(&provider_dir.as_path()) };
+                    let net = unsafe {
+                        net_setup(
+                            name_bytes.as_ptr() as _,
+                            name_bytes
+                                .len()
+                                .try_into()
+                                .map_err(|e| format!("VM name too long: {e}"))?,
+                            &provider_dir.as_path(),
+                        )
+                    };
                     if net.fd == -1 {
                         let e = io::Error::last_os_error();
                         return Err(format!("setting up networking failed: {e}"));

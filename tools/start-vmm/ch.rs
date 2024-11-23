@@ -147,7 +147,7 @@ pub fn add_net(vm_dir: &Path, net: &NetConfig) -> Result<(), NonZeroI32> {
 #[repr(C)]
 pub struct NetConfigC {
     pub fd: RawFd,
-    pub id: [u8; 16],
+    pub id: [u8; 18],
     pub mac: MacAddress,
 }
 

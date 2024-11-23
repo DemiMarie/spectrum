@@ -15,12 +15,12 @@
 
 static int setup_tap(const char bridge_name[static 1],
                      const char tap_prefix[static 1],
+                     const char name[static 1], int name_len,
                      char tap_name[static IFNAMSIZ])
 {
 	int fd, e;
 
-	// We assume ≤16-bit pids.
-	if (snprintf(tap_name, IFNAMSIZ, "%s%d", tap_prefix, getpgrp()) < 0)
+	if (snprintf(tap_name, IFNAMSIZ, "%s-%*s", tap_prefix, name_len, name) < 0)
 		return -1;
 	if ((fd = tap_open(tap_name, IFF_NO_PI|IFF_VNET_HDR|IFF_TUN_EXCL)) == -1)
 		goto out;
@@ -40,21 +40,30 @@ out:
 }
 
 static int client_net_setup(const char bridge_name[static 1],
+                            const char name[static 1], int name_len,
                             char tap_name[static IFNAMSIZ])
 {
-	return setup_tap(bridge_name, "client", tap_name);
+	return setup_tap(bridge_name, "client", name, name_len, tap_name);
 }
 
 [[gnu::nonnull]]
 static int router_net_setup(const char bridge_name[static 1],
+                            const char name[static 1], int name_len,
                             const struct vm_dir *router_vm_dir,
                             const uint8_t mac[6])
 {
 	struct net_config net;
+	char tap_name[IFNAMSIZ];
 	int e;
 
 	memcpy(&net.mac, mac, sizeof net.mac);
-	if ((net.fd = setup_tap(bridge_name, "router", net.id)) == -1)
+	e = snprintf(net.id, sizeof net.id, "client%d", getpgrp());
+	if (e > 0 && (size_t)e >= sizeof net.id)
+		errno = ENAMETOOLONG;
+	if (e < 0 || (size_t)e >= sizeof net.id)
+		return -1;
+	if ((net.fd = setup_tap(bridge_name, "router", name, name_len,
+	                        tap_name)) == -1)
 		return -1;
 
 	e = ch_add_net(router_vm_dir, &net);
@@ -66,7 +75,8 @@ static int router_net_setup(const char bridge_name[static 1],
 }
 
 [[gnu::nonnull]]
-struct net_config net_setup(const struct vm_dir *router_vm_dir)
+struct net_config net_setup(const char name[static 1], int name_len,
+                            const struct vm_dir *router_vm_dir)
 {
 	int e;
 	struct net_config r = { .fd = -1, .mac = { 0 } };
@@ -78,7 +88,7 @@ struct net_config net_setup(const struct vm_dir *router_vm_dir)
 	memcpy(r.mac, router_mac, 6);
 	r.mac[3] = 0x00;
 
-	if (snprintf(bridge_name, sizeof bridge_name, "br%d", pgrp) < 0)
+	if (snprintf(bridge_name, sizeof bridge_name, "br-%*s", name_len, name) < 0)
 		return r;
 
 	if (bridge_add(bridge_name) == -1)
@@ -86,10 +96,11 @@ struct net_config net_setup(const struct vm_dir *router_vm_dir)
 	if (if_up(bridge_name) == -1)
 		goto fail_bridge;
 
-	if ((r.fd = client_net_setup(bridge_name, r.id)) == -1)
+	if ((r.fd = client_net_setup(bridge_name, name, name_len, r.id)) == -1)
 		goto fail_bridge;
 
-	if (router_net_setup(bridge_name, router_vm_dir, router_mac) == -1)
+	if (router_net_setup(bridge_name, name, name_len, router_vm_dir,
+	                     router_mac) == -1)
 		goto fail_bridge;
 
 	return r;
