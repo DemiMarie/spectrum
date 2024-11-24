@@ -4,23 +4,6 @@
 rust_helper = static_library('test_helper', 'helper.rs',
   dependencies : rust_lib_dep)
 
-test('if_up', executable('if_up', 'if_up.c', '../net-util.c',
-  c_args : '-D_GNU_SOURCE'))
-test('if_down', executable('if_down', 'if_down.c', '../net-util.c',
-  c_args : '-D_GNU_SOURCE'))
-
-test('bridge_add', executable('bridge_add', 'bridge_add.c', '../net-util.c',
-  c_args : '-D_GNU_SOURCE'))
-test('bridge_add (%d)', executable('bridge_add-%d',
-  'bridge_add-%d.c', '../net-util.c', c_args : '-D_GNU_SOURCE'))
-test('bridge_add (name too long)', executable('bridge_add-name-too-long',
-  'bridge_add-name-too-long.c', '../net-util.c', c_args : '-D_GNU_SOURCE'))
-
-test('bridge_add_if', executable('bridge_add_if', 'bridge_add_if.c',
-  '../net-util.c', c_args : '-D_GNU_SOURCE'))
-test('bridge_remove', executable('bridge_remove',
-  'bridge_remove.c', '../net-util.c', c_args : '-D_GNU_SOURCE'))
-
 test('tap_open', executable('tap_open', 'tap_open.c', '../net-util.c',
   c_args : '-D_GNU_SOURCE'))
 test('tap_open (name too long)', executable('tap_open-name-too-long',
