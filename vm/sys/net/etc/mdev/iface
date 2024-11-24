@@ -33,4 +33,4 @@ ifte
   nft add rule ip nat postrouting oifname $INTERFACE counter masquerade
 }
 
-grep -iq ^0A:B3:EC: /sys/class/net/${INTERFACE}/address
+grep -iq ^02:01: /sys/class/net/${INTERFACE}/address

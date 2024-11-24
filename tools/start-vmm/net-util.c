@@ -141,3 +141,8 @@ int tap_open(char name[static IFNAMSIZ], int flags)
 	strncpy(name, ifr.ifr_name, IFNAMSIZ);
 	return fd;
 }
+
+int tap_set_persist(int fd, bool persist)
+{
+	return ioctl(fd, TUNSETPERSIST, persist);
+}

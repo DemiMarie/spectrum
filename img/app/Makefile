@@ -141,7 +141,7 @@ run-qemu: $(imgdir)/appvm/blk/root.img start-vhost-user-net start-virtiofsd
 	    -gdb unix:build/gdb.sock,server,nowait \
 	    -chardev socket,id=vhost-user-net,path=build/vhost-user-net.sock \
 	    -netdev vhost-user,id=net0,chardev=vhost-user-net \
-	    -device virtio-net,netdev=net0,mac=0A:B3:EC:00:00:00 \
+	    -device virtio-net,netdev=net0,mac=02:00:00:00:00:01 \
 	    -chardev socket,id=virtiofsd,path=build/virtiofsd.sock \
 	    -device vhost-user-fs-pci,chardev=virtiofsd,tag=virtiofs0 \
 	    -device virtio-gpu-rutabaga-pci,cross-domain=on,hostmem=8G \

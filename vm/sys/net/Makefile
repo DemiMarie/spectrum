@@ -106,7 +106,7 @@ run-qemu: $(vmdir)/netvm/blk/root.img
 	    -netdev user,id=net0 \
 	    -device e1000e,netdev=net0 \
 	    -netdev user,id=net1 \
-	    -device virtio-net,netdev=net1,mac=0A:B3:EC:80:00:00 \
+	    -device virtio-net,netdev=net1,mac=02:01:00:00:00:01 \
 	    -parallel none \
 	    -chardev vc,id=virtiocon0 \
 	    -device virtio-serial-pci \
@@ -120,7 +120,7 @@ run-cloud-hypervisor: $(vmdir)/netvm/blk/root.img start-vhost-user-net
 	    --api-socket path=build/vmm.sock \
 	    --memory size=256M,shared=on \
 	    --disk path=$(vmdir)/netvm/blk/root.img,readonly=on \
-	    --net vhost_user=on,socket=build/vhost-user-net.sock tap=tap1,mac=0A:B3:EC:80:00:00 \
+	    --net vhost_user=on,socket=build/vhost-user-net.sock tap=tap1,mac=02:01:00:00:00:01 \
 	    --kernel $(KERNEL) \
 	    --cmdline "root=PARTLABEL=root" \
 	    --console tty \
@@ -132,7 +132,7 @@ run-crosvm: $(vmdir)/netvm/blk/root.img
 	    --disk $(vmdir)/netvm/blk/root.img \
 	    -p "console=ttyS0 root=PARTLABEL=root" \
 	    --net tap-name=tap0 \
-	    --net tap-name=tap1,mac=0A:B3:EC:80:00:00 \
+	    --net tap-name=tap1,mac=02:01:00:00:00:01 \
 	    --serial type=file,hardware=serial,path=build/serial.log \
 	    --serial type=stdout,hardware=virtio-console,stdin=true \
 	    $(KERNEL)

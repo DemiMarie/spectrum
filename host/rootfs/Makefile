@@ -46,7 +46,6 @@ FILES = \
 	etc/s6-linux-init/run-image/service/vhost-user-gpu/template/run \
 	etc/s6-linux-init/run-image/service/vmm/notification-fd \
 	etc/s6-linux-init/run-image/service/vmm/run \
-	etc/s6-linux-init/run-image/service/vmm/template/finish \
 	etc/s6-linux-init/run-image/service/vmm/template/notification-fd \
 	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/notification-fd \
 	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/run \

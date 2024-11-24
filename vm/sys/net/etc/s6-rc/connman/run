@@ -10,7 +10,7 @@ backtick -E HARDWARE_INTERFACES {
   }
 
   # Filter out other VMs and the loopback device.
-  pipeline { xargs -0 grep -iL ^\\(0A:B3:EC:\\|00:00:00:00:00:00$\\) }
+  pipeline { xargs -0 grep -iL ^\\(02:01:\\|00:00:00:00:00:00$\\) }
 
   # Extract the interface names from the address file paths.
   awk -F/ "{if (NR > 1) printf \",\"; printf \"%s\", $5}"

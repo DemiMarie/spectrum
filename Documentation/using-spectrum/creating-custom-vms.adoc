@@ -76,14 +76,14 @@ VIRTIO_NET_F_MAC feature.
 A guest can distinguish between virtual inter-guest network
 connections and hardware network connections through the MAC address
 of the corresponding network interface: guest network interfaces for
-inter-guest networking have the OUI `0A:B3:EC`.
+inter-guest networking have locally administered addresses (LAAs).
 
 Connections to *network provider VMs* have the IP address to use
 encoded in the client interface's MAC address.  The client guest
 should configure an IPv4 address in `100.64.0.0/16`, where the final
 two octets of the IP address are the final two octets of the
 interface's MAC address.  For example, an application VM where a
-network interface named `eth0` has the MAC address `0A:B3:EC:00:A5:46`
+network interface named `eth0` has the MAC address `02:00:00:00:A5:46`
 should configure `eth0` with the IPv4 address `100.64.165.70` (because
 `A5` in hexadecimal is `165` in decimal, and `46` in hexadecimal is
 `70` in decimal).

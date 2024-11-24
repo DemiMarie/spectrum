@@ -11,6 +11,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <arpa/inet.h>
+
 #include <linux/if_tun.h>
 
 static int setup_tap(const char bridge_name[static 1],
@@ -22,9 +24,11 @@ static int setup_tap(const char bridge_name[static 1],
 
 	if (snprintf(tap_name, IFNAMSIZ, "%s-%*s", tap_prefix, name_len, name) < 0)
 		return -1;
-	if ((fd = tap_open(tap_name, IFF_NO_PI|IFF_VNET_HDR|IFF_TUN_EXCL)) == -1)
+	if ((fd = tap_open(tap_name, IFF_NO_PI|IFF_VNET_HDR)) == -1)
 		goto out;
-	if (bridge_add_if(bridge_name, tap_name) == -1)
+	if (tap_set_persist(fd, true) == -1)
+		goto fail;
+	if (bridge_add_if(bridge_name, tap_name) == -1 && errno != EBUSY)
 		goto fail;
 	if (if_up(tap_name) == -1)
 		goto fail;
@@ -64,7 +68,7 @@ static int router_net_setup(const char bridge_name[static 1],
 		return -1;
 	if ((net.fd = setup_tap(bridge_name, "router", name, name_len,
 	                        tap_name)) == -1)
-		return -1;
+		return errno == EBUSY ? 0 : -1;
 
 	e = ch_add_net(router_vm_dir, &net);
 	close(net.fd);
@@ -79,19 +83,15 @@ struct net_config net_setup(const char name[static 1], int name_len,
                             const struct vm_dir *router_vm_dir)
 {
 	int e;
+	uint8_t router_mac[6];
+	unsigned int client_index;
 	struct net_config r = { .fd = -1, .mac = { 0 } };
 	char bridge_name[IFNAMSIZ];
-	pid_t pgrp = getpgrp();
-	// We assume ≤16-bit pids.
-	uint8_t router_mac[6] = { 0x0A, 0xB3, 0xEC, 0x80, pgrp >> 8, pgrp };
-
-	memcpy(r.mac, router_mac, 6);
-	r.mac[3] = 0x00;
 
 	if (snprintf(bridge_name, sizeof bridge_name, "br-%*s", name_len, name) < 0)
 		return r;
 
-	if (bridge_add(bridge_name) == -1)
+	if (bridge_add(bridge_name) == -1 && errno != EEXIST)
 		return r;
 	if (if_up(bridge_name) == -1)
 		goto fail_bridge;
@@ -99,9 +99,19 @@ struct net_config net_setup(const char name[static 1], int name_len,
 	if ((r.fd = client_net_setup(bridge_name, name, name_len, r.id)) == -1)
 		goto fail_bridge;
 
+	if (!(client_index = htonl(if_nametoindex(r.id))))
+		goto fail_bridge;
+
+	router_mac[0] = 0x02; // IEEE 802c administratively assigned
+	router_mac[1] = 0x01; // Spectrum router
+	memcpy(&router_mac[2], &client_index, 4);
+
 	if (router_net_setup(bridge_name, name, name_len, router_vm_dir,
 	                     router_mac) == -1)
 		goto fail_bridge;
+
+	memcpy(r.mac, router_mac, sizeof r.mac);
+	r.mac[1] = 0x00; // Spectrum client
 
 	return r;
 
