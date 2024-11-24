@@ -18,7 +18,6 @@ use ch::{
     VsockConfig,
 };
 use net::net_setup;
-use s6::notify_readiness;
 
 pub fn prog_name() -> String {
     args_os()
@@ -148,9 +147,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
 pub fn create_vm(vm_dir: &Path, ready_fd: File) -> Result<(), String> {
     let config = vm_config(vm_dir)?;
 
-    ch::create_vm(vm_dir, config).map_err(|e| format!("creating VM: {e}"))?;
-
-    notify_readiness(ready_fd)
+    ch::create_vm(vm_dir, ready_fd, config).map_err(|e| format!("creating VM: {e}"))
 }
 
 #[cfg(test)]

@@ -3,6 +3,7 @@
 
 use std::convert::{TryFrom, TryInto};
 use std::ffi::{OsStr, OsString};
+use std::fs::File;
 use std::io::Write;
 use std::mem::take;
 use std::num::NonZeroI32;
@@ -15,6 +16,7 @@ use std::string::FromUtf8Error;
 use miniserde::{json, Serialize};
 
 use crate::net::MacAddress;
+use crate::s6::notify_readiness;
 
 // Trivially safe.
 const EPERM: NonZeroI32 = NonZeroI32::new(1).unwrap();
@@ -90,7 +92,7 @@ fn command(vm_dir: &Path, s: impl AsRef<OsStr>) -> Command {
     command
 }
 
-pub fn create_vm(vm_dir: &Path, mut config: VmConfig) -> Result<(), String> {
+pub fn create_vm(vm_dir: &Path, ready_fd: File, mut config: VmConfig) -> Result<(), String> {
     // Net devices can't be created from file descriptors in vm.create.
     // https://github.com/cloud-hypervisor/cloud-hypervisor/issues/5523
     let nets = take(&mut config.net);
@@ -116,6 +118,8 @@ pub fn create_vm(vm_dir: &Path, mut config: VmConfig) -> Result<(), String> {
             return Err(format!("ch-remote killed by signal {signal}"));
         }
     }
+
+    notify_readiness(ready_fd)?;
 
     for net in nets {
         add_net(vm_dir, &net).map_err(|e| format!("failed to add net: {e}"))?;
