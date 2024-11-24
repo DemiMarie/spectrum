@@ -29,7 +29,7 @@ background {
 }
 fdclose 4
 
-foreground { start-vmm $id }
+foreground { run-vmm $id }
 fdclose 3
 
 if {

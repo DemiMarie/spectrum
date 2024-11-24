@@ -7,7 +7,7 @@ use std::os::unix::prelude::*;
 use std::path::Path;
 use std::process::exit;
 
-use start_vmm::{create_api_socket, create_vm, prog_name, vm_command};
+use start_vmm::{create_vm, prog_name};
 
 fn ex_usage() -> ! {
     eprintln!("Usage: start-vmm vm");
@@ -18,7 +18,7 @@ fn ex_usage() -> ! {
 ///
 /// Takes ownership of the file descriptor used for readiness notification, so can
 /// only be called once.
-unsafe fn run() -> String {
+unsafe fn run() -> Result<(), String> {
     let mut args = args_os().skip(1);
     let Some(vm_name) = args.next() else {
         ex_usage();
@@ -28,25 +28,14 @@ unsafe fn run() -> String {
     }
 
     let vm_dir = Path::new("/run/vm/by-id").join(vm_name);
-
-    let api_socket = match create_api_socket(&vm_dir) {
-        Ok(api_socket) => api_socket,
-        Err(e) => return e,
-    };
-
     let ready_fd = File::from_raw_fd(3);
 
-    if let Err(e) = create_vm(&vm_dir, ready_fd) {
-        return e;
-    }
-
-    match vm_command(api_socket.into_raw_fd()) {
-        Ok(mut command) => format!("failed to exec: {}", command.exec()),
-        Err(e) => e,
-    }
+    create_vm(&vm_dir, ready_fd)
 }
 
 fn main() {
-    eprintln!("{}: {}", prog_name(), unsafe { run() });
-    exit(1);
+    if let Err(e) = unsafe { run() } {
+        eprintln!("{}: {e}", prog_name());
+        exit(1);
+    }
 }

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
 
-c_lib = static_library('start-vmm', 'fork.c', 'net.c', 'net-util.c', 'unix.c',
+c_lib = static_library('start-vmm', 'net.c', 'net-util.c',
   c_args : '-D_GNU_SOURCE')
 
 rust_lib = static_library('start_vmm', 'lib.rs',

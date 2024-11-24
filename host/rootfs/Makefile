@@ -58,6 +58,7 @@ FILES = \
 	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service \
 	usr/bin/create-vm-dependencies \
 	usr/bin/run-appimage \
+	usr/bin/run-vmm \
 	usr/bin/vm-console \
 	usr/bin/vm-import \
 	usr/bin/vm-start \

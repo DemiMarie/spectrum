@@ -2,37 +2,23 @@
 // SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
 
 mod ch;
-mod fork;
 mod net;
 mod s6;
-mod unix;
 
 use std::borrow::Cow;
 use std::convert::TryInto;
 use std::env::args_os;
 use std::ffi::OsStr;
-use std::fs::{remove_file, File};
+use std::fs::File;
 use std::io::{self, ErrorKind};
-use std::os::unix::net::UnixListener;
-use std::os::unix::prelude::*;
-use std::os::unix::process::parent_id;
 use std::path::Path;
-use std::process::{exit, Command};
 
 use ch::{
     ConsoleConfig, DiskConfig, FsConfig, GpuConfig, MemoryConfig, PayloadConfig, VmConfig,
     VsockConfig,
 };
-use fork::double_fork;
 use net::net_setup;
 use s6::notify_readiness;
-use unix::AsFdExt;
-
-const SIGTERM: i32 = 15;
-
-extern "C" {
-    fn kill(pid: i32, sig: i32) -> i32;
-}
 
 pub fn prog_name() -> String {
     args_os()
@@ -43,19 +29,6 @@ pub fn prog_name() -> String {
         .map(OsStr::to_string_lossy)
         .unwrap_or(Cow::Borrowed("start-vmm"))
         .into_owned()
-}
-
-pub fn create_api_socket(vm_dir: &Path) -> Result<UnixListener, String> {
-    let path = vm_dir.join("vmm");
-
-    let _ = remove_file(&path);
-    let api_socket = UnixListener::bind(&path).map_err(|e| format!("creating API socket: {e}"))?;
-
-    if let Err(e) = api_socket.clear_cloexec() {
-        return Err(format!("clearing CLOEXEC on API socket fd: {}", e));
-    }
-
-    Ok(api_socket)
 }
 
 pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
@@ -172,45 +145,12 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
     })
 }
 
-fn create_vm_child_main(vm_dir: &Path, ready_fd: File, config: VmConfig) -> ! {
-    if let Err(e) = ch::create_vm(vm_dir, config) {
-        eprintln!("{}: creating VM: {e}", prog_name());
-        // SAFETY: trivially safe.
-        if unsafe { kill(parent_id() as _, SIGTERM) } == -1 {
-            let e = io::Error::last_os_error();
-            eprintln!("{}: killing cloud-hypervisor: {e}", prog_name());
-        };
-        exit(1);
-    }
-
-    if let Err(e) = notify_readiness(ready_fd) {
-        eprintln!("{}: failed to notify readiness: {e}", prog_name());
-        exit(1);
-    }
-
-    exit(0)
-}
-
 pub fn create_vm(vm_dir: &Path, ready_fd: File) -> Result<(), String> {
     let config = vm_config(vm_dir)?;
 
-    // SAFETY: safe because we ensure we don't violate any invariants
-    // concerning OS resources shared between processes, by only
-    // passing data structs to the child main function.
-    match unsafe { double_fork() } {
-        e if e < 0 => Err(format!("double fork: {}", io::Error::from_raw_os_error(-e))),
-        // SAFETY: create_vm_child_main can only be called once per process,
-        // but this is a new process, so we know it hasn't been called before.
-        0 => create_vm_child_main(vm_dir, ready_fd, config),
-        _ => Ok(()),
-    }
-}
+    ch::create_vm(vm_dir, config).map_err(|e| format!("creating VM: {e}"))?;
 
-pub fn vm_command(api_socket_fd: RawFd) -> Result<Command, String> {
-    let mut command = Command::new("cloud-hypervisor");
-    command.args(["--api-socket", &format!("fd={api_socket_fd}")]);
-
-    Ok(command)
+    notify_readiness(ready_fd)
 }
 
 #[cfg(test)]

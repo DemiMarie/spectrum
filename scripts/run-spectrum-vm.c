@@ -16,7 +16,9 @@
 #include <sys/mount.h>
 #include <sys/poll.h>
 #include <sys/prctl.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/un.h>
 
 #include <linux/prctl.h>
 
@@ -155,10 +157,21 @@ static int listen_ready(void)
 	return fd[1];
 }
 
+static const struct sockaddr_un sock_addr = {
+	.sun_family = AF_UNIX,
+	.sun_path = "run/vm/by-id/vm/vmm"
+};
+
 int main(void)
 {
-	int fd;
-	char *dir_path;
+	int ready_fd, start_vmm_fd, sock_fd;
+	char *dir_path, *cloud_hypervisor_argv[] = {
+		"/bin/cloud-hypervisor",
+		"--api-socket",
+		NULL,
+		NULL
+	};
+	char **api_socket_arg = &cloud_hypervisor_argv[2];
 
 	if (asprintf(&dir_path, "%s/run-spectrum-vm.XXXXXX", tmpdir()) == -1)
 		err(EXIT_FAILURE, NULL);
@@ -214,13 +227,21 @@ int main(void)
 	spawn_vhost_user(CROSVM_PATH, crosvm_gpu_argv);
 	spawn_vhost_user(VIRTIOFSD_PATH, virtiofsd_argv);
 
-	fd = listen_ready();
-	if (dup2(fd, 3) == -1)
-		err(EXIT_FAILURE, "dup2 %d -> 3", fd);
-	if (fd != 3)
-		close(fd);
+	if ((sock_fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+		err(EXIT_FAILURE, "socket");
 
-	if ((fd = open(START_VMM_PATH, O_PATH|O_CLOEXEC)) == -1)
+	if (bind(sock_fd, &sock_addr, sizeof sock_addr) == -1)
+		err(EXIT_FAILURE, "bind");
+	if (listen(sock_fd, 1) == -1)
+		err(EXIT_FAILURE, "listen");
+
+	ready_fd = listen_ready();
+	if (dup2(ready_fd, 3) == -1)
+		err(EXIT_FAILURE, "dup2 %d -> 3", ready_fd);
+	if (ready_fd != 3)
+		close(ready_fd);
+
+	if ((start_vmm_fd = open(START_VMM_PATH, O_PATH|O_CLOEXEC)) == -1)
 		err(EXIT_FAILURE, "open " START_VMM_PATH);
 
 	if (unshare(CLONE_NEWUSER|CLONE_NEWNS) == -1)
@@ -236,8 +257,22 @@ int main(void)
 	if (chroot(dir_path) == -1)
 		err(EXIT_FAILURE, "chroot");
 
-	fexecve(fd,
-	        (char *const []){"start-vmm", "vm", NULL},
-	        (char *const []){"PATH=/bin", NULL});
+	switch (fork()) {
+	case 1:
+		err(EXIT_FAILURE, "fork");
+	case 0:
+		if (prctl(PR_SET_PDEATHSIG, SIGTERM) == -1)
+			err(EXIT_FAILURE, "prctl PR_SET_DEATHSIG");
+		close(sock_fd);
+		fexecve(start_vmm_fd,
+		        (char *const []){"start-vmm", "vm", NULL},
+		        (char *const []){"PATH=/bin", NULL});
+	}
+	close(ready_fd);
+
+	if (asprintf(api_socket_arg, "fd=%d", sock_fd) == -1)
+		err(EXIT_FAILURE, "asprintf");
+
+	execv(cloud_hypervisor_argv[0], cloud_hypervisor_argv);
 	err(EXIT_FAILURE, "exec " START_VMM_PATH);
 }
