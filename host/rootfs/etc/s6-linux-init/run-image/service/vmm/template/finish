@@ -12,5 +12,5 @@ if {
     remove-device client${4}
 }
 
-if { ip link set router-${3} down name _dead${4} nomaster }
+if { ip link set router-${3} down name _dead%d nomaster }
 ip link del br-${3}
