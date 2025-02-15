@@ -30,6 +30,7 @@ $(imgdir)/appvm/blk/root.img: ../../scripts/make-gpt.sh ../../scripts/sfdisk-fie
 
 VM_FILES = \
 	etc/dbus-1/session.conf \
+	etc/fonts/fonts.conf \
 	etc/fstab \
 	etc/init \
 	etc/mdev.conf \

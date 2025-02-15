@@ -7,8 +7,8 @@ import ../../lib/call-package.nix (
 pkgsStatic.callPackage (
 { lib, stdenvNoCC, runCommand, writeClosure
 , erofs-utils, jq, s6-rc, util-linux
-, busybox, cacert, execline, kmod, linux_latest, mdevd, s6, s6-linux-init
-, xdg-desktop-portal-spectrum
+, busybox, cacert, dejavu_fonts, execline, kmod, linux_latest, mdevd, s6
+, s6-linux-init, xdg-desktop-portal-spectrum,
 }:
 
 let
@@ -29,6 +29,7 @@ let
       })
 
       cacert
+      dejavu_fonts
       execline
       kmod
       mdevd
