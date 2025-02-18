@@ -29,6 +29,10 @@ let
       colord = super.colord.override {
         enableSystemd = false;
       };
+      flatpak = super.flatpak.override {
+        withMalcontent = false;
+        withSystemd = false;
+      };
       gcr_4 = super.gcr_4.override {
         systemdSupport = false;
       };

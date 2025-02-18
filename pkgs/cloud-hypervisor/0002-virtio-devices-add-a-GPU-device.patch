@@ -1,4 +1,4 @@
-From eacb8e3e6d4fd7ec15412ff159904f6c93427771 Mon Sep 17 00:00:00 2001
+From 118f3aeb2eec88f681484907fdcf8b319bca071d Mon Sep 17 00:00:00 2001
 From: Alyssa Ross <alyssa.ross@unikie.com>
 Date: Wed, 7 Sep 2022 14:16:29 +0000
 Subject: [PATCH 2/2] virtio-devices: add a GPU device
@@ -41,11 +41,11 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  vmm/src/api/mod.rs                            |  47 +-
  vmm/src/api/openapi/cloud-hypervisor.yaml     |  39 ++
  vmm/src/config.rs                             | 109 +++++
- vmm/src/device_manager.rs                     | 137 +++++-
+ vmm/src/device_manager.rs                     | 138 +++++-
  vmm/src/lib.rs                                |  79 +++-
  vmm/src/vm.rs                                 |  28 +-
  vmm/src/vm_config.rs                          |  10 +
- 19 files changed, 966 insertions(+), 26 deletions(-)
+ 19 files changed, 966 insertions(+), 27 deletions(-)
  create mode 100644 virtio-devices/src/vhost_user/gpu.rs
 
 diff --git a/src/bin/ch-remote.rs b/src/bin/ch-remote.rs
@@ -164,7 +164,7 @@ index f807189d..dee53f19 100644
              Command::new("add-pmem")
                  .about("Add persistent memory device")
 diff --git a/src/main.rs b/src/main.rs
-index fc9f6038..82072264 100644
+index 6ef75654..5b7f6806 100644
 --- a/src/main.rs
 +++ b/src/main.rs
 @@ -27,9 +27,9 @@ use vmm::vm_config;
@@ -203,7 +203,7 @@ index fc9f6038..82072264 100644
              serial: ConsoleConfig {
                  file: None,
 diff --git a/virtio-devices/src/device.rs b/virtio-devices/src/device.rs
-index 77501187..ab2866ec 100644
+index 06b245e2..5c5f2981 100644
 --- a/virtio-devices/src/device.rs
 +++ b/virtio-devices/src/device.rs
 @@ -6,7 +6,7 @@
@@ -288,10 +288,10 @@ index 2579e4f1..0a57af40 100644
          Thread::VirtioVhostNetCtl => virtio_vhost_net_ctl_thread_rules(),
          Thread::VirtioVsock => virtio_vsock_thread_rules(),
 diff --git a/virtio-devices/src/transport/pci_device.rs b/virtio-devices/src/transport/pci_device.rs
-index 6af4afc9..64996771 100644
+index c06b5cb1..ac6f4ee5 100644
 --- a/virtio-devices/src/transport/pci_device.rs
 +++ b/virtio-devices/src/transport/pci_device.rs
-@@ -1059,11 +1059,11 @@ impl PciDevice for VirtioPciDevice {
+@@ -1055,11 +1055,11 @@ impl PciDevice for VirtioPciDevice {
                      PciDeviceError::IoRegistrationFailed(shm_list.addr.raw_value(), e)
                  })?;
  
@@ -728,7 +728,7 @@ index 00000000..5e10e8cb
 +    }
 +}
 diff --git a/virtio-devices/src/vhost_user/mod.rs b/virtio-devices/src/vhost_user/mod.rs
-index 56d64152..dc8c9989 100644
+index ed625e3b..99f01c9e 100644
 --- a/virtio-devices/src/vhost_user/mod.rs
 +++ b/virtio-devices/src/vhost_user/mod.rs
 @@ -32,11 +32,13 @@ use crate::{
@@ -953,7 +953,7 @@ index fd47b0bb..d810dbfa 100644
  
  impl ApiAction for VmAddPmem {
 diff --git a/vmm/src/api/openapi/cloud-hypervisor.yaml b/vmm/src/api/openapi/cloud-hypervisor.yaml
-index b7074fdb..d6223957 100644
+index 021f61aa..bb3f4291 100644
 --- a/vmm/src/api/openapi/cloud-hypervisor.yaml
 +++ b/vmm/src/api/openapi/cloud-hypervisor.yaml
 @@ -259,6 +259,28 @@ paths:
@@ -996,7 +996,7 @@ index b7074fdb..d6223957 100644
          pmem:
            type: array
            items:
-@@ -1011,6 +1037,19 @@ components:
+@@ -1014,6 +1040,19 @@ components:
          id:
            type: string
  
@@ -1017,10 +1017,10 @@ index b7074fdb..d6223957 100644
        required:
          - file
 diff --git a/vmm/src/config.rs b/vmm/src/config.rs
-index 422e904f..36217b63 100644
+index 0cf29792..a330c7c7 100644
 --- a/vmm/src/config.rs
 +++ b/vmm/src/config.rs
-@@ -30,6 +30,8 @@ pub enum Error {
+@@ -32,6 +32,8 @@ pub enum Error {
      ParseFsTagTooLong,
      /// Filesystem socket is missing
      ParseFsSockMissing,
@@ -1029,7 +1029,7 @@ index 422e904f..36217b63 100644
      /// Missing persistent memory file parameter.
      ParsePmemFileMissing,
      /// Missing vsock socket path parameter.
-@@ -60,6 +62,8 @@ pub enum Error {
+@@ -62,6 +64,8 @@ pub enum Error {
      ParseBalloon(OptionParserError),
      /// Error parsing filesystem parameters
      ParseFileSystem(OptionParserError),
@@ -1038,7 +1038,7 @@ index 422e904f..36217b63 100644
      /// Error parsing persistent memory parameters
      ParsePersistentMemory(OptionParserError),
      /// Failed parsing console
-@@ -402,6 +406,8 @@ impl fmt::Display for Error {
+@@ -417,6 +421,8 @@ impl fmt::Display for Error {
                  "Error parsing --fs: max tag length is {}",
                  virtio_devices::vhost_user::VIRTIO_FS_TAG_LEN
              ),
@@ -1047,7 +1047,7 @@ index 422e904f..36217b63 100644
              ParsePersistentMemory(o) => write!(f, "Error parsing --pmem: {o}"),
              ParsePmemFileMissing => write!(f, "Error parsing --pmem: file missing"),
              ParseVsock(o) => write!(f, "Error parsing --vsock: {o}"),
-@@ -474,6 +480,7 @@ pub struct VmParams<'a> {
+@@ -489,6 +495,7 @@ pub struct VmParams<'a> {
      pub rng: &'a str,
      pub balloon: Option<&'a str>,
      pub fs: Option<Vec<&'a str>>,
@@ -1055,7 +1055,7 @@ index 422e904f..36217b63 100644
      pub pmem: Option<Vec<&'a str>>,
      pub serial: &'a str,
      pub console: &'a str,
-@@ -533,6 +540,9 @@ impl<'a> VmParams<'a> {
+@@ -548,6 +555,9 @@ impl<'a> VmParams<'a> {
          let fs: Option<Vec<&str>> = args
              .get_many::<String>("fs")
              .map(|x| x.map(|y| y as &str).collect());
@@ -1065,7 +1065,7 @@ index 422e904f..36217b63 100644
          let pmem: Option<Vec<&str>> = args
              .get_many::<String>("pmem")
              .map(|x| x.map(|y| y as &str).collect());
-@@ -587,6 +597,7 @@ impl<'a> VmParams<'a> {
+@@ -602,6 +612,7 @@ impl<'a> VmParams<'a> {
              rng,
              balloon,
              fs,
@@ -1073,7 +1073,7 @@ index 422e904f..36217b63 100644
              pmem,
              serial,
              console,
-@@ -1705,6 +1716,49 @@ impl FsConfig {
+@@ -1736,6 +1747,49 @@ impl FsConfig {
      }
  }
  
@@ -1123,7 +1123,7 @@ index 422e904f..36217b63 100644
  impl PmemConfig {
      pub const SYNTAX: &'static str = "Persistent memory parameters \
      \"file=<backing_file_path>,size=<persistent_memory_size>,iommu=on|off,\
-@@ -2547,6 +2601,17 @@ impl VmConfig {
+@@ -2578,6 +2632,17 @@ impl VmConfig {
              }
          }
  
@@ -1141,7 +1141,7 @@ index 422e904f..36217b63 100644
          if let Some(pmems) = &self.pmem {
              for pmem in pmems {
                  pmem.validate(self)?;
-@@ -2794,6 +2859,15 @@ impl VmConfig {
+@@ -2825,6 +2890,15 @@ impl VmConfig {
              fs = Some(fs_config_list);
          }
  
@@ -1157,7 +1157,7 @@ index 422e904f..36217b63 100644
          let mut pmem: Option<Vec<PmemConfig>> = None;
          if let Some(pmem_list) = &vm_params.pmem {
              let mut pmem_config_list = Vec::new();
-@@ -2934,6 +3008,7 @@ impl VmConfig {
+@@ -2965,6 +3039,7 @@ impl VmConfig {
              rng,
              balloon,
              fs,
@@ -1165,7 +1165,7 @@ index 422e904f..36217b63 100644
              pmem,
              serial,
              console,
-@@ -2995,6 +3070,13 @@ impl VmConfig {
+@@ -3026,6 +3101,13 @@ impl VmConfig {
              removed |= fs.len() != len;
          }
  
@@ -1179,7 +1179,7 @@ index 422e904f..36217b63 100644
          // Remove if net device
          if let Some(net) = self.net.as_mut() {
              let len = net.len();
-@@ -3067,6 +3149,7 @@ impl Clone for VmConfig {
+@@ -3098,6 +3180,7 @@ impl Clone for VmConfig {
              #[cfg(feature = "pvmemcontrol")]
              pvmemcontrol: self.pvmemcontrol.clone(),
              fs: self.fs.clone(),
@@ -1187,7 +1187,7 @@ index 422e904f..36217b63 100644
              pmem: self.pmem.clone(),
              serial: self.serial.clone(),
              console: self.console.clone(),
-@@ -3577,6 +3660,23 @@ mod tests {
+@@ -3608,6 +3691,23 @@ mod tests {
          Ok(())
      }
  
@@ -1211,7 +1211,7 @@ index 422e904f..36217b63 100644
      fn pmem_fixture() -> PmemConfig {
          PmemConfig {
              file: PathBuf::from("/tmp/pmem"),
-@@ -3848,6 +3948,7 @@ mod tests {
+@@ -3879,6 +3979,7 @@ mod tests {
              rng: RngConfig::default(),
              balloon: None,
              fs: None,
@@ -1219,7 +1219,7 @@ index 422e904f..36217b63 100644
              pmem: None,
              serial: default_serial(),
              console: default_console(),
-@@ -4049,6 +4150,7 @@ mod tests {
+@@ -4081,6 +4182,7 @@ mod tests {
              },
              balloon: None,
              fs: None,
@@ -1227,7 +1227,7 @@ index 422e904f..36217b63 100644
              pmem: None,
              serial: ConsoleConfig {
                  file: None,
-@@ -4221,6 +4323,13 @@ mod tests {
+@@ -4253,6 +4355,13 @@ mod tests {
              Err(ValidationError::VhostUserRequiresSharedMemory)
          );
  
@@ -1242,7 +1242,7 @@ index 422e904f..36217b63 100644
          still_valid_config.memory.shared = true;
          still_valid_config.validate().unwrap();
 diff --git a/vmm/src/device_manager.rs b/vmm/src/device_manager.rs
-index 8b3c20e5..209827bb 100644
+index 830590b4..d84c0aa1 100644
 --- a/vmm/src/device_manager.rs
 +++ b/vmm/src/device_manager.rs
 @@ -12,6 +12,7 @@
@@ -1262,19 +1262,20 @@ index 8b3c20e5..209827bb 100644
  };
  use vm_allocator::{AddressAllocator, SystemAllocator};
  use vm_device::dma_mapping::ExternalDmaMapping;
-@@ -99,8 +100,9 @@ use crate::memory_manager::{Error as MemoryManagerError, MemoryManager, MEMORY_M
+@@ -99,9 +100,9 @@ use crate::memory_manager::{Error as MemoryManagerError, MemoryManager, MEMORY_M
  use crate::pci_segment::PciSegment;
  use crate::serial_manager::{Error as SerialManagerError, SerialManager};
  use crate::vm_config::{
 -    ConsoleOutputMode, DeviceConfig, DiskConfig, FsConfig, NetConfig, PmemConfig, UserDeviceConfig,
--    VdpaConfig, VhostMode, VmConfig, VsockConfig, DEFAULT_PCI_SEGMENT_APERTURE_WEIGHT,
+-    VdpaConfig, VhostMode, VmConfig, VsockConfig, DEFAULT_IOMMU_ADDRESS_WIDTH_BITS,
+-    DEFAULT_PCI_SEGMENT_APERTURE_WEIGHT,
 +    ConsoleOutputMode, DeviceConfig, DiskConfig, FsConfig, GpuConfig, NetConfig, PmemConfig,
 +    UserDeviceConfig, VdpaConfig, VhostMode, VmConfig, VsockConfig,
-+    DEFAULT_PCI_SEGMENT_APERTURE_WEIGHT,
++    DEFAULT_IOMMU_ADDRESS_WIDTH_BITS, DEFAULT_PCI_SEGMENT_APERTURE_WEIGHT,
  };
  use crate::{device_node, GuestRegionMmap, PciDeviceInfo, DEVICE_MANAGER_SNAPSHOT_ID};
  
-@@ -127,6 +129,7 @@ const PVPANIC_DEVICE_NAME: &str = "__pvpanic";
+@@ -128,6 +129,7 @@ const PVPANIC_DEVICE_NAME: &str = "__pvpanic";
  // identifiers if the user doesn't give one
  const DISK_DEVICE_NAME_PREFIX: &str = "_disk";
  const FS_DEVICE_NAME_PREFIX: &str = "_fs";
@@ -1282,7 +1283,7 @@ index 8b3c20e5..209827bb 100644
  const NET_DEVICE_NAME_PREFIX: &str = "_net";
  const PMEM_DEVICE_NAME_PREFIX: &str = "_pmem";
  const VDPA_DEVICE_NAME_PREFIX: &str = "_vdpa";
-@@ -163,9 +166,15 @@ pub enum DeviceManagerError {
+@@ -164,9 +166,15 @@ pub enum DeviceManagerError {
      /// Cannot create virtio-fs device
      CreateVirtioFs(virtio_devices::vhost_user::Error),
  
@@ -1298,7 +1299,7 @@ index 8b3c20e5..209827bb 100644
      /// Cannot create vhost-user-blk device
      CreateVhostUserBlk(virtio_devices::vhost_user::Error),
  
-@@ -254,6 +263,9 @@ pub enum DeviceManagerError {
+@@ -255,6 +263,9 @@ pub enum DeviceManagerError {
      /// Cannot find a memory range for virtio-fs
      FsRangeAllocation,
  
@@ -1308,7 +1309,7 @@ index 8b3c20e5..209827bb 100644
      /// Error creating serial output file
      SerialOutputFileOpen(io::Error),
  
-@@ -2186,6 +2198,9 @@ impl DeviceManager {
+@@ -2195,6 +2206,9 @@ impl DeviceManager {
          // Add virtio-fs if required
          devices.append(&mut self.make_virtio_fs_devices()?);
  
@@ -1318,7 +1319,7 @@ index 8b3c20e5..209827bb 100644
          // Add virtio-pmem if required
          devices.append(&mut self.make_virtio_pmem_devices()?);
  
-@@ -2744,6 +2759,114 @@ impl DeviceManager {
+@@ -2753,6 +2767,114 @@ impl DeviceManager {
          Ok(devices)
      }
  
@@ -1433,7 +1434,7 @@ index 8b3c20e5..209827bb 100644
      fn make_virtio_pmem_device(
          &mut self,
          pmem_cfg: &mut PmemConfig,
-@@ -4062,6 +4185,7 @@ impl DeviceManager {
+@@ -4071,6 +4193,7 @@ impl DeviceManager {
                  | VirtioDeviceType::Block
                  | VirtioDeviceType::Pmem
                  | VirtioDeviceType::Fs
@@ -1441,7 +1442,7 @@ index 8b3c20e5..209827bb 100644
                  | VirtioDeviceType::Vsock => {}
                  _ => return Err(DeviceManagerError::RemovalNotAllowed(device_type)),
              }
-@@ -4347,6 +4471,13 @@ impl DeviceManager {
+@@ -4356,6 +4479,13 @@ impl DeviceManager {
          self.hotplug_virtio_pci_device(device)
      }
  
@@ -1456,7 +1457,7 @@ index 8b3c20e5..209827bb 100644
          self.validate_identifier(&pmem_cfg.id)?;
  
 diff --git a/vmm/src/lib.rs b/vmm/src/lib.rs
-index 8a197b73..892a9e43 100644
+index ad6eadfd..c5cd8886 100644
 --- a/vmm/src/lib.rs
 +++ b/vmm/src/lib.rs
 @@ -60,8 +60,8 @@ use crate::migration::{recv_vm_config, recv_vm_state};
@@ -1470,7 +1471,7 @@ index 8a197b73..892a9e43 100644
  };
  
  mod acpi;
-@@ -1962,6 +1962,32 @@ impl RequestHandler for Vmm {
+@@ -1979,6 +1979,32 @@ impl RequestHandler for Vmm {
          }
      }
  
@@ -1503,7 +1504,7 @@ index 8a197b73..892a9e43 100644
      fn vm_add_pmem(&mut self, pmem_cfg: PmemConfig) -> result::Result<Option<Vec<u8>>, VmError> {
          self.vm_config.as_ref().ok_or(VmError::VmNotCreated)?;
  
-@@ -2365,6 +2391,7 @@ mod unit_tests {
+@@ -2382,6 +2408,7 @@ mod unit_tests {
              },
              balloon: None,
              fs: None,
@@ -1511,7 +1512,7 @@ index 8a197b73..892a9e43 100644
              pmem: None,
              serial: ConsoleConfig {
                  file: None,
-@@ -2596,6 +2623,54 @@ mod unit_tests {
+@@ -2613,6 +2640,54 @@ mod unit_tests {
          );
      }
  
@@ -1613,10 +1614,10 @@ index e8a53830..36cf89f8 100644
          let pci_device_info = self
              .device_manager
 diff --git a/vmm/src/vm_config.rs b/vmm/src/vm_config.rs
-index e74fbc1d..cce0bdc1 100644
+index 93304e47..3db30082 100644
 --- a/vmm/src/vm_config.rs
 +++ b/vmm/src/vm_config.rs
-@@ -462,6 +462,15 @@ impl ApplyLandlock for FsConfig {
+@@ -469,6 +469,15 @@ impl ApplyLandlock for FsConfig {
      }
  }
  
@@ -1632,7 +1633,7 @@ index e74fbc1d..cce0bdc1 100644
  #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
  pub struct PmemConfig {
      pub file: PathBuf,
-@@ -772,6 +781,7 @@ pub struct VmConfig {
+@@ -779,6 +788,7 @@ pub struct VmConfig {
      pub rng: RngConfig,
      pub balloon: Option<BalloonConfig>,
      pub fs: Option<Vec<FsConfig>>,

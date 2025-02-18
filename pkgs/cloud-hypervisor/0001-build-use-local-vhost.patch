@@ -1,4 +1,4 @@
-From 68981d543cd4a2300bc2c39afca935782639acd4 Mon Sep 17 00:00:00 2001
+From ee7283b4c6fea473f1d3c6981bab5f239b7561a3 Mon Sep 17 00:00:00 2001
 From: Alyssa Ross <alyssa.ross@unikie.com>
 Date: Wed, 28 Sep 2022 12:18:19 +0000
 Subject: [PATCH 1/2] build: use local vhost
@@ -14,7 +14,7 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  2 files changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/Cargo.lock b/Cargo.lock
-index 0396a962..ddbf2af2 100644
+index bbc11a68..4ede2edb 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
 @@ -2282,7 +2282,6 @@ dependencies = [
@@ -34,7 +34,7 @@ index 0396a962..ddbf2af2 100644
   "libc",
   "log",
 diff --git a/Cargo.toml b/Cargo.toml
-index d8d2bcad..07aa7d6d 100644
+index b3bc0d2a..8eb260a0 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 @@ -112,8 +112,8 @@ seccompiler = "0.4.0"
