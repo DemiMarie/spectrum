@@ -17,7 +17,7 @@ syn = static_library('syn', 'src/lib.rs',
     '--cfg', 'feature="printing"',
     '--cfg', 'feature="proc-macro"',
   ],
-  rust_crate_type : 'rlib')
+  rust_abi : 'rust')
 
 syn_dep = declare_dependency(
   dependencies : [proc_macro2_dep, quote_dep],

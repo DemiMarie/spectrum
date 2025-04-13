@@ -10,7 +10,7 @@ proc_macro2 = static_library('proc_macro2', 'src/lib.rs',
   dependencies : unicode_ident_dep,
   native : true,
   rust_args : ['--cfg', 'feature="proc-macro"'],
-  rust_crate_type : 'rlib')
+  rust_abi : 'rust')
 
 proc_macro2_dep = declare_dependency(
   dependencies : unicode_ident_dep,

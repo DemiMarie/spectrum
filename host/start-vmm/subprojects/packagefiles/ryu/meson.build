@@ -7,7 +7,7 @@ if not get_option('unwind')
   add_project_arguments('-C', 'panic=abort', language : 'rust')
 endif
 
-ryu = static_library('ryu', 'src/lib.rs', rust_crate_type : 'rlib')
+ryu = static_library('ryu', 'src/lib.rs', rust_abi : 'rust')
 
 ryu_dep = declare_dependency(link_with : ryu)
 

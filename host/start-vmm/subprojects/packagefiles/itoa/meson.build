@@ -7,7 +7,7 @@ if not get_option('unwind')
   add_project_arguments('-C', 'panic=abort', language : 'rust')
 endif
 
-itoa = static_library('itoa', 'src/lib.rs', rust_crate_type : 'rlib')
+itoa = static_library('itoa', 'src/lib.rs', rust_abi : 'rust')
 
 itoa_dep = declare_dependency(link_with : itoa)
 
