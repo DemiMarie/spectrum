@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: MIT
 
 project('miniserde', 'rust', version : '0.1.39',
-  default_options : ['build.rust_std=2021', 'rust_std=2021'])
+  default_options : ['build.rust_std=2021', 'rust_std=2021'],
+  meson_version : '>=1.3.0')
 
 rust = import('rust')
 

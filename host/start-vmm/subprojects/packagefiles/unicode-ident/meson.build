@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: MIT
 
 project('unicode-ident', 'rust', version : '1.0.9',
-  default_options : ['build.rust_std=2018', 'rust_std=2018'])
+  default_options : ['build.rust_std=2018', 'rust_std=2018'],
+  meson_version : '>=1.3.0')
 
 unicode_ident = static_library('unicode_ident', 'src/lib.rs',
   native : true,
