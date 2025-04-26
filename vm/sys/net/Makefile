@@ -7,7 +7,7 @@ include ../../../lib/common.mk
 
 prefix = build/svc
 
-VMM = qemu
+VMM = cloud-hypervisor
 
 HOST_BUILD_FILES = \
 	build/host/data/netvm/blk/root.img \
