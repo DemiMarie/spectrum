@@ -124,17 +124,22 @@ start-vhost-user-gpu:
 	while ! [ -S build/vhost-user-gpu.sock ] && sleep .1; do :; done
 .PHONY: start-vhost-user-gpu
 
+start-vhost-user-net:
+	mkdir -p build
+	../../scripts/start-passt.elb
+
 start-virtiofsd: scripts/start-virtiofsd.elb
 	mkdir -p build
 	scripts/start-virtiofsd.elb
 .PHONY: start-virtiofsd
 
-run-qemu: $(imgdir)/appvm/blk/root.img start-virtiofsd
+run-qemu: $(imgdir)/appvm/blk/root.img start-vhost-user-net start-virtiofsd
 	@../../scripts/run-qemu.sh -m 256 -cpu host -kernel $(KERNEL) -vga none \
 	    -drive file=$(imgdir)/appvm/blk/root.img,if=virtio,format=raw,readonly=on \
 	    -append "root=PARTLABEL=root nokaslr" \
 	    -gdb unix:build/gdb.sock,server,nowait \
-	    -netdev user,id=net0 \
+	    -chardev socket,id=vhost-user-net,path=build/vhost-user-net.sock \
+	    -netdev vhost-user,id=net0,chardev=vhost-user-net \
 	    -device virtio-net,netdev=net0,mac=0A:B3:EC:00:00:00 \
 	    -chardev socket,id=virtiofsd,path=build/virtiofsd.sock \
 	    -device vhost-user-fs-pci,chardev=virtiofsd,tag=virtiofs0 \
@@ -148,16 +153,16 @@ run-qemu: $(imgdir)/appvm/blk/root.img start-virtiofsd
 	    -device virtconsole,chardev=virtiocon0
 .PHONY: run-qemu
 
-run-cloud-hypervisor: $(imgdir)/appvm/blk/root.img start-vhost-user-gpu start-virtiofsd
+run-cloud-hypervisor: $(imgdir)/appvm/blk/root.img start-vhost-user-gpu start-vhost-user-net start-virtiofsd
 	rm -f build/vmm.sock build/vsock.sock
-	@../../scripts/with-taps.elb ../../scripts/run-cloud-hypervisor.sh \
+	@../../scripts/run-cloud-hypervisor.sh \
 	    --api-socket path=build/vmm.sock \
 	    --memory size=1G,shared=on \
 	    --disk path=$(imgdir)/appvm/blk/root.img,readonly=on \
 	    --fs tag=virtiofs0,socket=build/virtiofsd.sock \
 	    --gpu socket=build/vhost-user-gpu.sock \
 	    --vsock cid=3,socket=build/vsock.sock \
-	    --net tap=tap0 \
+	    --net vhost_user=on,socket=build/vhost-user-net.sock \
 	    --kernel $(KERNEL) \
 	    --cmdline "root=PARTLABEL=root" \
 	    --console tty \

@@ -102,6 +102,10 @@ debug:
 	    $(VMLINUX)
 .PHONY: debug
 
+start-vhost-user-net:
+	mkdir -p build
+	../../../scripts/start-passt.elb
+
 run-qemu: build/host/data/netvm/blk/root.img
 	@../../../scripts/run-qemu.sh -m 256 -cpu host -kernel $(KERNEL) -vga none \
 	    -drive file=build/host/data/netvm/blk/root.img,if=virtio,format=raw,readonly=on \
@@ -117,14 +121,14 @@ run-qemu: build/host/data/netvm/blk/root.img
 	    -device virtconsole,chardev=virtiocon0
 .PHONY: run-qemu
 
-run-cloud-hypervisor: build/host/data/netvm/blk/root.img
+run-cloud-hypervisor: build/host/data/netvm/blk/root.img start-vhost-user-net
 	rm -f build/vmm.sock
 	@../../../scripts/with-taps.elb \
 	    ../../../scripts/run-cloud-hypervisor.sh \
 	    --api-socket path=build/vmm.sock \
-	    --memory size=256M \
+	    --memory size=256M,shared=on \
 	    --disk path=build/host/data/netvm/blk/root.img,readonly=on \
-	    --net tap=tap0 tap=tap1,mac=0A:B3:EC:80:00:00 \
+	    --net vhost_user=on,socket=build/vhost-user-net.sock tap=tap1,mac=0A:B3:EC:80:00:00 \
 	    --kernel $(KERNEL) \
 	    --cmdline "root=PARTLABEL=root" \
 	    --console tty \
