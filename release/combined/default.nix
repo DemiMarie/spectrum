@@ -5,7 +5,7 @@
 
 import ../../lib/call-package.nix (
 { callSpectrumPackage
-, lib, runCommand, stdenv, substituteAll, writeClosure
+, lib, runCommand, stdenv, replaceVars, writeClosure
 , dosfstools, grub2_efi, jq, libfaketime, mtools, squashfs-tools-ng
 , systemdMinimal, util-linux
 }:
@@ -41,9 +41,7 @@ let
 
   grub = grub2_efi;
 
-  grubCfg = substituteAll {
-    src = ./grub.cfg.in;
-
+  grubCfg = replaceVars ./grub.cfg.in {
     linux = removePrefix storeDir installer.kernel;
     initrd = removePrefix storeDir installer.initramfs;
     inherit (installer) kernelParams;
