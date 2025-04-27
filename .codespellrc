@@ -2,4 +2,4 @@
 # SPDX-License-Identifier: CC0-1.0
 
 [codespell]
-ignore-words-list = crate,rouge,ser
+ignore-words-list = crate,passt,rouge,ser
