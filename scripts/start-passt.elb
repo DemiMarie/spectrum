@@ -6,7 +6,7 @@ s6-ipcserver-socketbinder -B build/vhost-user-net.sock
 background {
   s6-ipcserverd
   # Patch sent to allow using descriptor 0.
-  # Message-ID: <20250426084425.25940-1-hi@alyssa.is>
+  # https://archives.passt.top/passt-dev/20250426084425.25940-1-hi@alyssa.is/
   fdmove -c 3 0
   importas -SsD passt PASST
   $PASST --vhost-user -fF 3
