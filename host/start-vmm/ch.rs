@@ -17,8 +17,8 @@ use miniserde::{json, Serialize};
 use crate::net::MacAddress;
 
 // Trivially safe.
-const EPERM: NonZeroI32 = unsafe { NonZeroI32::new_unchecked(1) };
-const EPROTO: NonZeroI32 = unsafe { NonZeroI32::new_unchecked(71) };
+const EPERM: NonZeroI32 = NonZeroI32::new(1).unwrap();
+const EPROTO: NonZeroI32 = NonZeroI32::new(71).unwrap();
 
 #[derive(Serialize)]
 pub struct ConsoleConfig {
