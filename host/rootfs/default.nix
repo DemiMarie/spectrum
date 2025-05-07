@@ -72,6 +72,9 @@ let
       procps = super.procps.override {
         withSystemd = false;
       };
+      pulseaudio = super.pulseaudio.override {
+        useSystemd = false;
+      };
 
       systemd = final.libudev-zero;
       systemdLibs = final.libudev-zero;
