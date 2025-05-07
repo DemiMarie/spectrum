@@ -179,7 +179,7 @@ let
   # (not just their bin/* files).
   usrPackages = [
     appvm kernel firmware
-  ] ++ (with pkgsGui; [ mesa.drivers dejavu_fonts westonLite ]);
+  ] ++ (with pkgsGui; [ mesa dejavu_fonts westonLite ]);
 
   packagesSysroot = runCommand "packages-sysroot" {
     depsBuildBuild = [ inkscape ];
