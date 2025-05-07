@@ -122,9 +122,12 @@ let
         ];
       });
 
-      xdg-desktop-portal = super.xdg-desktop-portal.override {
+      xdg-desktop-portal = (super.xdg-desktop-portal.override {
         enableSystemd = false;
-      };
+      }).overrideAttrs ({ ... }: {
+        # Tests use umockdev.
+        doCheck = false;
+      });
     })
   );
 
