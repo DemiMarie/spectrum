@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 project('itoa', 'rust',
-  version : '1.0.10',
+  version : '1.0.11',
   default_options : ['rust_std=2018'],
   meson_version : '>=1.3.0')
 

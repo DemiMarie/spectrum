@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
 # SPDX-License-Identifier: MIT
 
-project('quote', 'rust', version : '1.0.35',
+project('quote', 'rust', version : '1.0.38',
   default_options : ['build.rust_std=2018', 'rust_std=2018'],
   meson_version : '>=1.3.0')
 
