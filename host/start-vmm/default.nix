@@ -102,6 +102,8 @@ stdenv.mkDerivation (finalAttrs: {
           mesonFlagsArray+=(
               -Dproc-macro2:werror=false
               -Dproc-macro2:warning_level=0
+              -Dquote:werror=false
+              -Dquote:warning_level=0
               -Dryu:werror=false
               -Dryu:warning_level=0
               -Dsyn:werror=false
