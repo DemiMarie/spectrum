@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021-2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2022 Unikie
 
 import ../../lib/call-package.nix (
@@ -75,6 +75,22 @@ let
       pulseaudio = super.pulseaudio.override {
         useSystemd = false;
       };
+
+      qt6 = super.qt6.overrideScope (_: prev: {
+        qttranslations = prev.qttranslations.override {
+          qttools = prev.qttools.override {
+            qtbase = prev.qtbase.override {
+              qttranslations = null;
+              systemdSupport = false;
+            };
+            qtdeclarative = null;
+          };
+        };
+
+        qtbase = prev.qtbase.override {
+          systemdSupport = false;
+        };
+      });
 
       systemd = final.libudev-zero;
       systemdLibs = final.libudev-zero;
