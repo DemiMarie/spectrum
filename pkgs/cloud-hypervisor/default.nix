@@ -8,7 +8,7 @@ super.cloud-hypervisor.overrideAttrs (oldAttrs: rec {
   cargoDeps = final.rustPlatform.fetchCargoVendor {
     inherit patches;
     inherit (oldAttrs) src;
-    hash = "sha256-erfQzK8XQKaSxSimik/sw2ffUqZls0gH8vQ720ADKO0=";
+    hash = "sha256-JVxXxki8RHR2Ae9dEFJtBNc3I/gt6vds3T/6Qyz1UUU=";
   };
 
   vhost = final.fetchFromGitHub {

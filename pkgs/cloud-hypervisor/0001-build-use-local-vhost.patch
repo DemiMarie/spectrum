@@ -1,4 +1,4 @@
-From ee7283b4c6fea473f1d3c6981bab5f239b7561a3 Mon Sep 17 00:00:00 2001
+From 584bee6ad312604b3144b58fbdfe85cec0a9a0be Mon Sep 17 00:00:00 2001
 From: Alyssa Ross <alyssa.ross@unikie.com>
 Date: Wed, 28 Sep 2022 12:18:19 +0000
 Subject: [PATCH 1/2] build: use local vhost
@@ -14,10 +14,10 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  2 files changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/Cargo.lock b/Cargo.lock
-index bbc11a68..4ede2edb 100644
+index 825b1ed8..38fabf5e 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
-@@ -2282,7 +2282,6 @@ dependencies = [
+@@ -2293,7 +2293,6 @@ dependencies = [
  [[package]]
  name = "vhost"
  version = "0.12.1"
@@ -25,7 +25,7 @@ index bbc11a68..4ede2edb 100644
  dependencies = [
   "bitflags 2.6.0",
   "libc",
-@@ -2294,7 +2293,6 @@ dependencies = [
+@@ -2305,7 +2304,6 @@ dependencies = [
  [[package]]
  name = "vhost-user-backend"
  version = "0.16.1"
@@ -34,10 +34,10 @@ index bbc11a68..4ede2edb 100644
   "libc",
   "log",
 diff --git a/Cargo.toml b/Cargo.toml
-index b3bc0d2a..8eb260a0 100644
+index edaece2e..49db03cf 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -112,8 +112,8 @@ seccompiler = "0.4.0"
+@@ -113,8 +113,8 @@ seccompiler = "0.5.0"
  vfio-bindings = { git = "https://github.com/rust-vmm/vfio", branch = "main" }
  vfio-ioctls = { git = "https://github.com/rust-vmm/vfio", branch = "main", default-features = false }
  vfio_user = { git = "https://github.com/rust-vmm/vfio-user", branch = "main" }
