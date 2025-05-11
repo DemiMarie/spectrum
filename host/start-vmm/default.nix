@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2022-2025 Alyssa Ross <hi@alyssa.is>
 
 import ../../lib/call-package.nix (
 { src, lib, stdenv, fetchCrate, fetchurl, buildPackages
@@ -94,7 +94,6 @@ stdenv.mkDerivation (finalAttrs: {
       {
         name = "${name}-clippy";
         nativeBuildInputs = nativeBuildInputs ++ [ clippy ];
-        RUSTC = "clippy-driver";
         preConfigure = ''
           # It's not currently possible to enable warnings only for
           # non-subprojects without enumerating the subprojects.
@@ -110,7 +109,11 @@ stdenv.mkDerivation (finalAttrs: {
               -Dsyn:warning_level=0
           )
         '';
-        postBuild = ''touch $out && exit 0'';
+        dontBuild = true;
+        doCheck = true;
+        dontUseMesonCheck = true;
+        checkTarget = "clippy";
+        installPhase = ''touch $out && exit 0'';
       }
     );
 
