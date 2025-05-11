@@ -3,7 +3,7 @@
 
 project('start-vmm', 'rust', 'c',
   default_options : {
-    'c_std': 'c2x',
+    'c_std': 'c23',
     'rust_std': '2018',
     'warning_level': '3',
   })

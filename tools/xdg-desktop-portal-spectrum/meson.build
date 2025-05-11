@@ -3,7 +3,7 @@
 
 project('xdg-desktop-portal-spectrum', 'c',
   default_options : {
-    'c_std': 'c2x',
+    'c_std': 'c23',
     'warning_level': '3',
   })
 
