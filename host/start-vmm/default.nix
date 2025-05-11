@@ -94,21 +94,6 @@ stdenv.mkDerivation (finalAttrs: {
       {
         name = "${name}-clippy";
         nativeBuildInputs = nativeBuildInputs ++ [ clippy ];
-        preConfigure = ''
-          # It's not currently possible to enable warnings only for
-          # non-subprojects without enumerating the subprojects.
-          # https://github.com/mesonbuild/meson/issues/9398#issuecomment-954094750
-          mesonFlagsArray+=(
-              -Dproc-macro2:werror=false
-              -Dproc-macro2:warning_level=0
-              -Dquote:werror=false
-              -Dquote:warning_level=0
-              -Dryu:werror=false
-              -Dryu:warning_level=0
-              -Dsyn:werror=false
-              -Dsyn:warning_level=0
-          )
-        '';
         dontBuild = true;
         doCheck = true;
         dontUseMesonCheck = true;

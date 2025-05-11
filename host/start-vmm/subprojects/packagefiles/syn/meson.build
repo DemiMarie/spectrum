@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 project('syn', 'rust', version : '2.0.58',
-  default_options : ['build.rust_std=2021', 'rust_std=2021'],
+  default_options : ['build.rust_std=2021', 'rust_std=2021', 'warning_level=0'],
   meson_version : '>=1.3.0')
 
 proc_macro2_dep = dependency('proc-macro2-rs', native : true)

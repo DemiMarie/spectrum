@@ -3,7 +3,7 @@
 
 project('ryu', 'rust',
   version : '1.0.17',
-  default_options : ['rust_std=2018'],
+  default_options : ['rust_std=2018', 'warning_level=0'],
   meson_version : '>=1.3.0')
 
 if not get_option('unwind')
