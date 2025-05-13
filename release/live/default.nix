@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2021-2023 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021-2023, 2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2022 Unikie
 
 import ../../lib/call-package.nix (
@@ -14,7 +14,9 @@ let
   stdenv = stdenvNoCC;
 
   systemd = systemdUkify.overrideAttrs ({ mesonFlags ? [], ... }: {
-    mesonFlags = mesonFlags ++ [ "-Defi-addon-extra-sections=95" ];
+    # The default limit is too low to build a generic aarch64 distro image:
+    # https://github.com/systemd/systemd/pull/37417
+    mesonFlags = mesonFlags ++ [ "-Defi-stub-extra-sections=3000" ];
   });
 
   extfs = pkgsStatic.callPackage ../../host/initramfs/extfs.nix {

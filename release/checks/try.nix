@@ -19,7 +19,7 @@ in {
     import shlex
 
     flags = "${qemuBinary self.config.qemu.package} " + " ".join(map(shlex.quote, [
-      "-m", "512",
+      "-m", "1G",
       "-device", "qemu-xhci",
       "-device", "usb-storage,drive=drive1,removable=true",
       "-drive", "file=${self.config.qemu.package}/share/qemu/edk2-${stdenv.hostPlatform.qemuArch}-code.fd,format=raw,if=pflash,readonly=on",

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021-2025 Alyssa Ross <hi@alyssa.is>
 
 .POSIX:
 
@@ -20,35 +20,23 @@ $(dest): ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sf
 build/empty:
 	mkdir -p $@
 
-# Each device tree is a PE section, and there can only be a maximum of
-# 96 PE sections.  To work around this and consider every device tree
-# provided by the kernel for auto-loading, split them across as many
-# UKI addons (each of which is its own PE binary) as required.
-# https://github.com/systemd/systemd/issues/35943
-build/spectrum.efi.extra.d: $(DTBS)
-	rm -rf $@
-	mkdir -p $@
-	i=0; find $(DTBS) -name '*.dtb' | xargs -rn 92 | while read -r dtbs; do \
-	    i=$$((i + 1)) ;\
-	    printf "[UKI]\nDeviceTreeAuto=%s\n" "$$dtbs" | $(UKIFY) build \
-	        --output $@/dtbs$$i.addon.efi \
-	        --config /dev/stdin ;\
-	done
-
-build/spectrum.efi: build/rootfs.verity.roothash $(KERNEL) $(INITRAMFS)
-	$(UKIFY) build \
+build/spectrum.efi: build/rootfs.verity.roothash $(DTBS) $(KERNEL) $(INITRAMFS)
+	( \
+	    printf "[UKI]\nDeviceTreeAuto=" && \
+	    find $(DTBS) -name '*.dtb' -print0 | tr '\0' ' ' \
+	) | $(UKIFY) build \
 	    --output $@ \
+	    --config /dev/stdin \
 	    --linux $(KERNEL) \
 	    --initrd $(INITRAMFS) \
 	    --os-release $$'NAME="Spectrum"\n' \
 	    --cmdline "ro intel_iommu=on roothash=$$(cat build/rootfs.verity.roothash)"
 
-build/boot.fat: $(SYSTEMD_BOOT_EFI) build/spectrum.efi build/spectrum.efi.extra.d
+build/boot.fat: $(SYSTEMD_BOOT_EFI) build/spectrum.efi
 	$(TRUNCATE) -s 440401920 $@
 	$(MKFS_FAT) $@
 	$(MMD) -i $@ ::/EFI ::/EFI/BOOT ::/EFI/Linux
 	$(MCOPY) -i $@ build/spectrum.efi ::/EFI/Linux
-	$(MCOPY) -i $@ build/spectrum.efi.extra.d ::/EFI/Linux
 	$(MCOPY) -i $@ $(SYSTEMD_BOOT_EFI) ::/EFI/BOOT/$(EFINAME)
 
 # veritysetup format produces two files, but Make only (portably)
