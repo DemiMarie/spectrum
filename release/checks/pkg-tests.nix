@@ -9,6 +9,8 @@ import ../../lib/call-package.nix (
 
   lseek = lib.recurseIntoAttrs lseek.tests;
 
+  networking = lib.recurseIntoAttrs (callSpectrumPackage ./networking {}).tests;
+
   start-vmm = lib.recurseIntoAttrs start-vmm.tests;
 
   run-spectrum-vm = lib.recurseIntoAttrs

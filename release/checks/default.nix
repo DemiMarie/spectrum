@@ -16,6 +16,8 @@ import ../../lib/call-package.nix ({ callSpectrumPackage }:
 
   pkg-tests = callSpectrumPackage ./pkg-tests.nix {};
 
+  networking = callSpectrumPackage ./networking {};
+
   no-roothash = callSpectrumPackage ./no-roothash.nix {};
 
   reuse = callSpectrumPackage ./reuse.nix {};
