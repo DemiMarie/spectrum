@@ -73,8 +73,10 @@ stdenv.mkDerivation (finalAttrs: {
 
   passthru.tests = {
     clang-tidy = finalAttrs.finalPackage.overrideAttrs (
-      { src, nativeBuildInputs ? [], ... }:
+      { name, src, nativeBuildInputs ? [], ... }:
       {
+        name = "${name}-clang-tidy";
+
         src = lib.fileset.toSource {
           root = ../..;
           fileset = lib.fileset.union (lib.fileset.fromSource src) ../../.clang-tidy;
