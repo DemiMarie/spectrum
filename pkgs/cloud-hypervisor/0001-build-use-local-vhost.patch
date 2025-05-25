@@ -1,4 +1,4 @@
-From 584bee6ad312604b3144b58fbdfe85cec0a9a0be Mon Sep 17 00:00:00 2001
+From 3a174c9f3c99f2473d1d7dfed18ffeb8ba9bb553 Mon Sep 17 00:00:00 2001
 From: Alyssa Ross <alyssa.ross@unikie.com>
 Date: Wed, 28 Sep 2022 12:18:19 +0000
 Subject: [PATCH 1/2] build: use local vhost
@@ -14,18 +14,18 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  2 files changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/Cargo.lock b/Cargo.lock
-index 825b1ed8..38fabf5e 100644
+index 1af12b40..9cf07b99 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
-@@ -2293,7 +2293,6 @@ dependencies = [
+@@ -2309,7 +2309,6 @@ dependencies = [
  [[package]]
  name = "vhost"
  version = "0.12.1"
 -source = "git+https://github.com/rust-vmm/vhost?rev=d983ae0#d983ae07f78663b7d24059667376992460b571a2"
  dependencies = [
-  "bitflags 2.6.0",
+  "bitflags 2.9.0",
   "libc",
-@@ -2305,7 +2304,6 @@ dependencies = [
+@@ -2321,7 +2320,6 @@ dependencies = [
  [[package]]
  name = "vhost-user-backend"
  version = "0.16.1"
@@ -34,7 +34,7 @@ index 825b1ed8..38fabf5e 100644
   "libc",
   "log",
 diff --git a/Cargo.toml b/Cargo.toml
-index edaece2e..49db03cf 100644
+index 777e6356..f3f6d9c3 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 @@ -113,8 +113,8 @@ seccompiler = "0.5.0"
@@ -49,5 +49,5 @@ index edaece2e..49db03cf 100644
  virtio-queue = "0.14.0"
  vm-fdt = { git = "https://github.com/rust-vmm/vm-fdt", branch = "main" }
 -- 
-2.47.0
+2.49.0
 
