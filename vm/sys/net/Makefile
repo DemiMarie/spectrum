@@ -43,7 +43,7 @@ VM_DIRS = dev etc/s6-linux-init/env run proc sys var/lib/connman
 
 # These are separate because they need to be included, but putting
 # them as make dependencies would confuse make.
-VM_LINKS = bin lib var/run
+VM_LINKS = bin lib sbin var/run
 
 VM_BUILD_FILES = build/etc/s6-rc
 

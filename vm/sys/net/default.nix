@@ -22,6 +22,7 @@ let
     (busybox.override {
       extraConfig = ''
         CONFIG_DEPMOD n
+        CONFIG_INIT n
         CONFIG_INSMOD n
         CONFIG_LSMOD n
         CONFIG_MODINFO n

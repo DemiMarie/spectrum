@@ -24,6 +24,7 @@ let
           CONFIG_FEATURE_IP_ADDRESS y
           CONFIG_FEATURE_IP_LINK y
           CONFIG_FEATURE_IP_ROUTE y
+          CONFIG_INIT n
           CONFIG_IP y
         '';
       })
