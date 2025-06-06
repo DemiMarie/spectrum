@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2022-2025 Alyssa Ross <hi@alyssa.is>
 
 import ../../lib/call-package.nix (
-{ src, lib, stdenv, fetchCrate, fetchurl, buildPackages
+{ src, lib, stdenv, fetchCrate, fetchurl, runCommand, buildPackages
 , meson, ninja, rustc, clang-tools, clippy, run-spectrum-vm
 }:
 
@@ -104,7 +104,11 @@ stdenv.mkDerivation (finalAttrs: {
       }
     );
 
-    run = run-spectrum-vm.override { start-vmm = finalAttrs.finalPackage; };
+    run = runCommand "start-vmm-test" {} ''
+      ${run-spectrum-vm.override {
+        start-vmm = finalAttrs.finalPackage;
+      }} > $out
+    '';
 
     tests = finalAttrs.finalPackage.overrideAttrs (
       { name, mesonFlags ? [], ... }:
