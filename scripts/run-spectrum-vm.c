@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: EUPL-1.2+
-// SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2023, 2025 Alyssa Ross <hi@alyssa.is>
 
 #include <assert.h>
 #include <err.h>
@@ -137,9 +137,6 @@ int main(void)
 	if (mkdir("vm", 0777) == -1)
 		err(EXIT_FAILURE, "mkdir vm");
 
-	if (open("bin/cloud-hypervisor", O_CLOEXEC|O_CREAT|O_EXCL, 0) == -1)
-		err(EXIT_FAILURE, "create bin/cloud-hypervisor");
-
 	if (chdir("vm") == -1)
 		err(EXIT_FAILURE, "chdir vm");
 	if (mkdir("env", 0777) == -1)
@@ -166,8 +163,8 @@ int main(void)
 
 	if (unshare(CLONE_NEWUSER|CLONE_NEWNS) == -1)
 		err(EXIT_FAILURE, "unshare");
-	if (mount(CLOUD_HYPERVISOR_PATH, "../bin/cloud-hypervisor", NULL, MS_BIND, NULL) == -1)
-		err(EXIT_FAILURE, "bind mount " CLOUD_HYPERVISOR_PATH " -> ../bin/cloud-hypervisor");
+	if (mount(CLOUD_HYPERVISOR_BINDIR, "../bin", NULL, MS_BIND, NULL) == -1)
+		err(EXIT_FAILURE, "bind mount " CLOUD_HYPERVISOR_BINDIR " -> ../bin");
 	if (mount("/dev", "../dev", NULL, MS_BIND|MS_REC, NULL) == -1)
 		err(EXIT_FAILURE, "bind mount /dev -> ../dev");
 	if (mount("/nix", "../nix", NULL, MS_BIND|MS_REC, NULL) == -1)

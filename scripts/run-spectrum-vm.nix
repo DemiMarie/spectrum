@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2023, 2025 Alyssa Ross <hi@alyssa.is>
 
 { run ? ../vm/app/poweroff.nix, ... } @ args:
 
@@ -13,7 +13,7 @@ let
     ''-D_GNU_SOURCE''
     ''-DAPPVM_PATH="${callSpectrumPackage ../img/app {}}"''
     ''-DCONFIG_PATH="${callSpectrumPackage run {}}"''
-    ''-DCLOUD_HYPERVISOR_PATH="${lib.getExe cloud-hypervisor}"''
+    ''-DCLOUD_HYPERVISOR_BINDIR="${lib.getBin cloud-hypervisor}/bin"''
     ''-DSTART_VMM_PATH="${lib.getExe start-vmm}"''
     ''-DVIRTIOFSD_PATH="${lib.getExe virtiofsd}"''
   ];
