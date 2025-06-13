@@ -184,14 +184,13 @@ struct config {
 	} drives;
 };
 
-static FILE *start_qemu(const char *tmp_dir, struct config c)
+static FILE *start_qemu(struct config c)
 {
 	FILE *console;
 	struct utsname u;
 	int console_listener, console_conn;
 	char *arch, *args[] = {
 		(char *)c.run_qemu,
-		"-serial", nullptr,
 		"-drive", nullptr,
 		"-drive", nullptr,
 		"-drive", nullptr,
@@ -206,6 +205,7 @@ static FILE *start_qemu(const char *tmp_dir, struct config c)
 		"-device", "e1000e,netdev=net0",
 		"-monitor", "vc",
 		"-vga", "none",
+		"-serial", "unix:console",
 		"-smbios", "type=11,value=io.systemd.stub.kernel-cmdline-extra=console=ttyS0",
 		nullptr,
 	};
@@ -217,12 +217,7 @@ static FILE *start_qemu(const char *tmp_dir, struct config c)
 	if (strcmp(arch, "x86_64"))
 		args[sizeof args / sizeof *args - 3] = nullptr;
 
-	if (asprintf(&args[2], "unix:%s/console", tmp_dir) == -1) {
-		perror("asprintf");
-		exit(EXIT_FAILURE);
-	}
-
-	console_listener = setup_unix(args[2] + strlen("unix:"));
+	console_listener = setup_unix("console");
 
 	switch (fork()) {
 	case -1:
@@ -234,9 +229,9 @@ static FILE *start_qemu(const char *tmp_dir, struct config c)
 			exit(EXIT_FAILURE);
 		}
 
-		if (asprintf(&args[4], "file=%s,format=raw,if=pflash,readonly=true", c.drives.efi) == -1 ||
-		    asprintf(&args[6], "file=%s,format=raw,if=virtio,readonly=true", c.drives.img) == -1 ||
-		    asprintf(&args[8], "file=%s,format=raw,if=virtio,readonly=true", c.drives.user_data) == -1) {
+		if (asprintf(&args[2], "file=%s,format=raw,if=pflash,readonly=true", c.drives.efi) == -1 ||
+		    asprintf(&args[4], "file=%s,format=raw,if=virtio,readonly=true", c.drives.img) == -1 ||
+		    asprintf(&args[6], "file=%s,format=raw,if=virtio,readonly=true", c.drives.user_data) == -1) {
 			perror("asprintf");
 			exit(EXIT_FAILURE);
 		}
@@ -245,8 +240,6 @@ static FILE *start_qemu(const char *tmp_dir, struct config c)
 		perror("execv");
 		exit(EXIT_FAILURE);
 	}
-
-	free(args[2]);
 
 	if ((console_conn = accept(console_listener, nullptr, nullptr)) == -1) {
 		perror("accept");
@@ -323,9 +316,14 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	if (chdir(make_tmp_dir()) == -1) {
+		perror("chdir");
+		exit(EXIT_FAILURE);
+	}
+
 	int server = setup_server();
 
-	FILE *console = start_qemu(make_tmp_dir(), c);
+	FILE *console = start_qemu(c);
 
 	if (fputs("set -euxo pipefail\n"
 	          "mkdir /run/mnt\n"
