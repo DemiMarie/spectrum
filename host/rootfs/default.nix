@@ -9,8 +9,8 @@ pkgsStatic.callPackage (
 { start-vmm
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
 , bcachefs-tools, busybox, cloud-hypervisor, cryptsetup, dbus, execline
-, e2fsprogs, inkscape, jq, kmod, mdevd, s6, s6-linux-init, socat
-, util-linuxMinimal, virtiofsd, xorg
+, e2fsprogs, inkscape, inotify-tools, jq, kmod, mdevd, s6
+, s6-linux-init, socat, util-linuxMinimal, virtiofsd, xorg
 , xdg-desktop-portal-spectrum-host
 }:
 
@@ -137,8 +137,8 @@ let
   foot = pkgsGui.foot.override { allowPgo = false; };
 
   packages = [
-    bcachefs-tools cloud-hypervisor dbus execline jq kmod mdevd s6
-    s6-linux-init s6-rc socat start-vmm virtiofsd
+    bcachefs-tools cloud-hypervisor dbus execline inotify-tools jq
+    kmod mdevd s6 s6-linux-init s6-rc socat start-vmm virtiofsd
     xdg-desktop-portal-spectrum-host
 
     (cryptsetup.override {

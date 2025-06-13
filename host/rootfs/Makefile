@@ -31,6 +31,7 @@ FILES = \
 	etc/s6-linux-init/run-image/service/getty-tty4/run \
 	etc/s6-linux-init/run-image/service/s6-svscan-log/notification-fd \
 	etc/s6-linux-init/run-image/service/s6-svscan-log/run \
+	etc/s6-linux-init/run-image/service/serial-getty-generator/run \
 	etc/s6-linux-init/run-image/service/serial-getty/notification-fd \
 	etc/s6-linux-init/run-image/service/serial-getty/run \
 	etc/s6-linux-init/run-image/service/serial-getty/template/run \

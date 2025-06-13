@@ -1,0 +1,43 @@
+#!/bin/execlineb -P
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
+
+piperw 3 4
+background {
+  fdclose 3
+  fdmove 2 4
+  inotifywait -e MODIFY /sys/class/tty/console/active
+}
+fdclose 4
+importas -i inotifywait_pid !
+
+foreground {
+  if { fdmove 0 3 grep -qx "Watches established." }
+  background { fdmove 0 3 cat }
+  fdclose 3
+
+  # Wait until inotifywait is ready before updating serial gettys,
+  # so that changes won't be missed in between updating and starting
+  # inotifywait.
+  pipeline { s6-instance-list /run/service/serial-getty }
+  pipeline { sort }
+  fdmove -c 3 0
+
+  redirfd -r 0 /sys/class/tty/console/active
+  pipeline { tr " " "\n" }
+  pipeline { sort }
+
+  pipeline { comm -3 - /proc/self/fd/3 }
+  forstdin -Ep line
+  case -N $line {
+    "	?tty[0-9]*" { }
+    "	(.*)" {
+      importas -i tty 1
+      s6-instance-delete /run/service/serial-getty $tty
+    }
+  }
+  s6-instance-create /run/service/serial-getty $line
+}
+
+# Block until the active consoles change, then let s6 restart us.
+wait -- $inotifywait_pid
