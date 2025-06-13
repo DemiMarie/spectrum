@@ -321,7 +321,7 @@ int main(int argc, char *argv[])
 	          "mount \"$(findfs UUID=a7834806-2f82-4faf-8ac4-4f8fd8a474ca)\" /run/mnt\n"
 	          "s6-rc -bu change vmm-env\n"
 	          "vm-import user /run/mnt/vms\n"
-	          "vm-start user.vm\n"
+	          "vm-start user.nc\n"
 	          "tail -Fc +0 /run/log/current /run/*.log\n",
 	          console) == EOF) {
 		fputs("error writing to console\n", stderr);

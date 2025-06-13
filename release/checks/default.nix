@@ -14,9 +14,9 @@ import ../../lib/call-package.nix ({ callSpectrumPackage }:
 
   doc-anchors = callSpectrumPackage ./doc-anchors.nix {};
 
-  pkg-tests = callSpectrumPackage ./pkg-tests.nix {};
+  integration = callSpectrumPackage ./integration {};
 
-  networking = callSpectrumPackage ./networking {};
+  pkg-tests = callSpectrumPackage ./pkg-tests.nix {};
 
   no-roothash = callSpectrumPackage ./no-roothash.nix {};
 
