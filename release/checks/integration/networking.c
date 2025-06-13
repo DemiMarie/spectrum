@@ -176,14 +176,21 @@ static void wait_for_prompt(FILE *console)
 	exit(EXIT_FAILURE);
 }
 
-static FILE *start_qemu(const char *tmp_dir, const char *run_qemu,
-                        const char *efi, const char *img, const char *user_data)
+struct config {
+	const char *run_qemu;
+
+	struct {
+		const char *efi, *img, *user_data;
+	} drives;
+};
+
+static FILE *start_qemu(const char *tmp_dir, struct config c)
 {
 	FILE *console;
 	struct utsname u;
 	int console_listener, console_conn;
 	char *arch, *args[] = {
-		(char *)run_qemu,
+		(char *)c.run_qemu,
 		"-serial", nullptr,
 		"-drive", nullptr,
 		"-drive", nullptr,
@@ -227,14 +234,14 @@ static FILE *start_qemu(const char *tmp_dir, const char *run_qemu,
 			exit(EXIT_FAILURE);
 		}
 
-		if (asprintf(&args[4], "file=%s,format=raw,if=pflash,readonly=true", efi) == -1 ||
-		    asprintf(&args[6], "file=%s,format=raw,if=virtio,readonly=true", img) == -1 ||
-		    asprintf(&args[8], "file=%s,format=raw,if=virtio,readonly=true", user_data) == -1) {
+		if (asprintf(&args[4], "file=%s,format=raw,if=pflash,readonly=true", c.drives.efi) == -1 ||
+		    asprintf(&args[6], "file=%s,format=raw,if=virtio,readonly=true", c.drives.img) == -1 ||
+		    asprintf(&args[8], "file=%s,format=raw,if=virtio,readonly=true", c.drives.user_data) == -1) {
 			perror("asprintf");
 			exit(EXIT_FAILURE);
 		}
 
-		execv(run_qemu, args);
+		execv(c.run_qemu, args);
 		perror("execv");
 		exit(EXIT_FAILURE);
 	}
@@ -296,12 +303,17 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	char *run_qemu = argv[1];
-	char *efi = argv[2];
-	char *img = argv[3];
-	char *user_data = argv[4];
+	struct config c = {
+		.run_qemu = argv[1],
+		.drives = {
+			.efi = argv[2],
+			.img = argv[3],
+			.user_data = argv[4],
+		},
+	};
 
-	if (strchr(efi, ',') || strchr(img, ',') || strchr(user_data, ',')) {
+	if (strchr(c.drives.efi, ',') || strchr(c.drives.img, ',') ||
+	    strchr(c.drives.user_data, ',')) {
 		fputs("arguments contain commas\n", stderr);
 		exit(EXIT_FAILURE);
 	}
@@ -313,8 +325,7 @@ int main(int argc, char *argv[])
 
 	int server = setup_server();
 
-	FILE *console = start_qemu(make_tmp_dir(), run_qemu, efi, img,
-	                           user_data);
+	FILE *console = start_qemu(make_tmp_dir(), c);
 
 	if (fputs("set -euxo pipefail\n"
 	          "mkdir /run/mnt\n"
