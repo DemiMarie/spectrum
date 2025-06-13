@@ -7,13 +7,17 @@ project('spectrum-integration-tests', 'c',
 
 add_project_arguments('-D_GNU_SOURCE', language : 'c')
 
+run_qemu = find_program('../../../scripts/run-qemu.sh')
+
 lib = static_library('spectrum-integration-test', 'lib.c')
 
-test('networking', executable('networking', 'networking.c', link_with : lib),
-  timeout : 240,
-  args : [
-    find_program('../../../scripts/run-qemu.sh'),
-    get_option('efi'),
-    get_option('img'),
-    get_option('user_data'),
-  ])
+foreach test : ['networking', 'late-serial']
+  test(test, executable(test, test + '.c', link_with : lib),
+    timeout : 240,
+    args : [
+      run_qemu,
+      get_option('efi'),
+      get_option('img'),
+      get_option('user_data'),
+    ])
+endforeach

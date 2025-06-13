@@ -9,6 +9,10 @@ struct config {
 	struct {
 		const char *efi, *img, *user_data;
 	} drives;
+
+	struct {
+		const char *optname, *optval, *console;
+	} serial;
 };
 
 extern void test(struct config);

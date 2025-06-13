@@ -114,10 +114,12 @@ FILE *start_qemu(struct config c)
 		"-drive", nullptr,
 		"-drive", nullptr,
 		"-drive", nullptr,
+		"-smbios", nullptr,
 		"-m", "4G",
 		"-nodefaults",
 		"-machine", "virtualization=on",
 		"-cpu", "max",
+		"-device", "qemu-xhci",
 		"-device", "virtio-keyboard",
 		"-device", "virtio-mouse",
 		"-device", "virtio-gpu",
@@ -125,19 +127,20 @@ FILE *start_qemu(struct config c)
 		"-device", "e1000e,netdev=net0",
 		"-monitor", "vc",
 		"-vga", "none",
-		"-serial", "unix:console",
-		"-smbios", "type=11,value=io.systemd.stub.kernel-cmdline-extra=console=ttyS0",
+		"-chardev", "socket,id=socket,path=console",
+		c.serial.optname ? (char *)c.serial.optname : "-serial",
+		c.serial.optval ? (char *)c.serial.optval : "chardev:socket",
 		nullptr,
 	};
 	char **efi_arg = &args[2], **img_arg = &args[4],
-	     **user_data_arg = &args[6];
+	     **user_data_arg = &args[6], **console_arg = &args[8];
 
 	if (!(arch = getenv("ARCH"))) {
 		uname(&u);
 		arch = u.machine;
 	}
-	if (strcmp(arch, "x86_64"))
-		args[sizeof args / sizeof *args - 3] = nullptr;
+	if (!c.serial.console && !strcmp(arch, "x86_64"))
+		c.serial.console = "ttyS0";
 
 	console_listener = setup_unix("console");
 
@@ -153,7 +156,8 @@ FILE *start_qemu(struct config c)
 
 		if (asprintf(efi_arg, "file=%s,format=raw,if=pflash,readonly=true", c.drives.efi) == -1 ||
 		    asprintf(img_arg, "file=%s,format=raw,if=virtio,readonly=true", c.drives.img) == -1 ||
-		    asprintf(user_data_arg, "file=%s,format=raw,if=virtio,readonly=true", c.drives.user_data) == -1) {
+		    asprintf(user_data_arg, "file=%s,format=raw,if=virtio,readonly=true", c.drives.user_data) == -1 ||
+		    asprintf(console_arg, "type=11,value=io.systemd.stub.kernel-cmdline-extra=%s%s", c.serial.console ? "console=" : "", c.serial.console) == -1) {
 			perror("asprintf");
 			exit(EXIT_FAILURE);
 		}
