@@ -209,6 +209,8 @@ static FILE *start_qemu(struct config c)
 		"-smbios", "type=11,value=io.systemd.stub.kernel-cmdline-extra=console=ttyS0",
 		nullptr,
 	};
+	char **efi_arg = &args[2], **img_arg = &args[4],
+	     **user_data_arg = &args[6];
 
 	if (!(arch = getenv("ARCH"))) {
 		uname(&u);
@@ -229,9 +231,9 @@ static FILE *start_qemu(struct config c)
 			exit(EXIT_FAILURE);
 		}
 
-		if (asprintf(&args[2], "file=%s,format=raw,if=pflash,readonly=true", c.drives.efi) == -1 ||
-		    asprintf(&args[4], "file=%s,format=raw,if=virtio,readonly=true", c.drives.img) == -1 ||
-		    asprintf(&args[6], "file=%s,format=raw,if=virtio,readonly=true", c.drives.user_data) == -1) {
+		if (asprintf(efi_arg, "file=%s,format=raw,if=pflash,readonly=true", c.drives.efi) == -1 ||
+		    asprintf(img_arg, "file=%s,format=raw,if=virtio,readonly=true", c.drives.img) == -1 ||
+		    asprintf(user_data_arg, "file=%s,format=raw,if=virtio,readonly=true", c.drives.user_data) == -1) {
 			perror("asprintf");
 			exit(EXIT_FAILURE);
 		}
