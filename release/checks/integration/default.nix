@@ -48,6 +48,11 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   doCheck = true;
+  dontAddTimeoutMultiplier = true;
+  mesonCheckFlags = lib.optionals stdenv.hostPlatform.isAarch64 [
+    # Tests are run with TCG on aarch64.
+    "--timeout-multiplier=15"
+  ];
 
   installPhase = ''
     runHook preInstall

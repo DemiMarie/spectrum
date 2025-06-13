@@ -8,6 +8,7 @@ project('spectrum-integration-tests', 'c',
 add_project_arguments('-D_GNU_SOURCE', language : 'c')
 
 test('networking', executable('networking', 'networking.c'),
+  timeout : 240,
   args : [
     find_program('../../../scripts/run-qemu.sh'),
     get_option('efi'),
