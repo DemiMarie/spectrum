@@ -148,7 +148,7 @@ start-virtiofsd: scripts/start-virtiofsd.elb
 .PHONY: start-virtiofsd
 
 run-qemu: $(imgdir)/appvm/blk/root.img start-vhost-user-net start-virtiofsd
-	@../../scripts/run-qemu.sh -m 256 -cpu host -kernel $(KERNEL) -vga none \
+	@../../scripts/run-qemu.sh -m 256 -kernel $(KERNEL) -vga none \
 	    -drive file=$(imgdir)/appvm/blk/root.img,if=virtio,format=raw,readonly=on \
 	    -append "root=PARTLABEL=root nokaslr" \
 	    -gdb unix:build/gdb.sock,server,nowait \
