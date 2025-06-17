@@ -322,7 +322,7 @@ int main(int argc, char *argv[])
 	          "s6-rc -bu change vmm-env\n"
 	          "vm-import user /run/mnt/vms\n"
 	          "vm-start user.vm\n"
-	          "tail -Fc +0 /run/log/current /run/user.vm.log\r\n",
+	          "tail -Fc +0 /run/log/current /run/user.vm.log\n",
 	          console) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);
