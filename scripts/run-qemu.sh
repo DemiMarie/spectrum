@@ -5,6 +5,8 @@
 # This script wraps around QEMU to paper over platform differences,
 # which can't be handled portably in Make language.
 
+cpu='-cpu host'
+if [ ! -f /dev/kvm ]; then cpu=; fi
 case "${ARCH:="$(uname -m)"}" in
 	aarch64)
 		machine=virt,accel=kvm:tcg,gic-version=3,iommu=smmuv3
@@ -51,7 +53,7 @@ while [ $i -lt $# ]; do
 					virtualization=on)
 						case "$ARCH" in
 							aarch64)
-								opt="$opt,accel=tcg"
+								opt="$opt,accel=tcg" cpu=
 								;;
 							*)
 								continue
@@ -88,4 +90,5 @@ exec ${QEMU_SYSTEM:-qemu-system-$ARCH} \
 	-machine "$machine" \
 	${kernel:+${append:+-append "$append"}} \
 	${iommu:+-device "$iommu"} \
+	$cpu \
 	"$@"
