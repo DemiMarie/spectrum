@@ -1,0 +1,23 @@
+#!/bin/execlineb -P
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+s6-ipcserver-socketbinder -B /run/user/0/pipewire-0
+fdmove -c 3 0
+
+s6-ipcserver-socketbinder -B /run/user/0/pipewire-0-manager
+fdmove -c 4 0
+
+redirfd -r 0 /dev/null
+
+# Wait for sound devices to be available
+if { /etc/mdev/wait controlC0 }
+
+# Notify readiness.
+if { fdmove 1 5 echo }
+fdclose 5
+
+export LISTEN_FDS 2
+getpid LISTEN_PID
+pipewire
