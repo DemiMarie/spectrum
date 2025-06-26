@@ -4,9 +4,13 @@
 :page-has_children: true
 
 // SPDX-FileCopyrightText: 2022 Unikie
+// SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
 
 Patches are the way for contributors to submit code to the Spectrum project.
+
+Please do not sign patch emails with OpenPGP, as `git am` currently
+can't handle it.
 
 Make sure to xref:b4.adoc[install and configure the b4 utility] for
 applying and testing other people's patches.
