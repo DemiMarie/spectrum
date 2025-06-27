@@ -9,7 +9,6 @@ runCommand "spectrum-doc-anchors" {
     fileset = src;
   };
 } ''
-  ! grep --color=always -r xref:http $src
-  touch $out
+  grep --color=always -r xref:http $src || touch $out
 ''
 ) (_: {})
