@@ -29,4 +29,6 @@ import ../../lib/call-package.nix ({ callSpectrumPackage }:
   uncrustify = callSpectrumPackage ./uncrustify.nix {};
 
   wayland = callSpectrumPackage ./wayland {};
+
+  whitespace = callSpectrumPackage ./whitespace.nix {};
 }) (_: {})
