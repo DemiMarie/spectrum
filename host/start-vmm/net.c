@@ -20,7 +20,7 @@ static int setup_tap(const char bridge_name[static 1],
                      const char tap_prefix[static 1],
                      char tap_name[static IFNAMSIZ])
 {
-	int fd;
+	int fd, e;
 
 	// We assume ≤16-bit pids.
 	if (snprintf(tap_name, IFNAMSIZ, "%s%d", tap_prefix, getpid()) < -1)
@@ -34,7 +34,9 @@ static int setup_tap(const char bridge_name[static 1],
 
 	goto out;
 fail:
+	e = errno;
 	close(fd);
+	errno = e;
 	fd = -1;
 out:
 	return fd;
@@ -140,15 +142,17 @@ static int exit_listener_setup(const struct vm_dir *router_vm_dir,
                                const char router_device_id[static 1])
 {
 	pid_t pid = getpid();
-	int fd[2];
+	int fd[2], e;
 
 	if (pipe(fd) == -1)
 		return -1;
 
 	switch (fork()) {
 	case -1:
+		e = errno;
 		close(fd[0]);
 		close(fd[1]);
+		errno = e;
 		return -1;
 	case 0:
 		close(fd[0]);
@@ -162,6 +166,7 @@ static int exit_listener_setup(const struct vm_dir *router_vm_dir,
 [[gnu::nonnull]]
 struct net_config net_setup(const struct vm_dir *router_vm_dir)
 {
+	int e;
 	struct net_config r = { .fd = -1, .mac = { 0 } };
 	char bridge_name[IFNAMSIZ], router_device_id[IFNAMSIZ] = { 0 };
 	pid_t pid = getpid();
@@ -196,7 +201,9 @@ struct net_config net_setup(const struct vm_dir *router_vm_dir)
 
 fail_bridge:
 	bridge_delete(bridge_name);
+	e = errno;
 	close(r.fd);
+	errno = e;
 	r.fd = -1;
 	return r;
 }

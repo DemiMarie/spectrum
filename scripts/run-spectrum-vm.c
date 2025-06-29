@@ -54,15 +54,17 @@ static noreturn void exit_listener_main(int fd, const char *dir_path)
 
 static void exit_listener_setup(const char *dir_path)
 {
-	int fd[2];
+	int fd[2], e;
 
 	if (pipe(fd) == -1)
 		err(EXIT_FAILURE, "pipe");
 
 	switch (fork()) {
 	case -1:
+		e = errno;
 		close(fd[0]);
 		close(fd[1]);
+		errno = e;
 		err(EXIT_FAILURE, "fork");
 	case 0:
 		close(fd[0]);
