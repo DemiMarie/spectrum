@@ -23,7 +23,7 @@ static int setup_tap(const char bridge_name[static 1],
 	int fd;
 
 	// We assume ≤16-bit pids.
-	if (snprintf(tap_name, IFNAMSIZ, "%s%d", tap_prefix, getpid()) == -1)
+	if (snprintf(tap_name, IFNAMSIZ, "%s%d", tap_prefix, getpid()) < -1)
 		return -1;
 	if ((fd = tap_open(tap_name, IFF_NO_PI|IFF_VNET_HDR|IFF_TUN_EXCL)) == -1)
 		goto out;
@@ -171,7 +171,7 @@ struct net_config net_setup(const struct vm_dir *router_vm_dir)
 	memcpy(r.mac, router_mac, 6);
 	r.mac[3] = 0x00;
 
-	if (snprintf(bridge_name, sizeof bridge_name, "br%d", pid) == -1)
+	if (snprintf(bridge_name, sizeof bridge_name, "br%d", pid) < -1)
 		return r;
 
 	if (bridge_add(bridge_name) == -1)
