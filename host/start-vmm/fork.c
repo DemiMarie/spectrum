@@ -18,13 +18,14 @@ int double_fork(void)
 	pid_t child;
 
 	if (pipe(fd) == -1)
-		return -1;
+		return -errno;
 
 	switch (child = fork()) {
 	case -1:
+		v = errno;
 		close(fd[0]);
 		close(fd[1]);
-		return -1;
+		return -v;
 	case 0:
 		close(fd[0]);
 		switch ((v = fork())) {
@@ -45,11 +46,12 @@ int double_fork(void)
 		do {
 			r = read(fd[0], (char *)&v + acc, sizeof v - acc);
 		} while ((r != -1 || errno == EINTR) && (acc += r) < sizeof v);
-		close(fd[0]);
 		if (r == -1) {
+			v = -errno;
 			kill(child, SIGKILL);
 			waitpid(child, NULL, 0);
 		}
+		close(fd[0]);
 		return v;
 	}
 }
