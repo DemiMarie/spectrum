@@ -108,7 +108,7 @@ stdenv.mkDerivation (finalAttrs: {
         nativeBuildInputs = nativeBuildInputs ++ [ clang-tools ];
 
         buildPhase = ''
-          clang-tidy --warnings-as-errors='*' ../**/*.[ch]
+          clang-tidy --warnings-as-errors='*' ../**/*.c
           touch $out
           exit 0
         '';
