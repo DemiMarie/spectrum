@@ -6,12 +6,6 @@ rust_helper = static_library('test_helper', 'helper.rs',
 
 test('if_up', executable('if_up', 'if_up.c', '../net-util.c',
   c_args : '-D_GNU_SOURCE'))
-test('if_rename', executable('if_rename', 'if_rename.c', '../net-util.c',
-  c_args : '-D_GNU_SOURCE'))
-test('if_rename (%d)', executable('if_rename-%d',
-  'if_rename-%d.c', '../net-util.c', c_args : '-D_GNU_SOURCE'))
-test('if_rename (name too long)', executable('if_rename-name-too-long',
-  'if_rename-name-too-long.c', '../net-util.c', c_args : '-D_GNU_SOURCE'))
 test('if_down', executable('if_down', 'if_down.c', '../net-util.c',
   c_args : '-D_GNU_SOURCE'))
 
@@ -23,8 +17,6 @@ test('bridge_add (name too long)', executable('bridge_add-name-too-long',
   'bridge_add-name-too-long.c', '../net-util.c', c_args : '-D_GNU_SOURCE'))
 
 test('bridge_add_if', executable('bridge_add_if', 'bridge_add_if.c',
-  '../net-util.c', c_args : '-D_GNU_SOURCE'))
-test('bridge_remove_if', executable('bridge_remove_if', 'bridge_remove_if.c',
   '../net-util.c', c_args : '-D_GNU_SOURCE'))
 test('bridge_remove', executable('bridge_remove',
   'bridge_remove.c', '../net-util.c', c_args : '-D_GNU_SOURCE'))

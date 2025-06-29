@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: EUPL-1.2+
-// SPDX-FileCopyrightText: 2022, 2024-2025 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2022, 2024 Alyssa Ross <hi@alyssa.is>
 
 #include "net-util.h"
 
@@ -31,33 +31,6 @@ int if_up(const char name[static 1])
 	ifr.ifr_flags |= IFF_UP;
 	r = ioctl(fd, SIOCSIFFLAGS, &ifr);
 out:
-	e = errno;
-	close(fd);
-	errno = e;
-	return r;
-}
-
-int if_rename(const char name[static 1], const char newname[static 1])
-{
-	int fd, e, r;
-	struct ifreq ifr;
-
-	strncpy(ifr.ifr_name, name, sizeof ifr.ifr_name);
-	strncpy(ifr.ifr_newname, newname, sizeof ifr.ifr_newname);
-
-	if (ifr.ifr_newname[sizeof ifr.ifr_newname - 1]) {
-		errno = ENAMETOOLONG;
-		return -1;
-	}
-
-	if (strchr(ifr.ifr_newname, '%')) {
-		errno = EINVAL;
-		return -1;
-	}
-
-	if ((fd = socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0)) == -1)
-		return -1;
-	r = ioctl(fd, SIOCSIFNAME, &ifr);
 	e = errno;
 	close(fd);
 	errno = e;
@@ -120,25 +93,6 @@ int bridge_add_if(const char brname[static 1], const char ifname[static 1])
 		return -1;
 
 	r = ioctl(fd, SIOCBRADDIF, &ifr);
-	e = errno;
-	close(fd);
-	errno = e;
-	return r;
-}
-
-int bridge_remove_if(const char brname[static 1], const char ifname[static 1])
-{
-	struct ifreq ifr;
-	int fd, e, r;
-
-	strncpy(ifr.ifr_name, brname, IFNAMSIZ);
-	if (!(ifr.ifr_ifindex = if_nametoindex(ifname)))
-		return -1;
-
-	if ((fd = socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0)) == -1)
-		return -1;
-
-	r = ioctl(fd, SIOCBRDELIF, &ifr);
 	e = errno;
 	close(fd);
 	errno = e;

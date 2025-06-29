@@ -2,11 +2,11 @@
 // SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
 
 use std::convert::{TryFrom, TryInto};
-use std::ffi::{CStr, OsStr, OsString};
+use std::ffi::{OsStr, OsString};
 use std::io::Write;
 use std::mem::take;
 use std::num::NonZeroI32;
-use std::os::raw::{c_char, c_int};
+use std::os::raw::c_int;
 use std::os::unix::prelude::*;
 use std::path::Path;
 use std::process::{Command, Stdio};
@@ -140,19 +140,6 @@ pub fn add_net(vm_dir: &Path, net: &NetConfig) -> Result<(), NonZeroI32> {
     Err(EPROTO)
 }
 
-pub fn remove_device(vm_dir: &Path, device_id: &OsStr) -> Result<(), NonZeroI32> {
-    let ch_remote = command(vm_dir, "remove-device")
-        .arg(device_id)
-        .status()
-        .or(Err(EPERM))?;
-
-    if ch_remote.success() {
-        Ok(())
-    } else {
-        Err(EPROTO)
-    }
-}
-
 #[repr(C)]
 pub struct NetConfigC {
     pub fd: RawFd,
@@ -188,20 +175,6 @@ impl TryFrom<NetConfigC> for NetConfig {
 #[export_name = "ch_add_net"]
 unsafe extern "C" fn add_net_c(vm_dir: &&Path, net: &NetConfigC) -> c_int {
     if let Err(e) = add_net(vm_dir, &net.try_into().unwrap()) {
-        e.get()
-    } else {
-        0
-    }
-}
-
-/// # Safety
-///
-/// - `device_id` must point to a valid C string.
-#[export_name = "ch_remove_device"]
-unsafe extern "C" fn remove_device_c(vm_dir: &&Path, device_id: *const c_char) -> c_int {
-    let device_id = OsStr::from_bytes(CStr::from_ptr(device_id).to_bytes());
-
-    if let Err(e) = remove_device(vm_dir, device_id) {
         e.get()
     } else {
         0
