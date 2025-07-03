@@ -3,6 +3,8 @@
 
 #include "lib.h"
 
+#include <errno.h>
+#include <fcntl.h>
 #include <sched.h>
 #include <signal.h>
 #include <stdio.h>
@@ -10,6 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <sys/poll.h>
 #include <sys/prctl.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -85,29 +88,86 @@ static int setup_unix(const char *path)
 	return fd;
 }
 
-static void wait_for_prompt(FILE *console)
+struct console_thread_args {
+	FILE *console;
+	int prompt_event;
+};
+
+static void *console_thread(void *arg)
 {
+	struct console_thread_args *args = (struct console_thread_args *)arg;
+
 	char *needle = "~ # ";
 	size_t i = 0;
 	int c;
 
-	fputs("waiting for character\n", stderr);
-
-	while ((c = fgetc(console)) != EOF) {
+	while ((c = fgetc(args->console)) != EOF) {
 		fputc(c, stderr);
 		i = c == needle[i] ? i + 1 : 0;
-		if (!needle[i])
-			return;
+
+		if (!needle[i]) {
+			i = 0;
+			if (write(args->prompt_event, "\n", 1) == -1 && errno != EAGAIN) {
+				perror("write");
+				exit(EXIT_FAILURE);
+			}
+		}
 	}
 
 	fputs("unexpected EOF from console\n", stderr);
 	exit(EXIT_FAILURE);
 }
 
-FILE *start_qemu(struct config c)
+static int start_console_thread(FILE *console, pthread_t *thread)
 {
-	FILE *console;
+	int e, prompt_event[2];
+	struct console_thread_args *args = malloc(sizeof(*args));
+
+	if (!args) {
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
+
+	if (pipe2(prompt_event, O_CLOEXEC|O_NONBLOCK) == -1) {
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
+
+	args->console = console;
+	args->prompt_event = prompt_event[1];
+
+	if ((e = pthread_create(thread, nullptr, console_thread, args))) {
+		fprintf(stderr, "pthread_create: %s\n", strerror(e));
+		exit(EXIT_FAILURE);
+	}
+
+	return prompt_event[0];
+}
+
+static void wait_for_prompt(int prompt_event)
+{
+	char c;
+	struct pollfd pollfd = { .fd = prompt_event, .events = POLLIN };
+	if (poll(&pollfd, 1, -1) == -1) {
+		perror("poll");
+		exit(EXIT_FAILURE);
+	}
+	if (pollfd.revents != POLLIN) {
+		fprintf(stderr, "unexpected poll events from prompt event: %hx\n", pollfd.revents);
+		exit(EXIT_FAILURE);
+	}
+	while (read(prompt_event, &c, 1) != -1);
+	if (errno != EAGAIN && errno != EINTR) {
+		perror("read prompt event");
+		exit(EXIT_FAILURE);
+	}
+}
+
+struct vm start_qemu(struct config c)
+{
+	struct vm r;
 	struct utsname u;
+	FILE *console_reader;
 	int console_listener, console_conn;
 	char *arch, *args[] = {
 		(char *)c.run_qemu,
@@ -171,16 +231,25 @@ FILE *start_qemu(struct config c)
 		perror("accept");
 		exit(EXIT_FAILURE);
 	}
-	if (!(console = fdopen(console_conn, "a+"))) {
+
+	if (!(console_reader = fdopen(console_conn, "r"))) {
 		perror("fdopen");
 		exit(EXIT_FAILURE);
 	}
 
-	fputs("waiting for console prompt\n", stderr);
+	if ((console_conn = fcntl(console_conn, F_DUPFD_CLOEXEC, 0)) == -1) {
+		perror("fcntl(F_DUPFD_CLOEXEC)");
+		exit(EXIT_FAILURE);
+	}
 
-	wait_for_prompt(console);
+	if (!(r.console = fdopen(console_conn, "a"))) {
+		perror("fdopen");
+		exit(EXIT_FAILURE);
+	}
 
-	return console;
+	r.prompt_event = start_console_thread(console_reader, &r.console_thread);
+	wait_for_prompt(r.prompt_event);
+	return r;
 }
 
 int main(int argc, char *argv[])

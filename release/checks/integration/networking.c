@@ -3,9 +3,6 @@
 
 #include "lib.h"
 
-#include <errno.h>
-#include <pthread.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,31 +10,6 @@
 #include <net/if.h>
 
 #include <sys/ioctl.h>
-
-static void *drain(void *arg)
-{
-	int c;
-
-	while ((c = fgetc((FILE *)arg)) != EOF)
-		fputc(c, stderr);
-
-	if (ferror((FILE *)arg))
-		return (void *)(intptr_t)errno;
-
-	return nullptr;
-}
-
-static pthread_t start_drain(FILE *console)
-{
-	pthread_t thread;
-	int e;
-
-	if (!(e = pthread_create(&thread, nullptr, drain, console)))
-		return thread;
-
-	fprintf(stderr, "pthread_create: %s\n", strerror(e));
-	exit(EXIT_FAILURE);
-}
 
 static int setup_server(void)
 {
@@ -115,7 +87,7 @@ void test(struct config c)
 {
 	int server = setup_server();
 
-	FILE *console = start_qemu(c);
+	struct vm vm = start_qemu(c);
 
 	if (fputs("set -euxo pipefail\n"
 	          "mkdir /run/mnt\n"
@@ -124,15 +96,14 @@ void test(struct config c)
 	          "vm-import user /run/mnt/vms\n"
 	          "vm-start user.nc\n"
 	          "tail -Fc +0 /run/log/current /run/*.log\n",
-	          console) == EOF) {
+	          vm.console) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);
 	}
-	if (fflush(console) == EOF) {
+	if (fflush(vm.console) == EOF) {
 		perror("fflush");
 		exit(EXIT_FAILURE);
 	}
-	start_drain(console);
 
 	expect_connection(server);
 }
