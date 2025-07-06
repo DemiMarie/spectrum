@@ -55,6 +55,7 @@ FILES = \
 	etc/xdg/weston/autolaunch \
 	etc/xdg/weston/weston.ini \
 	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service \
+	usr/bin/assign-devices \
 	usr/bin/create-vm-dependencies \
 	usr/bin/run-appimage \
 	usr/bin/run-vmm \

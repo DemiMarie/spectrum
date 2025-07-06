@@ -9,6 +9,17 @@ background -d {
   ifelse -n { start-vmm $@ }
   { kill $vmm_pid }
 
+  if {
+    if -t {
+      backtick -E netvm_id {
+        backtick -E link_path { readlink /run/vm/by-name/sys.netvm }
+        basename -- $link_path
+      }
+      test $1 = $netvm_id
+    }
+    assign-devices
+  }
+
   cd /run/vm/by-id
   elglob -0 providers */config/providers/net/*
   forx -pE path { $providers }

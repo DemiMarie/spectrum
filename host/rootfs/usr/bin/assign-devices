@@ -1,0 +1,8 @@
+#!/bin/execlineb -P
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
+
+elglob -0 devices /sys/bus/pci/drivers/vfio-pci/????:??:??.?
+forx -pE device { $devices }
+
+ch-remote --api-socket /run/vm/by-name/sys.netvm/vmm add-device path=${device}
