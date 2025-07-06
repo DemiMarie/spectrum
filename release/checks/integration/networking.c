@@ -89,12 +89,12 @@ void test(struct config c)
 
 	struct vm vm = start_qemu(c);
 
-	if (fputs("set -euxo pipefail\n"
-	          "mkdir /run/mnt\n"
-	          "mount \"$(findfs UUID=a7834806-2f82-4faf-8ac4-4f8fd8a474ca)\" /run/mnt\n"
-	          "s6-rc -bu change vmm-env\n"
-	          "vm-import user /run/mnt/vms\n"
-	          "vm-start user.nc\n"
+	if (fputs("set -euxo pipefail && "
+	          "mkdir /run/mnt && "
+	          "mount \"$(findfs UUID=a7834806-2f82-4faf-8ac4-4f8fd8a474ca)\" /run/mnt && "
+	          "s6-rc -bu change vmm-env && "
+	          "vm-import user /run/mnt/vms && "
+	          "vm-start user.nc && "
 	          "tail -Fc +0 /run/log/current /run/*.log\n",
 	          vm.console) == EOF) {
 		fputs("error writing to console\n", stderr);
