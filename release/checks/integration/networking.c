@@ -100,10 +100,6 @@ void test(struct config c)
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);
 	}
-	if (fflush(vm.console) == EOF) {
-		perror("fflush");
-		exit(EXIT_FAILURE);
-	}
 
 	expect_connection(server);
 }

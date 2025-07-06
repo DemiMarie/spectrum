@@ -247,6 +247,15 @@ struct vm start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
+	errno = 0;
+	if (setvbuf(r.console, nullptr, _IOLBF, 0)) {
+		if (errno)
+			perror("setvbuf");
+		else
+			fputs("setvbuf failed\n", stderr);
+		exit(EXIT_FAILURE);
+	}
+
 	r.prompt_event = start_console_thread(console_reader, &r.console_thread);
 	wait_for_prompt(r.prompt_event);
 	return r;
