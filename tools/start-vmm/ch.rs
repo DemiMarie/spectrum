@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: EUPL-1.2+
 // SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
 
-use std::convert::{TryFrom, TryInto};
-use std::ffi::{OsStr, OsString};
+use std::convert::TryFrom;
+use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write;
 use std::mem::take;
 use std::num::NonZeroI32;
-use std::os::raw::c_int;
 use std::os::unix::prelude::*;
 use std::path::Path;
 use std::process::{Command, Stdio};
@@ -169,29 +168,5 @@ impl TryFrom<NetConfigC> for NetConfig {
 
     fn try_from(c: NetConfigC) -> Result<NetConfig, Self::Error> {
         Self::try_from(&c)
-    }
-}
-
-/// # Safety
-///
-/// - `net.fd` must be a valid file descriptor.
-/// - `net.id` must point to a valid C string.
-#[export_name = "ch_add_net"]
-unsafe extern "C" fn add_net_c(vm_dir: &&Path, net: &NetConfigC) -> c_int {
-    if let Err(e) = add_net(vm_dir, &net.try_into().unwrap()) {
-        e.get()
-    } else {
-        0
-    }
-}
-
-/// # Safety
-///
-/// `id` must be a device ID obtained by calling `add_net_c`.  After
-/// calling `device_free`, the pointer is no longer valid.
-#[export_name = "ch_device_free"]
-unsafe extern "C" fn device_free(id: Option<&mut OsString>) {
-    if let Some(id) = id {
-        drop(Box::from_raw(id))
     }
 }

@@ -3,14 +3,8 @@
 
 #include <stdint.h>
 
-struct ch_device;
-struct vm_dir;
-
 struct net_config {
 	int fd;
 	char id[18];
 	uint8_t mac[6];
 };
-
-[[gnu::nonnull]]
-int ch_add_net(const struct vm_dir *, const struct net_config[static 1]);

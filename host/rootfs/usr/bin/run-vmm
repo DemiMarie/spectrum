@@ -1,13 +1,42 @@
 #!/bin/execlineb -s0
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
 s6-ipcserver-socketbinder -B /run/vm/by-id/${1}/vmm
 
 getpid -E vmm_pid
 background -d {
-  if -n { start-vmm $@ }
-  kill $vmm_pid
+  ifelse -n { start-vmm $@ }
+  { kill $vmm_pid }
+
+  cd /run/vm/by-id
+  elglob -0 providers */config/providers/net/*
+  forx -pE path { $providers }
+  backtick -E client_id {
+   awk -v path=${path} -F / "BEGIN { split(path, p); print p[1] }"
+  }
+  backtick -E router_id {
+    backtick -E router { basename -- $path }
+    backtick -E link_path { readlink /run/vm/by-name/${router} }
+    basename -- $link_path
+  }
+
+  if -n {
+    if { test $client_id != $1 }
+    test $router_id != $1
+  }
+
+  backtick -E mac {
+    pipeline { ip -j link show client-${client_id} }
+    pipeline { jq -r ".[].ifindex" }
+    awk "{
+      printf \"02:01:%02X:%02X:%02X:%02X\", $0 / 256 ^ 3 % 256,
+	$0 / 256 ^ 2 % 256, $0 / 256 % 256, $0 % 256
+    }"
+  }
+
+  ch-remote --api-socket /run/vm/by-id/${router_id}/vmm add-net
+    id=router-${client_id},tap=router-${client_id},mac=${mac}
 }
 unexport !
 fdclose 3
