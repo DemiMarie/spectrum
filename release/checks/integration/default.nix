@@ -19,7 +19,7 @@ let
     type = "nix";
     run = writeShellScript "run" ''
       set -x
-      while ! echo hello | ${libressl.nc}/bin/nc -N 10.0.2.2 1234; do :; done
+      while :; do echo hello | ${libressl.nc}/bin/nc -N 10.0.2.2 1234; done
     '';
   };
 

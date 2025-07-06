@@ -3,8 +3,10 @@
 
 #include "lib.h"
 
+#include <poll.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <arpa/inet.h>
 #include <net/if.h>
@@ -83,6 +85,29 @@ static void expect_connection(int listener)
 	fclose(conn);
 }
 
+static void drain_connections(int listener)
+{
+	int r;
+	struct pollfd pollfd = { .fd = listener, .events = POLLIN };
+
+	for (;;) {
+		switch (poll(&pollfd, 1, 0)) {
+		case -1:
+			perror("poll");
+			exit(EXIT_FAILURE);
+		case 0:
+			return;
+		}
+
+		if ((r = accept4(listener, nullptr, nullptr, SOCK_CLOEXEC)) == -1) {
+			perror("accept");
+			exit(EXIT_FAILURE);
+		}
+
+		close(r);
+	}
+}
+
 void test(struct config c)
 {
 	int server = setup_server();
@@ -95,7 +120,27 @@ void test(struct config c)
 	          "s6-rc -bu change vmm-env && "
 	          "vm-import user /run/mnt/vms && "
 	          "vm-start \"$(basename \"$(readlink /run/vm/by-name/user.nc)\")\" && "
-	          "tail -Fc +0 /run/log/current /run/*.log\n",
+	          "tail -Fc +0 /run/log/current /run/*.log &\n",
+	          vm.console) == EOF) {
+		fputs("error writing to console\n", stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	expect_connection(server);
+
+	wait_for_prompt(vm.prompt_event);
+
+	if (fputs("s6-svc -wR -r /run/vm/by-name/sys.netvm/service\n",
+	          vm.console) == EOF) {
+		fputs("error writing to console\n", stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	wait_for_prompt(vm.prompt_event);
+
+	drain_connections(server);
+
+	if (fputs("vm-start \"$(basename \"$(readlink /run/vm/by-name/sys.netvm)\")\"\n",
 	          vm.console) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);

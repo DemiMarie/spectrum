@@ -13,7 +13,7 @@ lib = static_library('spectrum-integration-test', 'lib.c')
 
 foreach test : ['appimage', 'late-serial', 'networking']
   test(test, executable(test, test + '.c', link_with : lib),
-    timeout : 240,
+    timeout : 300,
     args : [
       run_qemu,
       get_option('efi'),
