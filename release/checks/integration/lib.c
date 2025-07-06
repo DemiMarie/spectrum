@@ -167,7 +167,7 @@ FILE *start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
-	if ((console_conn = accept(console_listener, nullptr, nullptr)) == -1) {
+	if ((console_conn = accept4(console_listener, nullptr, nullptr, SOCK_CLOEXEC)) == -1) {
 		perror("accept");
 		exit(EXIT_FAILURE);
 	}
