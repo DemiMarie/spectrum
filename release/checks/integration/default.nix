@@ -33,7 +33,9 @@ stdenv.mkDerivation (finalAttrs: {
   src = lib.fileset.toSource {
     root = ../../..;
     fileset = lib.fileset.union
-      (lib.fileset.intersection src ./.)
+      (lib.fileset.difference
+        (lib.fileset.intersection src ./.)
+        (lib.fileset.maybeMissing ./build))
       ../../../scripts/run-qemu.sh;
   };
   sourceRoot = "source/release/checks/integration";
