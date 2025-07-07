@@ -101,7 +101,7 @@ static void *console_thread(void *arg)
 	size_t i = 0;
 	int c;
 
-	while ((c = fgetc(args->console)) != EOF) {
+	while ((c = getc_unlocked(args->console)) != EOF) {
 		fputc(c, stderr);
 		i = c == needle[i] ? i + 1 : 0;
 
