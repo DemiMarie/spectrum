@@ -8,7 +8,10 @@ if { mkdir -p /run/configs/${vm_name}/fs }
 if { redirfd -w 1 /run/configs/${vm_name}/fs/type echo appimage }
 if { touch /run/configs/${vm_name}/fs/run }
 if { mount --rbind $1 /run/configs/${vm_name}/fs/run }
-if { ln -s /usr/img/appvm/blk /usr/img/appvm/vmlinux /run/configs/${vm_name} }
+if {
+  ln -s /usr/lib/spectrum/img/appvm/blk /usr/lib/spectrum/img/appvm/vmlinux
+    /run/configs/${vm_name}
+}
 
 if { mkdir /run/vm/run.${vm_name} }
 if { ln -s /run/configs/${vm_name} /run/vm/run.${vm_name}/config }
