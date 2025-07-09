@@ -9,6 +9,11 @@ import ../../../lib/call-package.nix (
 let
   live = callSpectrumPackage ../../live {};
 
+  appimage = writeShellScript "test.appimage" ''
+    #!/bin/execlineb -P
+    echo hello world
+  '';
+
   ncVm = callSpectrumPackage ../../../vm/make-vm.nix {} {
     providers.net = [ "sys.netvm" ];
     type = "nix";
@@ -21,7 +26,9 @@ let
   userData = runCommand "user-data.img" {
     nativeBuildInputs = [ e2fsprogs tar2ext4 ];
   } ''
-    tar --transform=s,^${ncVm},vms/nc, -Pcvf root.tar ${ncVm}
+    tar -Pcvf root.tar \
+        --transform=s,^${appimage},test.appimage, ${appimage} \
+        --transform=s,^${ncVm},vms/nc, ${ncVm}
     tar2ext4 -i root.tar -o $out
     tune2fs -U a7834806-2f82-4faf-8ac4-4f8fd8a474ca $out
   '';

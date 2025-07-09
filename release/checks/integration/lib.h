@@ -25,3 +25,4 @@ struct vm {
 };
 
 struct vm start_qemu(struct config config);
+void wait_for_prompt(int prompt_event);

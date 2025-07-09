@@ -11,7 +11,7 @@ run_qemu = find_program('../../../scripts/run-qemu.sh')
 
 lib = static_library('spectrum-integration-test', 'lib.c')
 
-foreach test : ['networking', 'late-serial']
+foreach test : ['appimage', 'late-serial', 'networking']
   test(test, executable(test, test + '.c', link_with : lib),
     timeout : 240,
     args : [

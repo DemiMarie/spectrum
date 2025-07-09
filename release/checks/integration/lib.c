@@ -144,7 +144,7 @@ static int start_console_thread(FILE *console, pthread_t *thread)
 	return prompt_event[0];
 }
 
-static void wait_for_prompt(int prompt_event)
+void wait_for_prompt(int prompt_event)
 {
 	char c;
 	struct pollfd pollfd = { .fd = prompt_event, .events = POLLIN };
