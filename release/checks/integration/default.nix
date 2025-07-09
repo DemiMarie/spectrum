@@ -70,25 +70,29 @@ stdenv.mkDerivation (finalAttrs: {
     QEMU_SYSTEM = "qemu-system-${stdenv.hostPlatform.qemuArch} -nographic";
   };
 
-  passthru.tests = {
-    clang-tidy = finalAttrs.finalPackage.overrideAttrs (
-      { name, src, nativeBuildInputs ? [], ... }:
-      {
-        name = "${name}-clang-tidy";
+  passthru = {
+    inherit userData;
 
-        src = lib.fileset.toSource {
-          root = ../../..;
-          fileset = lib.fileset.union (lib.fileset.fromSource src) ../../../.clang-tidy;
-        };
+    tests = {
+      clang-tidy = finalAttrs.finalPackage.overrideAttrs (
+        { name, src, nativeBuildInputs ? [], ... }:
+        {
+          name = "${name}-clang-tidy";
 
-        nativeBuildInputs = nativeBuildInputs ++ [ clang-tools ];
+          src = lib.fileset.toSource {
+            root = ../../..;
+            fileset = lib.fileset.union (lib.fileset.fromSource src) ../../../.clang-tidy;
+          };
 
-        buildPhase = ''
-          clang-tidy --warnings-as-errors='*' -p . ../*.c ../*.h
-          touch $out
-          exit 0
-        '';
-      }
-    );
+          nativeBuildInputs = nativeBuildInputs ++ [ clang-tools ];
+
+          buildPhase = ''
+            clang-tidy --warnings-as-errors='*' -p . ../*.c ../*.h
+            touch $out
+            exit 0
+          '';
+        }
+      );
+    };
   };
 })) (_: {})
