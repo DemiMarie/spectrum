@@ -261,21 +261,31 @@ struct vm start_qemu(struct config c)
 	return r;
 }
 
+static char *getenv_or_die(const char *name)
+{
+	char *r = getenv(name);
+	if (!r) {
+		fprintf(stderr, "%s not set\n", name);
+		exit(EXIT_FAILURE);
+	}
+	return r;
+}
+
 int main(int argc, char *argv[])
 {
 	exit_on_sigchld();
 
-	if (argc != 5) {
-		fputs("Usage: test efi spectrum user_data\n", stderr);
+	if (argc != 2) {
+		fputs("Usage: test run_qemu\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 
 	struct config c = {
 		.run_qemu = argv[1],
 		.drives = {
-			.efi = argv[2],
-			.img = argv[3],
-			.user_data = argv[4],
+			.efi = getenv_or_die("EFI_PATH"),
+			.img = getenv_or_die("IMG_PATH"),
+			.user_data = getenv_or_die("USER_DATA_PATH"),
 		},
 	};
 

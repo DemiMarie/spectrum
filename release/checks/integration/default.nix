@@ -50,12 +50,6 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [ meson ninja ];
   nativeCheckInputs = [ qemu_kvm ];
 
-  mesonFlags = [
-    "-Defi=${qemu_kvm}/share/qemu/edk2-${stdenv.hostPlatform.qemuArch}-code.fd"
-    "-Dimg=${live}"
-    "-Duser_data=${userData}"
-  ];
-
   doCheck = true;
   dontAddTimeoutMultiplier = true;
   mesonCheckFlags = lib.optionals stdenv.hostPlatform.isAarch64 [
@@ -75,6 +69,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   env = {
     QEMU_SYSTEM = "qemu-system-${stdenv.hostPlatform.qemuArch} -nographic";
+    EFI_PATH = "${qemu_kvm}/share/qemu/edk2-${stdenv.hostPlatform.qemuArch}-code.fd";
+    IMG_PATH = live;
+    USER_DATA_PATH = userData;
   };
 
   passthru = {

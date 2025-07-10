@@ -1,6 +1,0 @@
-# SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
-
-option('efi', type : 'string')
-option('img', type : 'string')
-option('user_data', type : 'string')
