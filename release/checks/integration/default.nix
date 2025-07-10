@@ -3,7 +3,7 @@
 
 import ../../../lib/call-package.nix (
 { callSpectrumPackage, src, lib, stdenv, runCommand, writeShellScript
-, clang-tools, meson, ninja, e2fsprogs, tar2ext4, libressl, qemu_kvm
+, clang-tools, meson, ninja, e2fsprogs, glib, tar2ext4, libressl, qemu_kvm
 }:
 
 let
@@ -23,12 +23,25 @@ let
     '';
   };
 
+  portalVm = callSpectrumPackage ../../../vm/make-vm.nix {} {
+    type = "nix";
+    run = writeShellScript "run" ''
+      set -x
+      ${lib.getExe' glib "gdbus"} call --session \
+          --dest org.freedesktop.portal.Desktop \
+          --object-path /org/freedesktop/portal/desktop \
+          --method org.freedesktop.portal.FileChooser.OpenFile \
+          "" "" '@a{sv} {}' || sleep inf
+    '';
+  };
+
   userData = runCommand "user-data.img" {
     nativeBuildInputs = [ e2fsprogs tar2ext4 ];
   } ''
     tar -Pcvf root.tar \
         --transform=s,^${appimage},test.appimage, ${appimage} \
-        --transform=s,^${ncVm},vms/nc, ${ncVm}
+        --transform=s,^${ncVm},vms/nc, ${ncVm} \
+        --transform=s,^${portalVm},vms/portal, ${portalVm}
     tar2ext4 -i root.tar -o $out
     tune2fs -U a7834806-2f82-4faf-8ac4-4f8fd8a474ca $out
   '';
