@@ -1,20 +1,18 @@
 #!/bin/sh -ue
-# SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2023-2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-License-Identifier: EUPL-1.2+
 
 # This script wraps around QEMU to paper over platform differences,
 # which can't be handled portably in Make language.
 
-accel=kvm
-
 case "${ARCH:="$(uname -m)"}" in
 	aarch64)
-		machine=virt,gic-version=3,iommu=smmuv3
+		machine=virt,accel=kvm:tcg,gic-version=3,iommu=smmuv3
 		;;
 	x86_64)
 		append="console=ttyS0${append:+ $append}"
 		iommu=intel-iommu,intremap=on
-		machine=q35,kernel-irqchip=split
+		machine=q35,accel=kvm:tcg,kernel-irqchip=split
 		;;
 esac
 
@@ -53,7 +51,7 @@ while [ $i -lt $# ]; do
 					virtualization=on)
 						case "$ARCH" in
 							aarch64)
-								accel=tcg
+								opt="$opt,accel=tcg"
 								;;
 							*)
 								continue
@@ -87,7 +85,6 @@ done
 
 set -x
 exec ${QEMU_SYSTEM:-qemu-system-$ARCH} \
-	-accel "$accel" \
 	-machine "$machine" \
 	${kernel:+${append:+-append "$append"}} \
 	${iommu:+-device "$iommu"} \
