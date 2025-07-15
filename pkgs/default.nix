@@ -42,7 +42,6 @@ let
       guestSupport = false;
       hostSupport = true;
     };
-    run-spectrum-vm = self.callSpectrumPackage ../scripts/run-spectrum-vm.nix {};
     xdg-desktop-portal-spectrum-host =
       self.callSpectrumPackage ../tools/xdg-desktop-portal-spectrum-host {};
 

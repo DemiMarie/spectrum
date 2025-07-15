@@ -15,7 +15,4 @@ import ../../lib/call-package.nix (
     guestSupport = true;
     hostSupport = true;
   }).tests;
-
-  run-spectrum-vm = lib.recurseIntoAttrs
-    (callSpectrumPackage ../../scripts/run-spectrum-vm.nix {}).tests;
 }) (_: {})

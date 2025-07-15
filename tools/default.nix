@@ -4,7 +4,7 @@
 import ../lib/call-package.nix (
 { src, lib, stdenv, fetchCrate, fetchurl, runCommand, buildPackages
 , meson, ninja, pkg-config, rustc
-, clang-tools, clippy, run-spectrum-vm
+, clang-tools, clippy
 , dbus
 , guestSupport ? true
 , hostSupport ? false
@@ -141,12 +141,6 @@ stdenv.mkDerivation (finalAttrs: {
         installPhase = ''touch $out && exit 0'';
       }
     );
-
-    run = runCommand "start-vmm-test" {} ''
-      ${run-spectrum-vm.override {
-        spectrum-host-tools = finalAttrs.finalPackage;
-      }} > $out
-    '';
   };
 
   meta = with lib; {
