@@ -94,11 +94,11 @@ VM_S6_RC_FILES = \
 	etc/s6-rc/mdevd/notification-fd \
 	etc/s6-rc/mdevd/run \
 	etc/s6-rc/mdevd/type \
+	etc/s6-rc/ok-all/contents \
+	etc/s6-rc/ok-all/type \
 	etc/s6-rc/wayland-proxy-virtwl/notification-fd \
 	etc/s6-rc/wayland-proxy-virtwl/run \
-	etc/s6-rc/wayland-proxy-virtwl/type \
-	etc/s6-rc/ok-all/contents \
-	etc/s6-rc/ok-all/type
+	etc/s6-rc/wayland-proxy-virtwl/type
 
 build/etc/s6-rc: $(VM_S6_RC_FILES)
 	mkdir -p $$(dirname $@)
