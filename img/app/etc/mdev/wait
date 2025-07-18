@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
 
+if { mkdir -m 0755 -p /run/wait }
 foreground {
   redirfd -w 2 /dev/null
-  foreground { mkdir /run/wait }
   mkfifo /run/wait/${1}
 }
 
