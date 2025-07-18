@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2021, 2023 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021, 2023, 2025 Alyssa Ross <hi@alyssa.is>
 
 BACKGROUND = background
 CPIO = cpio
@@ -17,3 +17,9 @@ TRUNCATE = truncate
 UKIFY = ukify
 VERITYSETUP = veritysetup
 VIRTIOFSD = virtiofsd
+
+PACKAGES_FILE != \
+	if ! [ -e build/packages.txt ] || ! cmp -s $$PACKAGES build/packages.txt; then \
+		mkdir -p build && cp -f $$PACKAGES build/packages.txt ;\
+	fi ;\
+	echo build/packages.txt

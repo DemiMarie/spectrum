@@ -110,9 +110,9 @@ LINKS = \
 
 BUILD_FILES = build/etc/s6-rc
 
-$(dest): ../../scripts/make-erofs.sh $(FILES) $(BUILD_FILES) build/empty build/fifo
+$(dest): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo
 	( \
-	    cat $$PACKAGES ;\
+	    cat $(PACKAGES_FILE) ;\
 	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file $$file; done ;\
 	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(DIRS) ;\
