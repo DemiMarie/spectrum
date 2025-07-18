@@ -5,9 +5,10 @@ Subject: [PATCH 2/2] virtio-devices: add a GPU device
 SPDX-FileCopyrightText: The Cloud Hypervisor Authors
 SPDX-FileCopyrightText: 2017-2018 The Chromium OS Authors. All rights reserved.
 SPDX-FileCopyrightText: 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-SPDX-FileCopyrightText: 2019-2020 Intel Corporation
+SPDX-FileCopyrightText: 2019-2020, 2022 Intel Corporation
 SPDX-FileCopyrightText: 2020, Oracle and/or its affiliates.
 SPDX-FileCopyrightText: 2022 Unikie
+SPDX-FileCopyrightText: 2023 Sartura Ltd.
 SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
 SPDX-License-Identifier: Apache-2.0 AND LicenseRef-BSD-3-Clause-Google
 
