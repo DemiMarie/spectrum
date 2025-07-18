@@ -450,7 +450,7 @@ index 8359eb1..f090466 100644
  }
  
 +/// Virtio shared memory descriptor.
-+#[repr(packed)]
++#[repr(C, packed)]
 +#[derive(Default, Copy, Clone)]
 +pub struct VhostSharedMemoryRegion {
 +    /// The shared memory region's shmid.
