@@ -84,7 +84,8 @@ for arg; do
 done
 
 set -x
-exec ${QEMU_SYSTEM:-qemu-system-$ARCH} \
+cmd=${QEMU_SYSTEM:-"qemu-system-$ARCH"}
+exec "$cmd" \
 	-machine "$machine" \
 	${kernel:+${append:+-append "$append"}} \
 	${iommu:+-device "$iommu"} \

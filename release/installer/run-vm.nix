@@ -6,7 +6,7 @@ import ../../lib/call-package.nix (
 
 let
   inherit (builtins) storeDir;
-  inherit (lib) makeBinPath escapeShellArg;
+  inherit (lib) makeBinPath escapeShellArg escapeShellArgs;
 
   eosimages = callSpectrumPackage ../combined/eosimages.nix {};
 
@@ -20,27 +20,32 @@ let
       };
     };
   };
+  firmware = "${qemu_kvm}/share/qemu/edk2-${stdenv.hostPlatform.qemuArch}-code.fd";
 in
 
 writeShellScript "run-spectrum-installer-vm.sh" ''
-  export PATH=${makeBinPath [ coreutils qemu_kvm ]}
+  set -eu
+  export PATH=${escapeShellArg (makeBinPath [ coreutils qemu_kvm ])}
   img="$(mktemp spectrum-installer-target.XXXXXXXXXX.img)"
   truncate -s 20G "$img"
-  exec 3<>"$img"
-  rm -f "$img"
-  exec ${../../scripts/run-qemu.sh} -cpu host -m 4G \
-    -device virtio-keyboard \
-    -device virtio-mouse \
-    -device virtio-gpu \
-    -parallel none \
-    -vga none \
-    -virtfs local,mount_tag=store,path=/nix/store,security_model=none,readonly=true \
-    -drive file=${qemu_kvm}/share/qemu/edk2-${stdenv.hostPlatform.qemuArch}-code.fd,format=raw,if=pflash,readonly=true \
-    -drive file=${eosimages},format=raw,if=virtio,readonly=true \
-    -drive file=/proc/self/fd/3,format=raw,if=virtio \
-    -kernel ${installer.kernel} \
-    -initrd ${installer.initramfs} \
-    -append ${escapeShellArg (toString [
+  firmware=${escapeShellArg firmware}
+  eosimages=${escapeShellArg eosimages}
+  exec 3<>"$img" 4<>"$firmware" 5<>"$eosimages"
+  rm -f -- "$img"
+  exec ${escapeShellArgs [
+    ../../scripts/run-qemu.sh "-cpu" "host" "-m" "4G"
+    "-device" "virtio-keyboard"
+    "-device" "virtio-mouse"
+    "-device" "virtio-gpu"
+    "-parallel" "none"
+    "-vga" "none"
+    "-virtfs" "local,mount_tag=store,path=/nix/store,security_model=none,readonly=true"
+    "-drive" "file=/proc/self/fd/4,format=raw,if=pflash,readonly=true"
+    "-drive" "file=/proc/self/fd/5,format=raw,if=virtio,readonly=true"
+    "-drive" "file=/proc/self/fd/3,format=raw,if=virtio"
+    "-kernel" installer.kernel
+    "-initrd" installer.initramfs
+    "-append" (toString [
       installer.kernelParams
       "systemd.journald.forward_to_console"
     ])}

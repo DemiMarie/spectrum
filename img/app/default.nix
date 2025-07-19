@@ -54,9 +54,10 @@ in
 
 let
   packagesSysroot = runCommand "packages-sysroot" {} ''
-    mkdir -p $out/etc/ssl/certs
-    ln -s ${appimageFhsenv}/{lib64,usr} ${kernel}/lib $out
-    ln -s ${cacert}/etc/ssl/certs/* $out/etc/ssl/certs
+    set -eu
+    mkdir -p -- "$out/etc/ssl/certs"
+    ln -s ${lib.escapeShellArg appimageFhsenv}/{lib64,usr} ${lib.escapeShellArg kernel}/lib "$out"
+    ln -s -- ${lib.escapeShellArg cacert}/etc/ssl/certs/* "$out/etc/ssl/certs"
   '';
 
   kernelTarget =
@@ -115,10 +116,10 @@ stdenvNoCC.mkDerivation {
 
   env = {
     KERNEL = "${kernel}/${baseNameOf kernelTarget}";
-    PACKAGES = runCommand "packages" {} ''
-      printf "%s\n/\n" ${packagesSysroot} >$out
-      sed p ${writeClosure [ packagesSysroot] } >>$out
-    '';
+    PACKAGES = runCommand "packages" {} ''{
+      printf "%s\n/\n" ${lib.escapeShellArg packagesSysroot}
+      sed p -- ${lib.escapeShellArg (writeClosure [ packagesSysroot]) }
+    } > "$out"'';
   };
 
   makeFlags = [ "prefix=$(out)" ];
