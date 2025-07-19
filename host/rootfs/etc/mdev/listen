@@ -5,7 +5,7 @@
 if { mkdir -p -m 0755 /run/wait }
 foreground {
   redirfd -w 2 /dev/null
-  mkfifo /run/wait/${1}
+  mkfifo -m 0600 /run/wait/${1}
 }
 
 redirfd -w 1 /run/wait/${1}
