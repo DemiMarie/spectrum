@@ -1,10 +1,11 @@
-#!/bin/sh -eu
+#!/bin/sh --
 #
 # SPDX-FileCopyrightText: 2021-2023 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2022 Unikie
 # SPDX-License-Identifier: EUPL-1.2+
 #
 # usage: make-gpt.sh GPT_PATH PATH:PARTTYPE[:PARTUUID[:PARTLABEL]]...
+set -euo pipefail
 
 ONE_MiB=1048576
 
@@ -14,7 +15,7 @@ ONE_MiB=1048576
 # using actual normal-sized 512-byte blocks, but it's probably not
 # worth it to configure sfdisk to do that.
 sizeMiB() {
-	wc -c "$1" | awk -v ONE_MiB=$ONE_MiB \
+	wc -c "$1" | awk -v "ONE_MiB=$ONE_MiB" \
 		'{printf "%d\n", ($1 + ONE_MiB - 1) / ONE_MiB}'
 }
 
@@ -47,19 +48,19 @@ table="label: gpt"
 # Keep 1MiB free at the start, and 1MiB free at the end.
 gptBytes=$((ONE_MiB * 2))
 for partition; do
-	sizeMiB="$(sizeMiB "$(partitionPath "$partition")")"
+	path=$(partitionPath "$partition")
+	sizeMiB=$(sizeMiB "$path")
 	table="$table${nl}size=${sizeMiB}MiB,$(awk -f "$scriptsDir/sfdisk-field.awk" -v partition="$partition")"
-	gptBytes="$((gptBytes + sizeMiB * ONE_MiB))"
+	gptBytes=$((gptBytes + sizeMiB * ONE_MiB))
 done
 
 rm -f "$out"
 truncate -s "$gptBytes" "$out"
-sfdisk --no-reread --no-tell-kernel "$out" <<EOF
-$table
-EOF
+printf %s\\n "$table" | sfdisk --no-reread --no-tell-kernel "$out"
 
 n=0
 for partition; do
-	fillPartition "$out" "$n" "$(partitionPath "$partition")"
+	path=$(partitionPath "$partition")
+	fillPartition "$out" "$n" "$path"
 	n="$((n + 1))"
 done
