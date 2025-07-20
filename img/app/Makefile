@@ -46,6 +46,7 @@ build/empty:
 	mkdir -p $@
 
 build/rootfs.erofs: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
+	set -euo pipefail; \
 	{ \
 	    cat $(PACKAGES_FILE) ;\
 	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
