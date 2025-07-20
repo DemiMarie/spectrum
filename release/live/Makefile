@@ -9,17 +9,23 @@ DTBS ?= build/empty
 
 dest = build/live.img
 
+export ROOT_FS
 $(dest): ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat build/rootfs.verity.superblock build/rootfs.verity.roothash $(ROOT_FS)
+	hash=$$(head -c 32 build/rootfs.verity.roothash) && \
+	second_hash=$$(dd if=build/rootfs.verity.roothash bs=32 count=1 skip=1 status=none) && \
+	uuid=$$(../../scripts/format-uuid.sh "$$hash") && \
+	second_uuid=$$(../../scripts/format-uuid.sh "$$second_hash") && \
 	../../scripts/make-gpt.sh $@.tmp \
 	    build/boot.fat:c12a7328-f81f-11d2-ba4b-00a0c93ec93b \
-	    build/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(ROOT_FS):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)")
+	    "build/rootfs.verity.superblock:verity:$$second_uuid" \
+	    "$$ROOT_FS:root:$$uuid"
 	mv $@.tmp $@
 
 build/empty:
 	mkdir -p $@
 
 build/spectrum.efi: build/rootfs.verity.roothash $(DTBS) $(KERNEL) $(INITRAMFS)
+	set -euo pipefail
 	( \
 	    printf "[UKI]\nDeviceTreeAuto=" && \
 	    find $(DTBS) -name '*.dtb' -print0 | tr '\0' ' ' \
@@ -43,7 +49,7 @@ build/boot.fat: $(SYSTEMD_BOOT_EFI) build/spectrum.efi
 # define two more rules to separate them again.
 build/rootfs.verity: $(ROOT_FS)
 	mkdir -p build
-	$(VERITYSETUP) format $(ROOT_FS) build/rootfs.verity.superblock.tmp \
+	set -euo pipefail; $(VERITYSETUP) format $(ROOT_FS) build/rootfs.verity.superblock.tmp \
 	    | awk -F ':[[:blank:]]*' '$$1 == "Root hash" {print $$2; exit}' \
 	    > build/rootfs.verity.roothash.tmp
 	cat build/rootfs.verity.roothash.tmp build/rootfs.verity.superblock.tmp \
@@ -58,8 +64,10 @@ clean:
 	rm -rf build
 .PHONY: clean
 
+export OVMF_CODE dest
+
 run: $(dest)
-	@../../scripts/run-qemu.sh -m 4G \
+	@3< "$$OVMF_CODR" 4< "$$dest" ../../scripts/run-qemu.sh -m 4G \
 	    -machine virtualization=on \
 	    -cpu max \
 	    -device virtio-keyboard \
@@ -69,6 +77,6 @@ run: $(dest)
 	    -vga none \
 	    -device qemu-xhci \
 	    -device usb-storage,drive=drive1,removable=true \
-	    -drive file=$(OVMF_CODE),format=raw,if=pflash,readonly=true \
-	    -drive file=$(dest),id=drive1,format=raw,if=none,readonly=true
+	    -drive file=/proc/self/fd/3,format=raw,if=pflash,readonly=true \
+	    -drive file=/proc/self/fd/4,id=drive1,format=raw,if=none,readonly=true
 .PHONY: run
