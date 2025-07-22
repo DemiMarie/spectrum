@@ -55,7 +55,9 @@ VM_FILES = \
 	etc/s6-linux-init/scripts/rc.shutdown.final \
 	etc/xdg/xdg-desktop-portal/portals.conf
 VM_DIRS = dev run proc sys tmp \
-	etc/s6-linux-init/run-image/service
+	etc/s6-linux-init/run-image/service \
+	etc/s6-linux-init/run-image/user \
+	etc/s6-linux-init/run-image/wait
 VM_FIFOS = etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/fifo
 
 # These are separate because they need to be included, but putting
