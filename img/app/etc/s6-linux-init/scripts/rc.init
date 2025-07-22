@@ -7,4 +7,12 @@ if { s6-rc-init -c /etc/s6-rc /run/service }
 if { modprobe overlay }
 if { mount -a --mkdir }
 
+# /tmp/.*-unix are used by X11 and exist on my machine with 1777 permissions.
+# Use mode 0755 because no other user needs access to them.
+# Also, I have seen some software use /tmp/user, so create it as well.
+if { mkdir -m 0755 /tmp/user /tmp/.X11-unix /tmp/.ICE-unix /tmp/.XIM-unix /tmp/.font-unix }
+
+# Create $XDG_RUNTIME_DIR
+if { mkdir -m 0700 /run/user/0 }
+
 s6-rc change ok-all
