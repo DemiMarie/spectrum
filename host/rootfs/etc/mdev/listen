@@ -4,7 +4,6 @@
 
 foreground {
   redirfd -w 2 /dev/null
-  foreground { mkdir /run/wait }
   mkfifo /run/wait/${1}
 }
 

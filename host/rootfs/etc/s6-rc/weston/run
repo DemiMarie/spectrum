@@ -4,7 +4,6 @@
 
 unexport WAYLAND_DISPLAY
 
-foreground { mkdir /run/user }
 foreground {
   umask 077
   mkdir /run/user/0
