@@ -1,10 +1,23 @@
 #!/bin/execlineb -P
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2020-2022 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
 if { s6-rc-init -c /etc/s6-rc /run/service }
 
 if { modprobe overlay }
 if { mount -a --mkdir }
+
+# X Font Server is obsolete
+if { mkdir -m 0000 /tmp/.font-unix }
+
+# /tmp/.X11-unix: X11 server
+# /tmp/.ICE-unix: X11 Inter-Client Exchange
+# /tmp/.XIM-unix: X11 input methods
+# Some documentation states sticky bit is required.
+if { mkdir -m 1700 /tmp/.X11-unix /tmp/.ICE-unix /tmp/.XIM-unix }
+
+# /run/user/0: "$XDG_RUNTIME_DIR"
+if { mkdir -m 0700 /run/user/0 }
 
 s6-rc change ok-all
