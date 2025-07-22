@@ -2,4 +2,5 @@
 # SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
 #
 mdevd-coldplug
+wireplumber
 app

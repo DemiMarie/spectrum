@@ -7,10 +7,6 @@
 # SPDX-FileCopyrightText: 2022 Unikie
 
 foreground { mkdir /tmp/.X11-unix }
-foreground {
-  umask 077
-  mkdir /run/user/0
-}
 
 s6-ipcserver-socketbinder -B /run/user/0/wayland-0
 fdmove -c 3 0

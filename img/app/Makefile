@@ -40,6 +40,7 @@ VM_FILES = \
 	etc/mdev/virtiofs \
 	etc/mdev/wait \
 	etc/passwd \
+	etc/pipewire/pipewire.conf \
 	etc/resolv.conf \
 	etc/s6-linux-init/env/DBUS_SESSION_BUS_ADDRESS \
 	etc/s6-linux-init/env/DISPLAY \
@@ -47,13 +48,15 @@ VM_FILES = \
 	etc/s6-linux-init/env/NIX_XDG_DESKTOP_PORTAL_DIR \
 	etc/s6-linux-init/env/WAYLAND_DISPLAY \
 	etc/s6-linux-init/env/XDG_RUNTIME_DIR \
+	etc/s6-linux-init/run-image/service/getty-hvc0/run \
 	etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/notification-fd \
 	etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/run \
-	etc/s6-linux-init/run-image/service/getty-hvc0/run \
 	etc/s6-linux-init/scripts/rc.init \
 	etc/s6-linux-init/scripts/rc.shutdown \
 	etc/s6-linux-init/scripts/rc.shutdown.final \
+	etc/wireplumber/wireplumber.conf.d/99_spectrum.conf \
 	etc/xdg/xdg-desktop-portal/portals.conf
+
 VM_DIRS = dev run proc sys tmp \
 	etc/s6-linux-init/run-image/service \
 	etc/s6-linux-init/run-image/user \
@@ -84,6 +87,7 @@ build/rootfs.erofs: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) $(V
 
 VM_S6_RC_FILES = \
 	etc/s6-rc/app/dependencies.d/dbus \
+	etc/s6-rc/app/dependencies.d/pipewire \
 	etc/s6-rc/app/dependencies.d/wayland-proxy-virtwl \
 	etc/s6-rc/app/run \
 	etc/s6-rc/app/type \
@@ -98,9 +102,16 @@ VM_S6_RC_FILES = \
 	etc/s6-rc/mdevd/type \
 	etc/s6-rc/ok-all/contents \
 	etc/s6-rc/ok-all/type \
+	etc/s6-rc/pipewire/notification-fd \
+	etc/s6-rc/pipewire/run \
+	etc/s6-rc/pipewire/type \
 	etc/s6-rc/wayland-proxy-virtwl/notification-fd \
 	etc/s6-rc/wayland-proxy-virtwl/run \
-	etc/s6-rc/wayland-proxy-virtwl/type
+	etc/s6-rc/wayland-proxy-virtwl/type \
+	etc/s6-rc/wireplumber/dependencies.d/dbus \
+	etc/s6-rc/wireplumber/dependencies.d/pipewire \
+	etc/s6-rc/wireplumber/run \
+	etc/s6-rc/wireplumber/type
 
 build/etc/s6-rc: $(VM_S6_RC_FILES)
 	mkdir -p $$(dirname $@)
@@ -147,6 +158,7 @@ run-qemu: $(imgdir)/appvm/blk/root.img start-vhost-user-net start-virtiofsd
 	    -chardev socket,id=virtiofsd,path=build/virtiofsd.sock \
 	    -device vhost-user-fs-pci,chardev=virtiofsd,tag=virtiofs0 \
 	    -device virtio-gpu-rutabaga-pci,cross-domain=on,hostmem=8G \
+	    -audio driver=pipewire,model=virtio \
 	    -object memory-backend-memfd,id=mem,size=256M,share=on \
 	    -numa node,memdev=mem \
 	    -device vhost-vsock-pci,guest-cid=3 \

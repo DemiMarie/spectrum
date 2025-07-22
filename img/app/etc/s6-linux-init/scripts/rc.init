@@ -1,10 +1,14 @@
 #!/bin/execlineb -P
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2020-2022 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
 if { s6-rc-init -c /etc/s6-rc /run/service }
 
 if { modprobe overlay }
 if { mount -a --mkdir }
+
+# /run/user/0: "$XDG_RUNTIME_DIR"
+if { mkdir -m 0700 /run/user/0 }
 
 s6-rc change ok-all
