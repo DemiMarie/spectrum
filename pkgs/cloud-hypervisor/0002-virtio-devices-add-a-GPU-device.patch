@@ -1,4 +1,4 @@
-From 4491a8938c81874949680cb85ef05bd01bc74d4a Mon Sep 17 00:00:00 2001
+From 3f4bc3d50dc8000fcf9d698b8d177f25e38653df Mon Sep 17 00:00:00 2001
 From: Alyssa Ross <alyssa.ross@unikie.com>
 Date: Wed, 7 Sep 2022 14:16:29 +0000
 Subject: [PATCH 2/2] virtio-devices: add a GPU device
@@ -50,7 +50,7 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  create mode 100644 virtio-devices/src/vhost_user/gpu.rs
 
 diff --git a/src/bin/ch-remote.rs b/src/bin/ch-remote.rs
-index ba369283..3a2e6ec8 100644
+index ba3692838..3a2e6ec88 100644
 --- a/src/bin/ch-remote.rs
 +++ b/src/bin/ch-remote.rs
 @@ -17,8 +17,8 @@ use option_parser::{ByteSized, ByteSizedParseError};
@@ -158,7 +158,7 @@ index ba369283..3a2e6ec8 100644
              Command::new("add-pmem")
                  .about("Add persistent memory device")
 diff --git a/src/main.rs b/src/main.rs
-index cfa6a248..74e13e3d 100644
+index cfa6a2481..74e13e3db 100644
 --- a/src/main.rs
 +++ b/src/main.rs
 @@ -27,9 +27,9 @@ use vmm::vm_config;
@@ -195,7 +195,7 @@ index cfa6a248..74e13e3d 100644
              serial: ConsoleConfig {
                  file: None,
 diff --git a/virtio-devices/src/device.rs b/virtio-devices/src/device.rs
-index 06b245e2..5c5f2981 100644
+index 06b245e27..5c5f29817 100644
 --- a/virtio-devices/src/device.rs
 +++ b/virtio-devices/src/device.rs
 @@ -6,7 +6,7 @@
@@ -217,7 +217,7 @@ index 06b245e2..5c5f2981 100644
  
  /// Trait for virtio devices to be driven by a virtio transport.
 diff --git a/virtio-devices/src/lib.rs b/virtio-devices/src/lib.rs
-index b666d68e..280d47f0 100644
+index b666d68e6..280d47f01 100644
 --- a/virtio-devices/src/lib.rs
 +++ b/virtio-devices/src/lib.rs
 @@ -48,7 +48,7 @@ pub use self::block::{Block, BlockState};
@@ -239,7 +239,7 @@ index b666d68e..280d47f0 100644
      CreateSeccompFilter(#[source] seccompiler::Error),
      #[error("Failed to create rate limiter: {0}")]
 diff --git a/virtio-devices/src/seccomp_filters.rs b/virtio-devices/src/seccomp_filters.rs
-index 2579e4f1..0a57af40 100644
+index 2579e4f14..0a57af407 100644
 --- a/virtio-devices/src/seccomp_filters.rs
 +++ b/virtio-devices/src/seccomp_filters.rs
 @@ -22,6 +22,7 @@ pub enum Thread {
@@ -280,7 +280,7 @@ index 2579e4f1..0a57af40 100644
          Thread::VirtioVhostNetCtl => virtio_vhost_net_ctl_thread_rules(),
          Thread::VirtioVsock => virtio_vsock_thread_rules(),
 diff --git a/virtio-devices/src/transport/pci_device.rs b/virtio-devices/src/transport/pci_device.rs
-index c09efacf..adfd2983 100644
+index c09efacf4..adfd2983c 100644
 --- a/virtio-devices/src/transport/pci_device.rs
 +++ b/virtio-devices/src/transport/pci_device.rs
 @@ -1049,11 +1049,11 @@ impl PciDevice for VirtioPciDevice {
@@ -299,7 +299,7 @@ index c09efacf..adfd2983 100644
                      );
 diff --git a/virtio-devices/src/vhost_user/gpu.rs b/virtio-devices/src/vhost_user/gpu.rs
 new file mode 100644
-index 00000000..5e10e8cb
+index 000000000..12d458926
 --- /dev/null
 +++ b/virtio-devices/src/vhost_user/gpu.rs
 @@ -0,0 +1,416 @@
@@ -559,8 +559,8 @@ index 00000000..5e10e8cb
 +                    VhostUserConfigFlags::WRITABLE,
 +                    data,
 +                )
-+                .map_err(|e| format!("{:?}", e))
-+                .and_then(|(_, config)| data.write_all(&config).map_err(|e| format!("{:?}", e)))
++                .map_err(|e| format!("{e:?}"))
++                .and_then(|(_, config)| data.write_all(&config).map_err(|e| format!("{e:?}")))
 +            {
 +                error!("Failed getting vhost-user-gpu configuration: {:?}", e);
 +            }
@@ -720,7 +720,7 @@ index 00000000..5e10e8cb
 +    }
 +}
 diff --git a/virtio-devices/src/vhost_user/mod.rs b/virtio-devices/src/vhost_user/mod.rs
-index 0f4bb80c..d504bc96 100644
+index 0f4bb80c7..d504bc96b 100644
 --- a/virtio-devices/src/vhost_user/mod.rs
 +++ b/virtio-devices/src/vhost_user/mod.rs
 @@ -32,11 +32,13 @@ use crate::{
@@ -756,7 +756,7 @@ index 0f4bb80c..d504bc96 100644
      UsedAddress,
      #[error("Invalid features provided from vhost-user backend")]
 diff --git a/virtio-devices/src/vhost_user/vu_common_ctrl.rs b/virtio-devices/src/vhost_user/vu_common_ctrl.rs
-index 60ee6b32..fb60b7f3 100644
+index 60ee6b32d..fb60b7f31 100644
 --- a/virtio-devices/src/vhost_user/vu_common_ctrl.rs
 +++ b/virtio-devices/src/vhost_user/vu_common_ctrl.rs
 @@ -12,7 +12,8 @@ use std::time::{Duration, Instant};
@@ -783,7 +783,7 @@ index 60ee6b32..fb60b7f3 100644
          &mut self,
          avail_features: u64,
 diff --git a/vmm/src/api/dbus/mod.rs b/vmm/src/api/dbus/mod.rs
-index 8230a4f1..bc396b82 100644
+index 8230a4f17..bc396b821 100644
 --- a/vmm/src/api/dbus/mod.rs
 +++ b/vmm/src/api/dbus/mod.rs
 @@ -20,7 +20,7 @@ use super::{ApiAction, ApiRequest};
@@ -808,7 +808,7 @@ index 8230a4f1..bc396b82 100644
          let mut net_config: NetConfig = serde_json::from_str(&net_config).map_err(api_error)?;
          if net_config.fds.is_some() {
 diff --git a/vmm/src/api/http/http_endpoint.rs b/vmm/src/api/http/http_endpoint.rs
-index ff1de562..5d2ed85b 100644
+index ff1de5629..5d2ed85b6 100644
 --- a/vmm/src/api/http/http_endpoint.rs
 +++ b/vmm/src/api/http/http_endpoint.rs
 @@ -15,10 +15,10 @@ use crate::api::http::{error_response, EndpointHandler, HttpError};
@@ -835,7 +835,7 @@ index ff1de562..5d2ed85b 100644
  vm_action_put_handler_body!(VmAddVdpa);
  vm_action_put_handler_body!(VmAddVsock);
 diff --git a/vmm/src/api/http/mod.rs b/vmm/src/api/http/mod.rs
-index 228cef29..2e33cc9e 100644
+index 228cef296..2e33cc9e4 100644
 --- a/vmm/src/api/http/mod.rs
 +++ b/vmm/src/api/http/mod.rs
 @@ -26,10 +26,10 @@ use self::http_endpoint::{VmActionHandler, VmCreate, VmInfo, VmmPing, VmmShutdow
@@ -865,7 +865,7 @@ index 228cef29..2e33cc9e 100644
          endpoint!("/vm.add-net"),
          Box::new(VmActionHandler::new(&VmAddNet)),
 diff --git a/vmm/src/api/mod.rs b/vmm/src/api/mod.rs
-index f1fdc5bb..99ff62f5 100644
+index f1fdc5bb0..99ff62f51 100644
 --- a/vmm/src/api/mod.rs
 +++ b/vmm/src/api/mod.rs
 @@ -49,8 +49,8 @@ use crate::config::RestoreConfig;
@@ -944,7 +944,7 @@ index f1fdc5bb..99ff62f5 100644
  
  impl ApiAction for VmAddPmem {
 diff --git a/vmm/src/api/openapi/cloud-hypervisor.yaml b/vmm/src/api/openapi/cloud-hypervisor.yaml
-index 80a4fa25..91d5d1df 100644
+index 80a4fa257..91d5d1dfa 100644
 --- a/vmm/src/api/openapi/cloud-hypervisor.yaml
 +++ b/vmm/src/api/openapi/cloud-hypervisor.yaml
 @@ -261,6 +261,28 @@ paths:
@@ -1008,7 +1008,7 @@ index 80a4fa25..91d5d1df 100644
        required:
          - file
 diff --git a/vmm/src/config.rs b/vmm/src/config.rs
-index d7c0f41e..4690a4b9 100644
+index d7c0f41e7..4690a4b90 100644
 --- a/vmm/src/config.rs
 +++ b/vmm/src/config.rs
 @@ -32,6 +32,8 @@ pub enum Error {
@@ -1233,7 +1233,7 @@ index d7c0f41e..4690a4b9 100644
          still_valid_config.memory.shared = true;
          still_valid_config.validate().unwrap();
 diff --git a/vmm/src/device_manager.rs b/vmm/src/device_manager.rs
-index d228010c..63a427ab 100644
+index d228010c0..63a427abc 100644
 --- a/vmm/src/device_manager.rs
 +++ b/vmm/src/device_manager.rs
 @@ -12,6 +12,7 @@
@@ -1452,7 +1452,7 @@ index d228010c..63a427ab 100644
          self.validate_identifier(&pmem_cfg.id)?;
  
 diff --git a/vmm/src/lib.rs b/vmm/src/lib.rs
-index cfb81509..db97ea55 100644
+index cfb81509e..db97ea556 100644
 --- a/vmm/src/lib.rs
 +++ b/vmm/src/lib.rs
 @@ -61,8 +61,8 @@ use crate::migration::{recv_vm_config, recv_vm_state};
@@ -1563,7 +1563,7 @@ index cfb81509..db97ea55 100644
      fn test_vmm_vm_cold_add_pmem() {
          let mut vmm = create_dummy_vmm();
 diff --git a/vmm/src/vm.rs b/vmm/src/vm.rs
-index 8db238e3..c9a87c14 100644
+index 8db238e30..c9a87c148 100644
 --- a/vmm/src/vm.rs
 +++ b/vmm/src/vm.rs
 @@ -92,8 +92,8 @@ use crate::migration::get_vm_snapshot;
@@ -1609,7 +1609,7 @@ index 8db238e3..c9a87c14 100644
          let pci_device_info = self
              .device_manager
 diff --git a/vmm/src/vm_config.rs b/vmm/src/vm_config.rs
-index a2c5b996..009329d1 100644
+index a2c5b996b..009329d15 100644
 --- a/vmm/src/vm_config.rs
 +++ b/vmm/src/vm_config.rs
 @@ -469,6 +469,15 @@ impl ApplyLandlock for FsConfig {
@@ -1637,5 +1637,5 @@ index a2c5b996..009329d1 100644
      #[serde(default = "default_serial")]
      pub serial: ConsoleConfig,
 -- 
-2.49.0
+2.50.0
 

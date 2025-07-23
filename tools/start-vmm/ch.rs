@@ -103,7 +103,7 @@ pub fn create_vm(vm_dir: &Path, ready_fd: File, mut config: VmConfig) -> Result<
         .map_err(|e| format!("failed to start ch-remote: {e}"))?;
 
     let json = json::to_string(&config);
-    write!(ch_remote.stdin.as_ref().unwrap(), "{}", json)
+    write!(ch_remote.stdin.as_ref().unwrap(), "{json}")
         .map_err(|e| format!("writing to ch-remote's stdin: {e}"))?;
 
     let status = ch_remote

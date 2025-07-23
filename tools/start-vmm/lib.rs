@@ -32,13 +32,13 @@ pub fn prog_name() -> String {
 
 pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
     let Some(vm_name) = vm_dir.file_name().unwrap().to_str() else {
-        return Err(format!("VM dir {:?} is not valid UTF-8", vm_dir));
+        return Err(format!("VM dir {vm_dir:?} is not valid UTF-8"));
     };
 
     // A colon is used for namespacing vhost-user backends, so while
     // we have the VM name we enforce that it doesn't contain one.
     if vm_name.contains(':') {
-        return Err(format!("VM name may not contain a colon: {:?}", vm_name));
+        return Err(format!("VM name may not contain a colon: {vm_name:?}"));
     }
 
     let config_dir = vm_dir.join("config");
@@ -70,7 +70,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                     let entry = result?.to_str().unwrap().to_string();
 
                     if entry.contains(',') {
-                        return Err(format!("illegal ',' character in path {:?}", entry));
+                        return Err(format!("illegal ',' character in path {entry:?}"));
                     }
 
                     Ok(DiskConfig {
@@ -79,7 +79,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                     })
                 })
                 .collect::<Result<_, _>>()?,
-            Err(e) => return Err(format!("reading directory {:?}: {}", blk_dir, e)),
+            Err(e) => return Err(format!("reading directory {blk_dir:?}: {e}")),
         },
         fs: [FsConfig {
             tag: "virtiofs0",
@@ -97,10 +97,10 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                 .into_iter()
                 .map(|result| {
                     let provider_name = result
-                        .map_err(|e| format!("examining directory entry: {}", e))?
+                        .map_err(|e| format!("examining directory entry: {e}"))?
                         .file_name()
                         .into_string()
-                        .map_err(|name| format!("provider name {:?} is not UTF-8", name))?;
+                        .map_err(|name| format!("provider name {name:?} is not UTF-8"))?;
 
                     let provider_dir = vm_dir
                         .parent()
@@ -134,7 +134,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                 .take(1)
                 .collect::<Result<_, _>>()?,
             Err(e) if e.kind() == ErrorKind::NotFound => Default::default(),
-            Err(e) => return Err(format!("reading directory {:?}: {e}", net_providers_dir)),
+            Err(e) => return Err(format!("reading directory {net_providers_dir:?}: {e}")),
         },
         payload: PayloadConfig {
             kernel: kernel_path.to_str().unwrap().to_string(),
