@@ -1,4 +1,4 @@
-From f7271e843fc0630becaa7c5504ab12b6630003da Mon Sep 17 00:00:00 2001
+From 6f505091fee73b059fceef76eabe60f385706673 Mon Sep 17 00:00:00 2001
 From: David Stevens <stevensd@chromium.org>
 Date: Thu, 13 Oct 2022 10:37:47 +0900
 Subject: [PATCH 4/4] vhost_user: add protocol flag for shmem
@@ -26,7 +26,7 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  1 file changed, 2 insertions(+)
 
 diff --git a/vhost/src/vhost_user/message.rs b/vhost/src/vhost_user/message.rs
-index f090466..f77e098 100644
+index b847885a4..69cebde75 100644
 --- a/vhost/src/vhost_user/message.rs
 +++ b/vhost/src/vhost_user/message.rs
 @@ -444,6 +444,8 @@ bitflags! {
@@ -39,5 +39,5 @@ index f090466..f77e098 100644
  }
  
 -- 
-2.47.0
+2.50.0
 

@@ -1,4 +1,4 @@
-From 941c789933574a9491ac0c6d0d8063f474090eee Mon Sep 17 00:00:00 2001
+From 7012cacaee3c8c8ce1bd6992be6ae16879110d23 Mon Sep 17 00:00:00 2001
 From: David Stevens <stevensd@chromium.org>
 Date: Wed, 15 Jun 2022 16:45:12 +0900
 Subject: [PATCH 3/4] vhost_user: add shared memory region support
@@ -31,34 +31,35 @@ Signed-off-by: Alyssa Ross <alyssa.ross@unikie.com>
 [renumbered for crosvm commit e428c4ba88a26695f63929c680b4101a9b8d5cbc]
 Signed-off-by: Alyssa Ross <hi@alyssa.is>
 ---
- vhost-user-backend/src/handler.rs            |  11 +-
+ vhost-user-backend/src/handler.rs            |  12 +-
  vhost/src/vhost_user/backend_req.rs          |  20 ++-
  vhost/src/vhost_user/backend_req_handler.rs  |  15 +++
  vhost/src/vhost_user/dummy_backend.rs        |   4 +
  vhost/src/vhost_user/frontend.rs             |  24 ++++
  vhost/src/vhost_user/frontend_req_handler.rs |  53 +++++++-
  vhost/src/vhost_user/message.rs              | 126 +++++++++++++++++++
- 7 files changed, 243 insertions(+), 10 deletions(-)
+ 7 files changed, 243 insertions(+), 11 deletions(-)
 
 diff --git a/vhost-user-backend/src/handler.rs b/vhost-user-backend/src/handler.rs
-index 9217870..0bec765 100644
+index 27e8e9a1f..b242a72c9 100644
 --- a/vhost-user-backend/src/handler.rs
 +++ b/vhost-user-backend/src/handler.rs
-@@ -17,9 +17,10 @@ use crate::bitmap::{BitmapReplace, MemRegionBitmap, MmapLogReg};
+@@ -17,10 +17,10 @@ use crate::bitmap::{BitmapReplace, MemRegionBitmap, MmapLogReg};
  #[cfg(feature = "postcopy")]
  use userfaultfd::{Uffd, UffdBuilder};
  use vhost::vhost_user::message::{
 -    VhostTransferStateDirection, VhostTransferStatePhase, VhostUserConfigFlags, VhostUserLog,
--    VhostUserMemoryRegion, VhostUserProtocolFeatures, VhostUserSingleMemoryRegion,
--    VhostUserVirtioFeatures, VhostUserVringAddrFlags, VhostUserVringState,
+-    VhostUserMemoryRegion, VhostUserProtocolFeatures, VhostUserSharedMsg,
+-    VhostUserSingleMemoryRegion, VhostUserVirtioFeatures, VhostUserVringAddrFlags,
+-    VhostUserVringState,
 +    VhostSharedMemoryRegion, VhostTransferStateDirection, VhostTransferStatePhase,
 +    VhostUserConfigFlags, VhostUserLog, VhostUserMemoryRegion, VhostUserProtocolFeatures,
-+    VhostUserSingleMemoryRegion, VhostUserVirtioFeatures, VhostUserVringAddrFlags,
-+    VhostUserVringState,
++    VhostUserSharedMsg, VhostUserSingleMemoryRegion, VhostUserVirtioFeatures,
++    VhostUserVringAddrFlags, VhostUserVringState,
  };
  use vhost::vhost_user::GpuBackend;
  use vhost::vhost_user::{
-@@ -663,6 +664,10 @@ where
+@@ -671,6 +671,10 @@ where
          Ok(())
      }
  
@@ -70,7 +71,7 @@ index 9217870..0bec765 100644
          &mut self,
          direction: VhostTransferStateDirection,
 diff --git a/vhost/src/vhost_user/backend_req.rs b/vhost/src/vhost_user/backend_req.rs
-index f95f812..e6d677c 100644
+index eb5ef65af..69665ce0e 100644
 --- a/vhost/src/vhost_user/backend_req.rs
 +++ b/vhost/src/vhost_user/backend_req.rs
 @@ -49,12 +49,16 @@ impl BackendInternal {
@@ -111,10 +112,10 @@ index f95f812..e6d677c 100644
  
  #[cfg(test)]
 diff --git a/vhost/src/vhost_user/backend_req_handler.rs b/vhost/src/vhost_user/backend_req_handler.rs
-index 635766d..a8eaadf 100644
+index d74b04558..076b09362 100644
 --- a/vhost/src/vhost_user/backend_req_handler.rs
 +++ b/vhost/src/vhost_user/backend_req_handler.rs
-@@ -73,6 +73,7 @@ pub trait VhostUserBackendReqHandler {
+@@ -74,6 +74,7 @@ pub trait VhostUserBackendReqHandler {
      fn get_max_mem_slots(&self) -> Result<u64>;
      fn add_mem_region(&self, region: &VhostUserSingleMemoryRegion, fd: File) -> Result<()>;
      fn remove_mem_region(&self, region: &VhostUserSingleMemoryRegion) -> Result<()>;
@@ -122,7 +123,7 @@ index 635766d..a8eaadf 100644
      fn set_device_state_fd(
          &self,
          direction: VhostTransferStateDirection,
-@@ -137,6 +138,7 @@ pub trait VhostUserBackendReqHandlerMut {
+@@ -139,6 +140,7 @@ pub trait VhostUserBackendReqHandlerMut {
      fn get_max_mem_slots(&mut self) -> Result<u64>;
      fn add_mem_region(&mut self, region: &VhostUserSingleMemoryRegion, fd: File) -> Result<()>;
      fn remove_mem_region(&mut self, region: &VhostUserSingleMemoryRegion) -> Result<()>;
@@ -130,7 +131,7 @@ index 635766d..a8eaadf 100644
      fn set_device_state_fd(
          &mut self,
          direction: VhostTransferStateDirection,
-@@ -268,6 +270,10 @@ impl<T: VhostUserBackendReqHandlerMut> VhostUserBackendReqHandler for Mutex<T> {
+@@ -274,6 +276,10 @@ impl<T: VhostUserBackendReqHandlerMut> VhostUserBackendReqHandler for Mutex<T> {
          self.lock().unwrap().remove_mem_region(region)
      }
  
@@ -141,7 +142,7 @@ index 635766d..a8eaadf 100644
      fn set_device_state_fd(
          &self,
          direction: VhostTransferStateDirection,
-@@ -609,6 +615,15 @@ impl<S: VhostUserBackendReqHandler> BackendReqHandler<S> {
+@@ -634,6 +640,15 @@ impl<S: VhostUserBackendReqHandler> BackendReqHandler<S> {
                  let res = self.backend.remove_mem_region(&msg);
                  self.send_ack_message(&hdr, res)?;
              }
@@ -158,10 +159,10 @@ index 635766d..a8eaadf 100644
                  let file = take_single_file(files).ok_or(Error::IncorrectFds)?;
                  let msg =
 diff --git a/vhost/src/vhost_user/dummy_backend.rs b/vhost/src/vhost_user/dummy_backend.rs
-index ac36cdc..f0b761c 100644
+index a45d3b47f..9b2040d6f 100644
 --- a/vhost/src/vhost_user/dummy_backend.rs
 +++ b/vhost/src/vhost_user/dummy_backend.rs
-@@ -302,6 +302,10 @@ impl VhostUserBackendReqHandlerMut for DummyBackendReqHandler {
+@@ -310,6 +310,10 @@ impl VhostUserBackendReqHandlerMut for DummyBackendReqHandler {
          Ok(())
      }
  
@@ -173,10 +174,10 @@ index ac36cdc..f0b761c 100644
          &mut self,
          _direction: VhostTransferStateDirection,
 diff --git a/vhost/src/vhost_user/frontend.rs b/vhost/src/vhost_user/frontend.rs
-index 9e26474..86fe1d4 100644
+index 195a6af1e..41b49cbd3 100644
 --- a/vhost/src/vhost_user/frontend.rs
 +++ b/vhost/src/vhost_user/frontend.rs
-@@ -76,6 +76,9 @@ pub trait VhostUserFrontend: VhostBackend {
+@@ -79,6 +79,9 @@ pub trait VhostUserFrontend: VhostBackend {
      /// Remove a guest memory mapping from vhost.
      fn remove_mem_region(&mut self, region: &VhostUserMemoryRegionInfo) -> Result<()>;
  
@@ -186,7 +187,7 @@ index 9e26474..86fe1d4 100644
      /// Sends VHOST_USER_POSTCOPY_ADVISE msg to the backend
      /// initiating the beginning of the postcopy process.
      /// Backend will return a userfaultfd.
-@@ -549,6 +552,27 @@ impl VhostUserFrontend for Frontend {
+@@ -567,6 +570,27 @@ impl VhostUserFrontend for Frontend {
          node.wait_for_ack(&hdr).map_err(|e| e.into())
      }
  
@@ -215,7 +216,7 @@ index 9e26474..86fe1d4 100644
      fn postcopy_advise(&mut self) -> Result<File> {
          let mut node = self.node();
 diff --git a/vhost/src/vhost_user/frontend_req_handler.rs b/vhost/src/vhost_user/frontend_req_handler.rs
-index 77d4bf5..f26cd64 100644
+index 77d4bf55a..f26cd6491 100644
 --- a/vhost/src/vhost_user/frontend_req_handler.rs
 +++ b/vhost/src/vhost_user/frontend_req_handler.rs
 @@ -52,6 +52,16 @@ pub trait VhostUserFrontendReqHandler {
@@ -321,7 +322,7 @@ index 77d4bf5..f26cd64 100644
              let def_err = libc::EINVAL;
              let val = match res {
 diff --git a/vhost/src/vhost_user/message.rs b/vhost/src/vhost_user/message.rs
-index 8359eb1..f090466 100644
+index 8359eb1fd..b847885a4 100644
 --- a/vhost/src/vhost_user/message.rs
 +++ b/vhost/src/vhost_user/message.rs
 @@ -172,6 +172,8 @@ enum_value! {
@@ -479,5 +480,5 @@ index 8359eb1..f090466 100644
  mod tests {
      use super::*;
 -- 
-2.47.0
+2.50.0
 

@@ -1,4 +1,4 @@
-From 66d1565058e27c7dea06775988fa1e6f48983ee0 Mon Sep 17 00:00:00 2001
+From dec88cad3b2a6817f441c26fbe2b4fef46759d17 Mon Sep 17 00:00:00 2001
 From: Alyssa Ross <alyssa.ross@unikie.com>
 Date: Wed, 28 Sep 2022 12:18:19 +0000
 Subject: [PATCH 1/2] build: use local vhost
@@ -9,44 +9,46 @@ SPDX-License-Identifier: Apache-2.0 AND LicenseRef-BSD-3-Clause-Google
 Signed-off-by: Alyssa Ross <alyssa.ross@unikie.com>
 Signed-off-by: Alyssa Ross <hi@alyssa.is>
 ---
- Cargo.lock | 2 --
+ Cargo.lock | 4 ----
  Cargo.toml | 4 ++--
- 2 files changed, 2 insertions(+), 4 deletions(-)
+ 2 files changed, 2 insertions(+), 6 deletions(-)
 
 diff --git a/Cargo.lock b/Cargo.lock
-index 1af12b40f..9cf07b994 100644
+index 305e31cee..9724641d4 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
-@@ -2309,7 +2309,6 @@ dependencies = [
+@@ -2276,8 +2276,6 @@ dependencies = [
  [[package]]
  name = "vhost"
- version = "0.12.1"
--source = "git+https://github.com/rust-vmm/vhost?rev=d983ae0#d983ae07f78663b7d24059667376992460b571a2"
+ version = "0.14.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2a4dcad85a129d97d5d4b2f3c47a4affdeedd76bdcd02094bcb5d9b76cac2d05"
  dependencies = [
   "bitflags 2.9.0",
   "libc",
-@@ -2321,7 +2320,6 @@ dependencies = [
+@@ -2289,8 +2287,6 @@ dependencies = [
  [[package]]
  name = "vhost-user-backend"
- version = "0.16.1"
--source = "git+https://github.com/rust-vmm/vhost?rev=d983ae0#d983ae07f78663b7d24059667376992460b571a2"
+ version = "0.20.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e183205a9ba7cb9c47fcb0fc0a07fc295a110efbb11ab78ad0d793b0a38a7bde"
  dependencies = [
   "libc",
   "log",
 diff --git a/Cargo.toml b/Cargo.toml
-index 777e6356f..f3f6d9c3f 100644
+index f05de398e..380a06767 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 @@ -113,8 +113,8 @@ seccompiler = "0.5.0"
- vfio-bindings = { git = "https://github.com/rust-vmm/vfio", branch = "main" }
- vfio-ioctls = { git = "https://github.com/rust-vmm/vfio", branch = "main", default-features = false }
- vfio_user = { git = "https://github.com/rust-vmm/vfio-user", branch = "main" }
--vhost = { git = "https://github.com/rust-vmm/vhost", rev = "d983ae0" }
--vhost-user-backend = { git = "https://github.com/rust-vmm/vhost", rev = "d983ae0" }
+ vfio-bindings = { version = "0.5.0", default-features = false }
+ vfio-ioctls = { version = "0.5.0", default-features = false }
+ vfio_user = { version = "0.1.0", default-features = false }
+-vhost = { version = "0.14.0", default-features = false }
+-vhost-user-backend = { version = "0.20.0", default-features = false }
 +vhost = { path = "../vhost/vhost" }
 +vhost-user-backend = { path = "../vhost/vhost-user-backend" }
- virtio-bindings = "0.2.4"
- virtio-queue = "0.14.0"
+ virtio-bindings = "0.2.6"
+ virtio-queue = "0.16.0"
  vm-fdt = { git = "https://github.com/rust-vmm/vm-fdt", branch = "main" }
 -- 
 2.50.0

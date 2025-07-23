@@ -94,13 +94,11 @@ let
         };
       });
 
-      systemd = final.libudev-zero;
-      systemdLibs = final.libudev-zero;
-      systemdMinimal = final.libudev-zero;
-
-      seatd = super.seatd.override {
-        systemdSupport = false;
-      };
+      systemd = super.systemd.overrideAttrs ({ meta ? { }, ... }: {
+        meta = meta // {
+          platforms = [ ];
+        };
+      });
 
       tinysparql = super.tinysparql.overrideAttrs ({ mesonFlags ? [], ... }: {
         mesonFlags = mesonFlags ++ [ "-Dsystemd_user_services=false" ];
@@ -113,6 +111,8 @@ let
         # test that needs umockdev.
         withIntrospection = false;
       };
+
+      udev = final.libudev-zero;
 
       util-linux = super.util-linux.override {
         systemdSupport = false;
