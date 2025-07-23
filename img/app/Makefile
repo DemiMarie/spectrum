@@ -165,7 +165,7 @@ run-qemu: $(imgdir)/appvm/blk/root.img start-vhost-user-net start-virtiofsd
 	    -parallel none \
 	    -chardev vc,id=virtiocon0 \
 	    -device virtio-serial-pci \
-	    -device virtconsole,chardev=virtiocon0
+	    -device virtconsole,chardev=virtiocon0 3< '$(subst ','\'',$(imgdir))/appvm/blk/root.img'
 .PHONY: run-qemu
 
 run-cloud-hypervisor: $(imgdir)/appvm/blk/root.img start-vhost-user-gpu start-vhost-user-net start-virtiofsd

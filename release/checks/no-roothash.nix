@@ -16,14 +16,13 @@ in {
   nodes = {};
 
   testScript = ''
-    import shlex
-
-    flags = "${qemuBinary self.config.qemu.package} " + " ".join(map(shlex.quote, [
-      "-m", "512",
-      "-kernel", "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}",
-      "-initrd", "${initramfs}",
-      "-append", "console=${qemuSerialDevice} panic=-1",
-    ]))
+    flags = ${builtins.toJSON ("${lib.escapeShellArgs [
+      (qemuBinary self.config.qemu.package)
+      "-m" "512"
+      "-kernel" "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}"
+      "-initrd" initramfs
+      "-append" "console=${qemuSerialDevice} panic=-1",
+    ])}
 
     machine = create_machine(flags)
 
