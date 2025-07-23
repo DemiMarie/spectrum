@@ -3,6 +3,7 @@ From: David Stevens <stevensd@chromium.org>
 Date: Wed, 15 Jun 2022 16:45:12 +0900
 Subject: [PATCH 3/4] vhost_user: add shared memory region support
 SPDX-FileCopyrightText: 2019 Intel Corporation. All Rights Reserved.
+SPDX-FileCopyrightText: 2019 Alibaba Cloud Computing. All rights reserved.
 SPDX-FileCopyrightText: 2019-2021 Alibaba Cloud. All rights reserved.
 SPDX-FileCopyrightText: The Chromium OS Authors
 SPDX-FileCopyrightText: 2022 Unikie

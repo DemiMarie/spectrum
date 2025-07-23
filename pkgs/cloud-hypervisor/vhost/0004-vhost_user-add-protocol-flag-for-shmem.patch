@@ -2,7 +2,7 @@ From f7271e843fc0630becaa7c5504ab12b6630003da Mon Sep 17 00:00:00 2001
 From: David Stevens <stevensd@chromium.org>
 Date: Thu, 13 Oct 2022 10:37:47 +0900
 Subject: [PATCH 4/4] vhost_user: add protocol flag for shmem
-SPDX-FileCopyrightText: 2019-2021 Alibaba Cloud. All rights reserved.
+SPDX-FileCopyrightText: 2019 Alibaba Cloud Computing. All rights reserved.
 SPDX-FileCopyrightText: The Chromium OS Authors
 SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
 SPDX-License-Identifier: Apache-2.0
