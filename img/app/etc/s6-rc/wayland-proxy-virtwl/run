@@ -7,7 +7,6 @@
 # SPDX-FileCopyrightText: 2022 Unikie
 
 foreground { mkdir /tmp/.X11-unix }
-foreground { mkdir /run/user }
 foreground {
   umask 077
   mkdir /run/user/0
