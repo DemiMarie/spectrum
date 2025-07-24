@@ -22,61 +22,14 @@ let
   pkgsGui = pkgsMusl.extend (
     final: super:
     (optionalAttrs (systems.equals pkgsMusl.stdenv.hostPlatform super.stdenv.hostPlatform) {
-      appstream = super.appstream.override {
-        withSystemd = false;
-      };
-      at-spi2-core = super.at-spi2-core.override {
-        systemdSupport = false;
-      };
-      colord = super.colord.override {
-        enableSystemd = false;
-      };
       flatpak = super.flatpak.override {
         withMalcontent = false;
-        withSystemd = false;
-      };
-      gcr_4 = super.gcr_4.override {
-        systemdSupport = false;
-      };
-      gnome-desktop = super.gnome-desktop.override {
-        withSystemd = false;
-      };
-      gnome-settings-daemon = super.gnome-settings-daemon.override {
-        withSystemd = false;
       };
 
       libgudev = super.libgudev.overrideAttrs ({ ... }: {
         # Tests use umockdev, which is not compatible with libudev-zero.
         doCheck = false;
       });
-
-      modemmanager = super.modemmanager.override {
-        withSystemd = false;
-      };
-      networkmanager = super.networkmanager.override {
-        withSystemd = false;
-      };
-      pcsclite = super.pcsclite.override {
-        systemdSupport = false;
-      };
-      pipewire = super.pipewire.override {
-        enableSystemd = false;
-      };
-      polkit = super.polkit.override {
-        useSystemd = false;
-      };
-      postgresql = super.postgresql.override {
-        systemdSupport = false;
-      };
-      ppp = super.ppp.override {
-        withSystemd = false;
-      };
-      procps = super.procps.override {
-        withSystemd = false;
-      };
-      pulseaudio = super.pulseaudio.override {
-        useSystemd = false;
-      };
 
       qt6 = super.qt6.overrideScope (_: prev: {
         qttranslations = prev.qttranslations.override {
@@ -100,23 +53,13 @@ let
         };
       });
 
-      tinysparql = super.tinysparql.overrideAttrs ({ mesonFlags ? [], ... }: {
-        mesonFlags = mesonFlags ++ [ "-Dsystemd_user_services=false" ];
-      });
-
       upower = super.upower.override {
-        withSystemd = false;
-
         # Not ideal, but it's the best way to get rid of an installed
         # test that needs umockdev.
         withIntrospection = false;
       };
 
       udev = final.libudev-zero;
-
-      util-linux = super.util-linux.override {
-        systemdSupport = false;
-      };
 
       weston = super.weston.overrideAttrs ({ mesonFlags ? [], ... }: {
         mesonFlags = mesonFlags ++ [
