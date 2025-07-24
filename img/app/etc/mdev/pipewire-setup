@@ -1,0 +1,29 @@
+#!/usr/bin/bash --
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+unset card device factory_name media_class stream
+set -euo pipefail
+export LC_ALL=C.UTF-8
+# Wait for PipeWire to start
+s6-svc -wU /run/service/pipewire
+# checked by mdevd
+[[ "$DEVNAME" =~ ^snd/pcmC(0|[1-9][0-9]*)D(0|[1-9][0-9]*)([cp])$ ]]
+card=${BASH_REMATCH[1]} device=${BASH_REMATCH[2]}
+case ${BASH_REMATCH[3]} in
+(p) factory_name=api.alsa.pcm.sink media_class=Audio/Sink stream=playback;;
+(c) factory_name=api.alsa.pcm.source media_class=Audio/Source stream=capture;;
+(*) exit 100;; # impossible
+esac
+exec pw-cli create-node adapter "
+alsa.card=\"$card\"
+alsa.device=\"$device\"
+api.alsa.path=\"hw:$card,$device\"
+api.alsa.pcm.card=\"$card\"
+api.alsa.pcm.stream=\"$stream"'"
+audio.channels=2
+audio.format="S16LE"
+audio.position="FL,FR"
+factory.name="'"$factory_name\"
+node.name=\"alsa_${stream}_${card}_$device\"
+object.linger = true
+"

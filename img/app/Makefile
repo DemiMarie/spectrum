@@ -39,6 +39,7 @@ VM_FILES = \
 	etc/mdev/listen \
 	etc/mdev/virtiofs \
 	etc/mdev/wait \
+	etc/mdev/pipewire-setup \
 	etc/passwd \
 	etc/resolv.conf \
 	etc/s6-linux-init/env/DBUS_SESSION_BUS_ADDRESS \
@@ -87,6 +88,7 @@ build/rootfs.erofs: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) $(V
 
 VM_S6_RC_FILES = \
 	etc/s6-rc/app/dependencies.d/dbus \
+	etc/s6-rc/app/dependencies.d/pipewire \
 	etc/s6-rc/app/dependencies.d/wayland-proxy-virtwl \
 	etc/s6-rc/app/dependencies.d/wireplumber \
 	etc/s6-rc/app/run \
@@ -102,6 +104,7 @@ VM_S6_RC_FILES = \
 	etc/s6-rc/mdevd/type \
 	etc/s6-rc/ok-all/contents \
 	etc/s6-rc/ok-all/type \
+	etc/s6-rc/pipewire/dependencies.d/dbus \
 	etc/s6-rc/pipewire/notification-fd \
 	etc/s6-rc/pipewire/run \
 	etc/s6-rc/pipewire/type \
