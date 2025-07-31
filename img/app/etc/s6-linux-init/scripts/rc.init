@@ -6,5 +6,6 @@ if { s6-rc-init -c /etc/s6-rc /run/service }
 
 if { modprobe overlay }
 if { mount -a --mkdir }
+if { mkdir -m 1700 /tmp/.X11-unix /tmp/.ICE-unix /tmp/.font-unix /tmp/.XIM-unix }
 
 s6-rc change ok-all
