@@ -48,6 +48,9 @@ let
       pkgs.xwayland
       pkgs.xdg-desktop-portal
       pkgs.xdg-desktop-portal-gtk
+      # Depends on pulseaudio libs
+      pkgs.pipewire
+      pkgs.wireplumber
     ];
   })).fhsenv;
 in
