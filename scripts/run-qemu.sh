@@ -1,29 +1,35 @@
-#!/bin/sh -ue
+#!/bin/sh --
 # SPDX-FileCopyrightText: 2023-2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-License-Identifier: EUPL-1.2+
 
 # This script wraps around QEMU to paper over platform differences,
 # which can't be handled portably in Make language.
+set -uef
+if [ -n ${ARCH+test} ]; then
+	ARCH=$(uname -m)
+fi
+unset iommu machine append
+cpu='-cpu host'
 
-case "${ARCH:="$(uname -m)"}" in
+case $ARCH in
 	aarch64)
-		machine=virt,accel=kvm:tcg,gic-version=3,iommu=smmuv3
+		machine=virt,gic-version=3,iommu=smmuv3
 		;;
 	x86_64)
-		append="console=ttyS0${append:+ $append}"
+		append=console=ttyS0
 		iommu=intel-iommu,intremap=on
-		machine=q35,accel=kvm:tcg,kernel-irqchip=split
+		machine=q35,kernel-irqchip=split
 		;;
 esac
 
 i=0
-while [ $i -lt $# ]; do
-	arg="$1"
+while [ "$i" -lt "$#" ]; do
+	arg=$1
 	shift
 
-	case "$arg" in
+	case $arg in
 		-append)
-			set -- "$@" -append "${append:+$append }$1"
+			set -- "$@" -append ${append:+"$append "}"$1"
 			i=$((i + 2))
 			shift
 			continue
@@ -31,10 +37,10 @@ while [ $i -lt $# ]; do
 		-device)
 			IFS=,
 			for opt in $1; do
-				case "$opt" in
-					*-iommu)
-						unset iommu
-						;;
+				case $opt in
+				*-iommu)
+					unset iommu
+					;;
 				esac
 				break
 			done
