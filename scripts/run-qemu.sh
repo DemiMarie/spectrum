@@ -23,7 +23,7 @@ while [ $i -lt $# ]; do
 	arg="$1"
 	shift
 
-	case "$arg" in
+	case $arg in
 		-append)
 			set -- "$@" -append "${append:+$append }$1"
 			i=$((i + 2))
@@ -33,10 +33,10 @@ while [ $i -lt $# ]; do
 		-device)
 			IFS=,
 			for opt in $1; do
-				case "$opt" in
-					*-iommu)
-						unset iommu
-						;;
+				case $opt in
+				*-iommu)
+					unset iommu
+					;;
 				esac
 				break
 			done
@@ -49,19 +49,13 @@ while [ $i -lt $# ]; do
 
 			IFS=,
 			for opt in $1; do
-				case "$opt" in
-					virtualization=on)
-						case "$ARCH" in
-							aarch64)
-								opt="$opt,accel=tcg" cpu=
-								;;
-							*)
-								continue
-								;;
-						esac
-						;;
-				esac
-
+				if [ "$opt" = 'virtualization=on' ]; then
+					if [ "$ARCH" = 'aarch64' ]; then
+						opt=$opt,accel=tcg cpu=
+					else
+						continue
+					fi
+				fi
 				arg="$arg${arg:+,}$opt"
 			done
 			unset IFS
