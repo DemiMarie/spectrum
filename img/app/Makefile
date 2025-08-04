@@ -177,7 +177,7 @@ run-cloud-hypervisor: $(imgdir)/appvm/blk/root.img start-vhost-user-gpu start-vh
 	    --fs tag=virtiofs0,socket=build/virtiofsd.sock \
 	    --gpu socket=build/vhost-user-gpu.sock \
 	    --vsock cid=3,socket=build/vsock.sock \
-	    --net vhost_user=on,socket=build/vhost-user-net.sock \
+	    --net mac=02:00:00:00:00:01,vhost_user=on,socket=build/vhost-user-net.sock \
 	    --kernel $(KERNEL) \
 	    --cmdline "root=PARTLABEL=root" \
 	    --console tty \
@@ -188,7 +188,7 @@ run-crosvm: $(imgdir)/appvm/blk/root.img start-vhost-user-gpu start-virtiofsd
 	../../scripts/with-taps.elb $(CROSVM_RUN) \
 	    --disk $(imgdir)/appvm/blk/root.img \
 	    -p "console=ttyS0 root=PARTLABEL=root" \
-	    --net tap-name=tap0 \
+	    --net tap-name=tap0,mac=02:00:00:00:00:01 \
 	    --vhost-user fs,socket=build/virtiofsd.sock \
 	    --vhost-user gpu,socket=build/vhost-user-gpu.sock \
 	    --vsock cid=3 \
