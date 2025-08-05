@@ -6,6 +6,11 @@ export PATH /bin
 
 if { mount -a }
 
+if { ln -s /proc/self/fd /dev }
+if { ln -s /proc/self/fd/0 /dev/stdin }
+if { ln -s /proc/self/fd/1 /dev/stdout }
+if { ln -s /proc/self/fd/2 /dev/stderr }
+
 piperw 3 4
 if { fdmove 1 4 /etc/getuuids }
 fdclose 4
