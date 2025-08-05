@@ -1,5 +1,13 @@
 #!/bin/execlineb -s0
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>
+# Symlink creation (if it's copyrightable):
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+/usr/bin/if { /usr/bin/ln -s /proc/self/fd /dev }
+/usr/bin/if { /usr/bin/ln -s /proc/self/fd/0 /dev/stdin }
+/usr/bin/if { /usr/bin/ln -s /proc/self/fd/1 /dev/stdout }
+/usr/bin/if { /usr/bin/ln -s /proc/self/fd/2 /dev/stderr }
 
 /bin/s6-linux-init -c /etc/s6-linux-init -s /run/param -- $@
