@@ -45,4 +45,4 @@ while read -r arg1; do
 	cp -RT -- "$arg1" "$root/$arg2"
 done
 
-mkfs.erofs -b4096 --all-root "$@" "$root"
+mkfs.erofs -x-1 -b4096 --all-root "$@" "$root"
