@@ -19,7 +19,9 @@ VERITYSETUP = veritysetup
 VIRTIOFSD = virtiofsd
 
 PACKAGES_FILE != \
-	if ! [ -e build/packages.txt ] || ! cmp -s $$PACKAGES build/packages.txt; then \
-		mkdir -p build && cp -f $$PACKAGES build/packages.txt ;\
-	fi ;\
-	echo build/packages.txt
+	if [ -n "$$PACKAGES" ]; then \
+	    if ! [ -e build/packages.txt ] || ! cmp -s "$$PACKAGES" build/packages.txt; then \
+	        mkdir -p build && cp -f "$$PACKAGES" build/packages.txt ;\
+	    fi ;\
+	    echo build/packages.txt ;\
+	fi
