@@ -10,3 +10,4 @@ target/
 **/subprojects/*
 !**/subprojects/*.wrap
 !**/subprojects/packagefiles
+**/.direnv/*
