@@ -32,7 +32,7 @@ impl Display for MacAddress {
 }
 
 impl Serialize for MacAddress {
-    fn begin(&self) -> Fragment {
+    fn begin(&self) -> Fragment<'_> {
         Fragment::Str(Cow::Owned(self.to_string()))
     }
 }
