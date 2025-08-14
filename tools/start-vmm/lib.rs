@@ -41,8 +41,9 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
         return Err(format!("VM name may not contain a colon: {vm_name:?}"));
     }
 
-    let config_dir = vm_dir.join("config");
+    let name_bytes = vm_name.as_bytes();
 
+    let config_dir = vm_dir.join("config");
     let blk_dir = config_dir.join("blk");
     let kernel_path = config_dir.join("vmlinux");
     let net_providers_dir = config_dir.join("providers/net");
@@ -93,46 +94,24 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
             shared: true,
         },
         net: match net_providers_dir.read_dir() {
-            Ok(entries) => entries
-                .into_iter()
-                .map(|result| {
-                    let provider_name = result
-                        .map_err(|e| format!("examining directory entry: {e}"))?
-                        .file_name()
-                        .into_string()
-                        .map_err(|name| format!("provider name {name:?} is not UTF-8"))?;
+            Ok(_) => {
+                // SAFETY: we check the result.
+                let net = unsafe {
+                    net_setup(
+                        name_bytes.as_ptr() as _,
+                        name_bytes
+                            .len()
+                            .try_into()
+                            .map_err(|e| format!("VM name too long: {e}"))?,
+                    )
+                };
+                if net.fd == -1 {
+                    let e = io::Error::last_os_error();
+                    return Err(format!("setting up networking failed: {e}"));
+                }
 
-                    let provider_dir = vm_dir
-                        .parent()
-                        .unwrap()
-                        .parent()
-                        .unwrap()
-                        .join("by-name")
-                        .join(provider_name);
-
-                    let name_bytes = vm_name.as_bytes();
-                    // SAFETY: we check the result.
-                    let net = unsafe {
-                        net_setup(
-                            name_bytes.as_ptr() as _,
-                            name_bytes
-                                .len()
-                                .try_into()
-                                .map_err(|e| format!("VM name too long: {e}"))?,
-                            &provider_dir.as_path(),
-                        )
-                    };
-                    if net.fd == -1 {
-                        let e = io::Error::last_os_error();
-                        return Err(format!("setting up networking failed: {e}"));
-                    }
-
-                    Ok(net.try_into().unwrap())
-                })
-                // TODO: to support multiple net providers, we'll need
-                // a better naming scheme for tap and bridge devices.
-                .take(1)
-                .collect::<Result<_, _>>()?,
+                vec![net.try_into().unwrap()]
+            }
             Err(e) if e.kind() == ErrorKind::NotFound => Default::default(),
             Err(e) => return Err(format!("reading directory {net_providers_dir:?}: {e}")),
         },
