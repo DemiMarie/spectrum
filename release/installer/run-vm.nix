@@ -28,7 +28,7 @@ writeShellScript "run-spectrum-installer-vm.sh" ''
   truncate -s 20G "$img"
   exec 3<>"$img"
   rm -f "$img"
-  exec ${../../scripts/run-qemu.sh} -cpu host -m 4G \
+  exec ${../../scripts/run-qemu.sh} -cpu max -m 4G \
     -device virtio-keyboard \
     -device virtio-mouse \
     -device virtio-gpu \

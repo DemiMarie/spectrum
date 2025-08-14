@@ -99,7 +99,7 @@ start-vhost-user-net:
 	../../../scripts/start-passt.elb
 
 run-qemu: $(vmdir)/netvm/blk/root.img
-	@../../../scripts/run-qemu.sh -m 256 -cpu host -kernel $(KERNEL) -vga none \
+	@../../../scripts/run-qemu.sh -m 256 -cpu max -kernel $(KERNEL) -vga none \
 	    -drive file=$(vmdir)/netvm/blk/root.img,if=virtio,format=raw,readonly=on \
 	    -append "root=PARTLABEL=root nokaslr" \
 	    -gdb unix:build/gdb.sock,server,nowait \
