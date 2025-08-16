@@ -225,7 +225,6 @@ run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
 	    -qmp unix:build/vmm.sock,server,nowait \
 	    -monitor vc \
 	    -parallel none \
-	    -serial none \
 	    -chardev vc,id=virtiocon0 \
 	    -device virtio-serial \
 	    -device virtconsole,chardev=virtiocon0 \
