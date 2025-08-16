@@ -84,7 +84,7 @@ build/rootfs.erofs: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) $(V
 	    for file in $(VM_BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(VM_DIRS) ;\
 	    printf 'build/fifo\n%s\n' $(VM_FIFOS) ;\
-	) | ../../scripts/make-erofs.sh $@
+	) | ../../scripts/make-erofs.sh s6 $@
 
 VM_S6_RC_FILES = \
 	etc/s6-rc/app/dependencies.d/dbus \

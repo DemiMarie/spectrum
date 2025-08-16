@@ -3,11 +3,6 @@
 # SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
 
 unexport WAYLAND_DISPLAY
-
-foreground {
-  umask 077
-  mkdir /run/user/0
-}
 unexport ?
 
 backtick USER { id -un }

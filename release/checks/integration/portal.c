@@ -13,7 +13,7 @@ void test(struct config c)
 	          "(tail -Fc +0 /run/log/current &) && "
 	          "mkdir /run/mnt && "
 	          "mount \"$(findfs UUID=a7834806-2f82-4faf-8ac4-4f8fd8a474ca)\" /run/mnt && "
-	          "s6-rc -bu change vmm-env && "
+	          "s6-rc -bu change weston && "
 	          "vm-import user /run/mnt/vms && "
 	          "(tail -Fc +0 /run/*.log &) && "
 	          "s6-svc -O /run/vm/by-name/user.portal/service && "

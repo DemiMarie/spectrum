@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+ACTION!="remove", KERNEL=="kvm", ENV{SYSTEMD_READY}="1", TAG+="systemd"
+ACTION!="remove", ENV{PCI_CLASS}=="2????", RUN+="/etc/mdev/net/add"
+# Taken from Arch wiki.  Should fall under fair use (1 line) in US at least
+# (due to being too small and the only reasonable way to do this), but is
+# the reason for the GFDL license.
+ACTION!="remove", SUBSYSTEM=="tty", ENV{ID_BUS}=="usb", TAG+="systemd", ENV{SYSTEMD_WANTS}+="serial-getty@$kernel.service"

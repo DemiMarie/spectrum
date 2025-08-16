@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+auth     required pam_permit.so
+account  required pam_permit.so
+password required pam_permit.so
+session  required pam_loginuid.so
+session  required pam_keyinit.so force revoke
+session  required pam_namespace.so
+session  required /usr/lib/security/pam_systemd.so
