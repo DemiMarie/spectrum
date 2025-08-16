@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2022 Unikie
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+[Unit]
+Description=Wayland proxy for VM %I
+
+[Service]
+Type=simple
+# Wayland doesn't allow passing directory FDs.
+# TODO: enforce this (with an fstat() check)
+# in the Wayland compositor.
+DynamicUser=yes

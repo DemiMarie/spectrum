@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+[Unit]
+Description=XDG Desktop Portal for VM %i
+# for /run/vm/by-id
+Requires=vm-dbus@%i.service
+After=vm-dbus@%i.service
+PartOf=spectrum-vm@%i.service
+
+[Service]
+# FIXME: lock this down
+SystemCallFilter=@system-service
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/vm/by-id/%i/portal-bus
+StandardInput=socket
+Type=simple
+ExecStart=/usr/bin/xdg-desktop-portal-spectrum-host

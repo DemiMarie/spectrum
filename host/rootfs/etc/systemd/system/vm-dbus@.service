@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+[Unit]
+Description=Per-VM message bus daemon
+Documentation=man:dbus-daemon(1)
+Requires=systemd-tmpfiles-setup.service %N.socket
+After=systemd-tmpfiles-setup.service %N.socket
+
+[Service]
+Environment=VM=/run/vm/by-id/%i
+Type=notify
+ExecStart=/usr/bin/dbus-daemon --config-file /usr/share/dbus-1/session.conf --address systemd:
+DynamicUser=yes
+User=vm-dbus-%i
+Group=vm-dbus-%i
+# TODO: make this (much) stricter
+SystemCallFilter=@basic-io @io-event @pkey @sandbox @signal

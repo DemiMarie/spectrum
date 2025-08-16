@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+[Unit]
+Requires=%N.socket
+After=%N.socket
+PartOf=spectrum-vm@%i.service
+
+[Service]
+Environment=TMPDIR=/run
+Type=simple
+StandardInput=socket
+PrivateMounts=yes
+RuntimeDirectory=vm/by-id/%i/fs
+BindReadOnlyPaths=%t/vm/by-id/%i/fs:%t/vm/by-id/%i/fs:rbind
+# FIXME: better seccomp filter
+# FIXME: run as non-root
+# FIXME: use NixOS's isolation mechanism
+# FIXME: use DynamicUser=
+ProtectSystem=strict
+ProtectHome=strict
+SystemCallFilter=@system-service
+ExecStart=virtiofsd --fd 0 --shared-dir /run/vm/by-id/%i/fs:rbind

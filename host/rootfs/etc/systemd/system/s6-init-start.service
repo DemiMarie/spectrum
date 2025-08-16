@@ -1,0 +1,8 @@
+[Unit]
+Description=Start s6 services
+Requires=systemd-tmpfiles-setup.service systemd-logind.service
+After=systemd-tmpfiles-setup.service systemd-logind.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/s6-svscan /run/service

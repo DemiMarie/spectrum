@@ -10,48 +10,26 @@ dest = build/rootfs.erofs
 FILES = \
 	etc/fonts/fonts.conf \
 	etc/fstab \
-	etc/group \
 	etc/init \
 	etc/login \
-	etc/mdev.conf \
-	etc/mdev/listen \
-	etc/mdev/net/add \
-	etc/mdev/wait \
+	etc/machine-id \
 	etc/parse-devname \
-	etc/passwd \
-	etc/s6-linux-init/env/WAYLAND_DISPLAY \
-	etc/s6-linux-init/env/XDG_RUNTIME_DIR \
-	etc/s6-linux-init/run-image/service/dbus/notification-fd \
-	etc/s6-linux-init/run-image/service/dbus/run \
-	etc/s6-linux-init/run-image/service/dbus/template/notification-fd \
-	etc/s6-linux-init/run-image/service/dbus/template/run \
-	etc/s6-linux-init/run-image/service/getty-tty1/run \
-	etc/s6-linux-init/run-image/service/getty-tty2/run \
-	etc/s6-linux-init/run-image/service/getty-tty3/run \
-	etc/s6-linux-init/run-image/service/getty-tty4/run \
-	etc/s6-linux-init/run-image/service/s6-svscan-log/notification-fd \
-	etc/s6-linux-init/run-image/service/s6-svscan-log/run \
-	etc/s6-linux-init/run-image/service/serial-getty-generator/run \
-	etc/s6-linux-init/run-image/service/serial-getty/notification-fd \
-	etc/s6-linux-init/run-image/service/serial-getty/run \
-	etc/s6-linux-init/run-image/service/serial-getty/template/run \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/notification-fd \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/run \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/template/notification-fd \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/template/run \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/notification-fd \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/run \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/template/data/check \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/template/notification-fd \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/template/run \
-	etc/s6-linux-init/run-image/service/vmm/notification-fd \
-	etc/s6-linux-init/run-image/service/vmm/run \
-	etc/s6-linux-init/run-image/service/vmm/template/notification-fd \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/notification-fd \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/run \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/notification-fd \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/run \
-	etc/s6-linux-init/scripts/rc.init \
+	etc/sysctl.d/spectrum.conf \
+	etc/systemd/system.conf.d/zspectrum.conf \
+	etc/systemd/system/cloud-hypervisor@.service \
+	etc/systemd/system/cloud-hypervisor@.socket \
+	etc/systemd/system/s6-init-start.service \
+	etc/systemd/system/serial-getty@.service.d/90_force.conf \
+	etc/systemd/system/sys-vmms.service \
+	etc/systemd/system/systemd-logind.service.d/90_etc-read-only.conf \
+	etc/systemd/system/vhost-user-fs@.service \
+	etc/systemd/system/vhost-user-fs@.socket \
+	etc/systemd/system/vhost-user-gpu@.service \
+	etc/systemd/system/vm-dbus@.service \
+	etc/systemd/system/weston.service \
+	etc/systemd/system/xdg-desktop-portal-spectrum-host@.service \
+	etc/tmpfiles.d/99-spectrum.conf \
+	etc/udev/rules.d/99-spectrum-kvm.conf \
 	etc/xdg/weston/autolaunch \
 	etc/xdg/weston/weston.ini \
 	usr/bin/assign-devices \
@@ -63,46 +41,63 @@ FILES = \
 	usr/bin/vm-start \
 	usr/bin/vm-stop \
 	usr/bin/xdg-open \
-	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service
+	usr/lib/spectrum/s6-start \
+	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service \
+	usr/share/spectrum/service/dbus/notification-fd \
+	usr/share/spectrum/service/dbus/run \
+	usr/share/spectrum/service/dbus/template/notification-fd \
+	usr/share/spectrum/service/dbus/template/run \
+	usr/share/spectrum/service/s6-svscan-log/notification-fd \
+	usr/share/spectrum/service/s6-svscan-log/run \
+	usr/share/spectrum/service/vhost-user-fs/notification-fd \
+	usr/share/spectrum/service/vhost-user-fs/run \
+	usr/share/spectrum/service/vhost-user-fs/template/notification-fd \
+	usr/share/spectrum/service/vhost-user-fs/template/run \
+	usr/share/spectrum/service/vhost-user-gpu/notification-fd \
+	usr/share/spectrum/service/vhost-user-gpu/run \
+	usr/share/spectrum/service/vhost-user-gpu/template/data/check \
+	usr/share/spectrum/service/vhost-user-gpu/template/notification-fd \
+	usr/share/spectrum/service/vhost-user-gpu/template/run \
+	usr/share/spectrum/service/vmm/notification-fd \
+	usr/share/spectrum/service/vmm/run \
+	usr/share/spectrum/service/vmm/template/notification-fd \
+	usr/share/spectrum/service/xdg-desktop-portal-spectrum-host/notification-fd \
+	usr/share/spectrum/service/xdg-desktop-portal-spectrum-host/run \
+	usr/share/spectrum/service/xdg-desktop-portal-spectrum-host/template/notification-fd \
+	usr/share/spectrum/service/xdg-desktop-portal-spectrum-host/template/run
 
 DIRS = \
 	dev \
+	etc/dbus \
 	etc/s6-linux-init/env \
-	etc/s6-linux-init/run-image/configs \
-	etc/s6-linux-init/run-image/lock \
-	etc/s6-linux-init/run-image/service/dbus/instance \
-	etc/s6-linux-init/run-image/service/dbus/instances \
-	etc/s6-linux-init/run-image/service/dbus/template/data \
-	etc/s6-linux-init/run-image/service/dbus/template/env \
-	etc/s6-linux-init/run-image/service/serial-getty/instance \
-	etc/s6-linux-init/run-image/service/serial-getty/instances \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/instance \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/instances \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/template/data \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/template/env \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/instance \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/instances \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/template/env \
-	etc/s6-linux-init/run-image/service/vmm/instance \
-	etc/s6-linux-init/run-image/service/vmm/instances \
-	etc/s6-linux-init/run-image/service/vmm/template/data \
-	etc/s6-linux-init/run-image/service/vmm/template/env \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/instance \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/instances \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/data \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/env \
-	etc/s6-linux-init/run-image/user \
-	etc/s6-linux-init/run-image/vm/by-id \
-	etc/s6-linux-init/run-image/vm/by-name \
-	etc/s6-linux-init/run-image/wait \
 	ext \
 	home \
 	proc \
-	root \
+	root/.ssh \
 	run \
 	srv \
 	sys \
-	tmp
+	tmp \
+	usr/share/spectrum/configs \
+	usr/share/spectrum/service/dbus/instance \
+	usr/share/spectrum/service/dbus/instances \
+	usr/share/spectrum/service/dbus/template/data \
+	usr/share/spectrum/service/dbus/template/env \
+	usr/share/spectrum/service/vhost-user-fs/instance \
+	usr/share/spectrum/service/vhost-user-fs/instances \
+	usr/share/spectrum/service/vhost-user-fs/template/data \
+	usr/share/spectrum/service/vhost-user-fs/template/env \
+	usr/share/spectrum/service/vhost-user-gpu/instance \
+	usr/share/spectrum/service/vhost-user-gpu/instances \
+	usr/share/spectrum/service/vhost-user-gpu/template/env \
+	usr/share/spectrum/service/vmm/instance \
+	usr/share/spectrum/service/vmm/instances \
+	usr/share/spectrum/service/vmm/template/data \
+	usr/share/spectrum/service/vmm/template/env \
+	usr/share/spectrum/service/xdg-desktop-portal-spectrum-host/instance \
+	usr/share/spectrum/service/xdg-desktop-portal-spectrum-host/instances \
+	usr/share/spectrum/service/xdg-desktop-portal-spectrum-host/template/data \
+	usr/share/spectrum/service/xdg-desktop-portal-spectrum-host/template/env
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
@@ -111,11 +106,14 @@ FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 LINKS = \
 	bin \
 	etc/mtab \
-	etc/s6-linux-init/run-image/opengl-driver \
-	etc/s6-linux-init/run-image/service/vmm/template/run \
+	etc/systemd/system/dbus.service \
+	etc/systemd/system/default.target.requires/s6-init-start.service \
+	etc/systemd/system/graphical.target.requires/s6-init-start.service \
+	etc/systemd/system/multi-user.target.requires/s6-init-start.service \
 	lib \
 	sbin \
 	usr/sbin \
+	usr/share/spectrum/service/vmm/template/run \
 	var/lock \
 	var/run
 
@@ -138,31 +136,12 @@ build/empty:
 	mkdir -p $@
 
 S6_RC_FILES = \
-	etc/s6-rc/card0/type \
-	etc/s6-rc/card0/up \
-	etc/s6-rc/core/type \
-	etc/s6-rc/core/up \
-	etc/s6-rc/kvm/timeout-up \
-	etc/s6-rc/kvm/type \
-	etc/s6-rc/kvm/up \
-	etc/s6-rc/mdevd-coldplug/dependencies \
-	etc/s6-rc/mdevd-coldplug/type \
-	etc/s6-rc/mdevd-coldplug/up \
-	etc/s6-rc/mdevd/notification-fd \
-	etc/s6-rc/mdevd/run \
-	etc/s6-rc/mdevd/type \
 	etc/s6-rc/ok-all/contents \
 	etc/s6-rc/ok-all/type \
-	etc/s6-rc/static-nodes/type \
-	etc/s6-rc/static-nodes/up \
-	etc/s6-rc/sys-vmms/dependencies \
 	etc/s6-rc/sys-vmms/type \
 	etc/s6-rc/sys-vmms/up \
 	etc/s6-rc/vm-env/contents \
 	etc/s6-rc/vm-env/type \
-	etc/s6-rc/vmm-env/contents \
-	etc/s6-rc/vmm-env/type \
-	etc/s6-rc/weston/dependencies \
 	etc/s6-rc/weston/notification-fd \
 	etc/s6-rc/weston/type \
 	etc/s6-rc/weston/run
@@ -237,7 +216,7 @@ run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
 	    -device virtconsole,chardev=virtiocon0 \
 	    -drive file=build/live.img,if=virtio,format=raw,readonly=on \
 	    -drive file=/proc/self/fd/3,if=virtio,format=raw \
-	    -append "console=hvc0 roothash=$$(< build/rootfs.verity.roothash) intel_iommu=on nokaslr" \
+	    -append "console=hvc0 roothash=$$(< build/rootfs.verity.roothash) intel_iommu=on nokaslr systemd.verity=no" \
 	    -device virtio-keyboard \
 	    -device virtio-mouse \
 	    -device virtio-gpu \
