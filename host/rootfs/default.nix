@@ -138,6 +138,7 @@ let
     depsBuildBuild = [ inkscape ];
     nativeBuildInputs = [ xorg.lndir ];
   } ''
+    set -eu
     mkdir -p $out/usr/bin $out/usr/share/dbus-1/services \
       $out/usr/share/icons/hicolor/20x20/apps
 
