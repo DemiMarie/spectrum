@@ -17,7 +17,7 @@ let
   inherit (nixosAllHardware.config.hardware) firmware;
   inherit (lib)
     concatMapStringsSep concatStrings escapeShellArgs fileset optionalAttrs
-    mapAttrsToList systems trivial;
+    mapAttrsToList systems trivial escapeShellArg;
 
   pkgsGui = pkgs.extend (
     final: super:
@@ -119,7 +119,7 @@ let
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
   usrPackages = [
-    appvm kernel firmware netvm pkgs.systemd
+    appvm kernel firmware netvm
   ] ++ (with pkgs; [ mesa dejavu_fonts westonLite ]);
 
   appvms = {
@@ -138,29 +138,31 @@ let
     # Weston doesn't support SVG icons.
     inkscape -w 20 -h 20 \
         -o $out/usr/share/icons/hicolor/20x20/apps/com.system76.CosmicFiles.png \
-        ${pkgs.cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
+        ${escapeShellArg pkgs.cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
 
-    ln -st $out/usr/bin \
-        ${concatMapStringsSep " " (p: "${p}/bin/*") packages} \
-        ${pkgs.xdg-desktop-portal}/libexec/xdg-document-portal \
-        ${pkgs.xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
-    ln -st $out/usr/share/dbus-1 \
-        ${dbus}/share/dbus-1/session.conf
-    ln -st $out/usr/share/dbus-1/services \
-        ${pkgs.xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
+    ln -st "$out/usr/bin" -- \
+        ${concatMapStringsSep " " (p: "${escapeShellArg p}/bin/*") packages} \
+        ${escapeShellArg pkgs.xdg-desktop-portal}/libexec/xdg-document-portal \
+        ${escapeShellArg pkgs.xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
+    ln -st "$out/usr/share/dbus-1" -- \
+        ${escapeShellArg dbus}/share/dbus-1/session.conf
+    ln -st "$out/usr/share/dbus-1/services" -- \
+        ${escapeShellArg pkgs.xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
 
     for pkg in ${escapeShellArgs usrPackages}; do
         lndir -ignorelinks -silent "$pkg" "$out/usr"
     done
+    cp -a -- ${escapeShellArg pkgs.systemd} "$out/usr/"
+    find "$out/usr/"
 
     ${concatStrings (mapAttrsToList (name: path: ''
-      ln -s ${path} $out/usr/lib/spectrum/vm/${name}
+      ln -s -- ${escapeShellArg path} "$out"/usr/lib/spectrum/vm/${escapeShellArg name}
     '') appvms)}
 
     # TODO: this is a hack and we should just build the util-linux
     # programs we want.
     # https://lore.kernel.org/util-linux/87zgrl6ufb.fsf@alyssa.is/
-    ln -s ${util-linuxMinimal}/bin/{findfs,uuidgen,lsblk,mount} $out/usr/bin
+    ln -s -- ${escapeShellArg util-linuxMinimal}/bin/{findfs,uuidgen,lsblk,mount} $out/usr/bin
   '';
 in
 
