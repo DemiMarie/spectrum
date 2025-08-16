@@ -13,6 +13,7 @@ FILES = \
 	etc/group \
 	etc/init \
 	etc/login \
+	etc/machine-id \
 	etc/mdev.conf \
 	etc/mdev/listen \
 	etc/mdev/net/add \
@@ -63,7 +64,17 @@ FILES = \
 	usr/bin/vm-import \
 	usr/bin/vm-start \
 	usr/bin/vm-stop \
-	usr/bin/xdg-open
+	usr/bin/xdg-open \
+	usr/lib/systemd/system/cloud-hypervisor@.service \
+	usr/lib/systemd/system/cloud-hypervisor@.socket \
+	usr/lib/systemd/system/sys-vmms.service \
+	usr/lib/systemd/system/vhost-user-fs@.service \
+	usr/lib/systemd/system/vhost-user-fs@.socket \
+	usr/lib/systemd/system/vhost-user-gpu@.service \
+	usr/lib/systemd/system/vm-dbus@.service \
+	usr/lib/systemd/system/vmm-env.target \
+	usr/lib/systemd/system/weston.service \
+	usr/lib/systemd/system/xdg-desktop-portal-spectrum-host@.service
 
 DIRS = \
 	dev \
@@ -94,6 +105,7 @@ DIRS = \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \
 	etc/s6-linux-init/run-image/wait \
+	usr/lib \
 	ext \
 	run \
 	proc \

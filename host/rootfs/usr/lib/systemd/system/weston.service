@@ -1,0 +1,15 @@
+[Unit]
+Description=Weston Wayland compositor
+Requires=dri-card0.device
+After=dri-card0.device
+User=root
+
+[Service]
+ExecStartPre=mkdir -m 0700 /run/user/%U
+StandardInput=tty
+TTYPath=/dev/tty1
+ExecStart=weston
+Type=notify
+
+[Install]
+WantedBy=default.target

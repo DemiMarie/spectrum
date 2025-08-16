@@ -1,0 +1,8 @@
+[Unit]
+Description=VMM for %i
+PartOf=spectrum-vm@%i.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/run-vmm
+StandardInput=socket

@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
 
-cd $2
 elglob -0 names *
 
 forx -po0 -E name { $names }

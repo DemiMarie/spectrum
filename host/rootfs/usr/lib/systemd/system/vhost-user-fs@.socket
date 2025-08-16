@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+[Unit]
+PartOf=spectrum-vm@%i.service
+
+[Socket]
+ListenStream=/run/vm/by-id/%i/virtiofsd.socket

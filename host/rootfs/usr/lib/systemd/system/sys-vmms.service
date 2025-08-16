@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+[Unit]
+Description=Start system virtual machines
+After=systemd-sysctl.service kvm.device
+Requires=systemd-sysctl.service kvm.device
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/vm-import sys /usr/lib/spectrum/vm
+WorkingDirectory=/usr/lib/spectrum/vm

@@ -1,0 +1,6 @@
+[Unit]
+Description=Cloud Hypervisor control socket for VM %i
+PartOf=spectrum-vm@%i.service
+
+[Socket]
+ListenStream=/run/vm/by-id/%i/vmm
