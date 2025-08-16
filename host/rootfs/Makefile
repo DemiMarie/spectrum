@@ -105,6 +105,7 @@ FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 # them as make dependencies would confuse make.
 LINKS = \
 	bin \
+	etc/mtab \
 	etc/s6-linux-init/run-image/opengl-driver \
 	etc/s6-linux-init/run-image/service/vmm/template/run \
 	lib \
