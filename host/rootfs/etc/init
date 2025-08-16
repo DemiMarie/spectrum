@@ -1,5 +1,11 @@
 #!/bin/execlineb -s0
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
-/bin/s6-linux-init -c /etc/s6-linux-init -s /run/param -- $@
+# Make /etc and /var writable to keep systemd happy
+if { mount -t tmpfs -o defaults,mode=0700 -- tmpfs /run }
+if { mkdir -m 0700 /run/etc-upper /run/etc-work /run/var-upper /run/var-work }
+if { mount -t overlay -o lowerdir=/etc,upperdir=/run/etc-upper,workdir=/run/etc-work,metacopy=on,volatile,index=on,redirect_dir=on,nosuid,nodev,X-mount.mode=0755 -- overlay /etc }
+if { mount -t overlay -o lowerdir=/var,upperdir=/run/var-upper,workdir=/run/var-work,metacopy=on,volatile,index=on,redirect_dir=on,nosuid,nodev,X-mount.mode=0755 -- overlay /var }
+if { umount /run }
+/sbin/init $@

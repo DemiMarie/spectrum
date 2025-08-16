@@ -10,10 +10,14 @@
 
 umask 0022 # for permissions
 ex_usage() {
-	echo "Usage: make-erofs.sh [options]... img < srcdest.txt" >&2
+	echo "Usage: make-erofs.sh [s6|systemd] [options]... img < srcdest.txt" >&2
 	exit 1
 }
 
+case ${1-bad} in
+(s6|systemd) init_type=$1; shift;;
+(*) ex_usage;;
+esac
 for img; do :; done
 if [ -z "${img-}" ]; then
 	ex_usage
@@ -124,12 +128,8 @@ chmod 0755 "$root"
 # directories for reading.
 mkdir -m 0400 "$root/dev" "$root/proc" "$root/run" "$root/sys" "$root/tmp"
 
-# Cause s6-linux-init to create /run/lock and /run/user
-# with the correct mode (0755) and create /home,
-# /var/cache, /var/log, and /var/spool directly.
+# Create /var/cache, /var/log, and /var/spool directly.
 mkdir -m 0755 \
-	"$root/etc/s6-linux-init/run-image/lock" \
-	"$root/etc/s6-linux-init/run-image/user" \
 	"$root/home" \
 	"$root/var/cache" \
 	"$root/var/log" \
@@ -138,9 +138,28 @@ mkdir -m 0755 \
 # Create symbolic links that are always expected to exist.
 chmod 0755 "$root/usr"
 ln -s ../proc/self/mounts "$root/etc/mtab"
+case $init_type in
+(s6)
+	# Create /var/tmp for programs that use it.
+	ln -s ../tmp "$root/var/tmp"
+	# Cause s6-linux-init to create /run/lock and /run/user
+	# with the correct mode (0755).
+	mkdir -m 0755 \
+		"$root/etc/s6-linux-init/run-image/lock" \
+		"$root/etc/s6-linux-init/run-image/user"
+	;;
+(systemd)
+	# systemd expects /srv to exist
+	# and creates /var/tmp itself
+	mkdir -m 0755 "$root/srv"
+	;;
+(*)
+	echo 'internal error: bad init type' >&2
+	exit 1
+	;;
+esac
 ln -s ../run "$root/var/run"
 ln -s ../run/lock "$root/var/lock"
-ln -s ../tmp "$root/var/tmp"
 ln -s bin "$root/usr/sbin"
 ln -s lib "$root/usr/lib64"
 ln -s usr/bin "$root/bin"

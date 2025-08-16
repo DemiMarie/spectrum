@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+[Unit]
+Description=Start s6 services
+# for /run/s6 and /run/service symlinks
+Requires=systemd-tmpfiles-setup.service
+After=systemd-tmpfiles-setup.service
+# Sadly necessary
+After=systemd-udev-settle.service
+
+[Service]
+User=root
+PAMName=login
+Type=exec
+PrivateIPC=yes
+RuntimeDirectory=s6
+Environment=XDG_RUNTIME_DIR=/run/user/%U PATH=/usr/bin
+KeyringMode=inherit
+Slice=user-%U.slice
+ExecStartPre=/usr/bin/cp -a /usr/share/spectrum/service %t/s6/
+ExecStartPre=/usr/bin/mkfifo %t/s6/sync-fifo
+ExecStart=/usr/bin/redirfd -w 3 %t/s6/sync-fifo /usr/bin/s6-svscan -d 3 -- %t/s6/service
+ExecStartPost=/bin/sh -c 'read < "$1"' - %t/s6/sync-fifo
+ExecStartPost=/usr/bin/s6-rc-init -l %t/s6/rc -- %t/s6/service
+ExecStartPost=/usr/bin/s6-rc -l %t/s6/rc change ok-all

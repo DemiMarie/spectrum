@@ -1,6 +1,0 @@
-#!/bin/execlineb -P
-# SPDX-License-Identifier: ISC
-# SPDX-FileCopyrightText: Copyright (c) 2015-2024 Laurent Bercot <ska-skaware@skarnet.org>
-
-redirfd -rnb 0 fifo
-s6-log -bpd3 -- T /run/log

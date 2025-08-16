@@ -53,7 +53,7 @@ build/rootfs.erofs: ../../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) 
 	    for file in $(VM_FILES); do printf '%s\n%s\n' $$file $$file; done ;\
 	    for file in $(VM_BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(VM_DIRS) ;\
-	) | ../../../scripts/make-erofs.sh $@
+	) | ../../../scripts/make-erofs.sh s6 $@
 
 VM_S6_RC_FILES = \
 	etc/s6-rc/connman/dependencies \
