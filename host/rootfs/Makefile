@@ -108,7 +108,8 @@ LINKS = \
 	etc/s6-linux-init/run-image/opengl-driver \
 	etc/s6-linux-init/run-image/service/vmm/template/run \
 	lib \
-	sbin
+	sbin \
+	usr/sbin
 
 BUILD_FILES = build/etc/s6-rc
 
