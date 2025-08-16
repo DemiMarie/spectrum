@@ -20,59 +20,6 @@ let
     mapAttrsToList systems trivial escapeShellArg;
   inherit (pkgs) dbus dbus-broker glibcLocales systemd;
 
-  pkgsGui = pkgs.extend (
-    final: super:
-    (optionalAttrs (systems.equals pkgsMusl.stdenv.hostPlatform super.stdenv.hostPlatform) {
-      flatpak = super.flatpak.override {
-        withMalcontent = false;
-      };
-
-      libgudev = super.libgudev.overrideAttrs ({ ... }: {
-        # Tests use umockdev, which is not compatible with libudev-zero.
-        doCheck = false;
-      });
-
-      qt6 = super.qt6.overrideScope (_: prev: {
-        qttranslations = prev.qttranslations.override {
-          qttools = prev.qttools.override {
-            qtbase = prev.qtbase.override {
-              qttranslations = null;
-              systemdSupport = false;
-            };
-            qtdeclarative = null;
-          };
-        };
-
-        qtbase = prev.qtbase.override {
-          systemdSupport = false;
-        };
-      });
-
-      upower = super.upower.override {
-        # Not ideal, but it's the best way to get rid of an installed
-        # test that needs umockdev.
-        withIntrospection = false;
-      };
-
-      udev = final.libudev-zero;
-
-      weston = super.weston.overrideAttrs ({ mesonFlags ? [], ... }: {
-        mesonFlags = mesonFlags ++ [
-          "-Dsystemd=false"
-        ];
-      });
-
-      xdg-desktop-portal = (super.xdg-desktop-portal.override {
-        enableSystemd = false;
-      }).overrideAttrs ({ ... }: {
-        # Tests use umockdev.
-        doCheck = false;
-      });
-    })
-  );
-
-  foot = pkgs.foot;
-
   packages = [
     bcachefs-tools cloud-hypervisor execline inotify-tools
     iproute2 jq kmod s6 s6-linux-init s6-rc socat
@@ -117,8 +64,8 @@ let
 
   kernel = linux_latest;
 
-  appvm = callSpectrumPackage ../../img/app { inherit (foot) terminfo; };
-  netvm = callSpectrumPackage ../../vm/sys/net { inherit (foot) terminfo; };
+  appvm = callSpectrumPackage ../../img/app { inherit (pkgs.foot) terminfo; };
+  netvm = callSpectrumPackage ../../vm/sys/net { inherit (pkgs.foot) terminfo; };
 
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
