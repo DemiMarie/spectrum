@@ -51,6 +51,8 @@ let
     for pkg in ${lib.escapeShellArgs usrPackages}; do
         lndir -ignorelinks -silent "$pkg" "$out/usr"
     done
+    [ -h "$out/usr/sbin" ]
+    rm -f -- "$out/usr/sbin"
   '';
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
