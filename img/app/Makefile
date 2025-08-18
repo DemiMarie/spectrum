@@ -57,15 +57,15 @@ VM_FILES = \
 	etc/wireplumber/wireplumber.conf.d/99_spectrum.conf \
 	etc/xdg/xdg-desktop-portal/portals.conf
 
-VM_DIRS = dev run proc sys tmp var \
+VM_DIRS = \
 	etc/s6-linux-init/run-image/service \
-	etc/s6-linux-init/run-image/user \
-	etc/s6-linux-init/run-image/wait
+	etc/s6-linux-init/run-image/wait \
+	var
 VM_FIFOS = etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/fifo
 
 # These are separate because they need to be included, but putting
 # them as make dependencies would confuse make.
-VM_LINKS = bin etc/ssl/certs/ca-certificates.crt sbin
+VM_LINKS = etc/ssl/certs/ca-certificates.crt
 
 VM_BUILD_FILES = build/etc/s6-rc
 

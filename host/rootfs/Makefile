@@ -66,7 +66,6 @@ FILES = \
 	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service
 
 DIRS = \
-	dev \
 	etc/s6-linux-init/env \
 	etc/s6-linux-init/run-image/configs \
 	etc/s6-linux-init/run-image/service/dbus/instance \
@@ -90,14 +89,11 @@ DIRS = \
 	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/instances \
 	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/data \
 	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/env \
-	etc/s6-linux-init/run-image/user \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \
 	etc/s6-linux-init/run-image/wait \
 	ext \
-	run \
-	proc \
-	sys \
+	root \
 	var
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
@@ -105,11 +101,8 @@ FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 # These are separate because they need to be included, but putting
 # them as make dependencies would confuse make.
 LINKS = \
-	bin \
 	etc/s6-linux-init/run-image/opengl-driver \
-	etc/s6-linux-init/run-image/service/vmm/template/run \
-	lib \
-	sbin
+	etc/s6-linux-init/run-image/service/vmm/template/run
 
 BUILD_FILES = build/etc/s6-rc
 

@@ -91,9 +91,30 @@ let
   })).fhsenv;
 
   packagesSysroot = runCommand "packages-sysroot" {} ''
-    mkdir -p $out/etc/ssl/certs
-    ln -s ${appimageFhsenv}/{lib64,usr} ${kernel.modules}/lib $out
-    ln -s ${cacert}/etc/ssl/certs/* $out/etc/ssl/certs
+    set -eu
+    mkdir -p -- "$out/etc/ssl/certs" "$out/usr/bin"
+    # ../../scripts/make-erofs.sh will re-create these
+    rm -f -- "$out/usr/lib64" "$out/usr/lib"
+    source_dir=${lib.escapeShellArg appimageFhsenv}/usr
+    for i in "$source_dir"/*; do
+      subdir=''${i##*/}
+      case $subdir in
+      (bin|include|lib|lib64|libexec|sbin|share) :;;
+      (*) printf 'Bad subdirectory %s\n' "$subdir" >&2; exit 1;;
+      esac
+    done
+    if ! [ -h "$source_dir/lib" ]; then echo "FHSenv didn't make lib a symlink" >&2; exit 1; fi
+    ln -s -- "$source_dir/include" "$source_dir/libexec" "$source_dir/share" "$out/usr"
+    cp -RT -- "$source_dir/lib64" "$out/usr/lib"
+    # Do this first so that the subsequent call to cp (without -T)
+    # will create new entries in the existing bin directory.
+    cp -RT -- "$source_dir/sbin" "$out/usr/bin"
+    # with -T cp tries to delete the whole target directory first
+    cp -R -- "$source_dir/bin" "$out/usr"
+    # so that ln can make the symlink
+    chmod -- 0755 "$out/usr/lib"
+    ln -s -- ${lib.escapeShellArg kernel}/lib/modules "$out/usr/lib/"
+    ln -s -- ${lib.escapeShellArg cacert}/etc/ssl/certs/* "$out/etc/ssl/certs"
   '';
 in
 
