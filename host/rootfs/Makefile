@@ -54,7 +54,6 @@ FILES = \
 	etc/s6-linux-init/scripts/rc.init \
 	etc/xdg/weston/autolaunch \
 	etc/xdg/weston/weston.ini \
-	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service \
 	usr/bin/assign-devices \
 	usr/bin/create-vm-dependencies \
 	usr/bin/run-appimage \
@@ -63,12 +62,14 @@ FILES = \
 	usr/bin/vm-import \
 	usr/bin/vm-start \
 	usr/bin/vm-stop \
-	usr/bin/xdg-open
+	usr/bin/xdg-open \
+	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service
 
 DIRS = \
 	dev \
 	etc/s6-linux-init/env \
 	etc/s6-linux-init/run-image/configs \
+	etc/s6-linux-init/run-image/lock \
 	etc/s6-linux-init/run-image/service/dbus/instance \
 	etc/s6-linux-init/run-image/service/dbus/instances \
 	etc/s6-linux-init/run-image/service/dbus/template/data \
@@ -95,9 +96,13 @@ DIRS = \
 	etc/s6-linux-init/run-image/vm/by-name \
 	etc/s6-linux-init/run-image/wait \
 	ext \
-	run \
+	home \
 	proc \
-	sys
+	root \
+	run \
+	srv \
+	sys \
+	tmp
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
@@ -110,7 +115,9 @@ LINKS = \
 	etc/s6-linux-init/run-image/service/vmm/template/run \
 	lib \
 	sbin \
-	usr/sbin
+	usr/sbin \
+	var/lock \
+	var/run
 
 BUILD_FILES = build/etc/s6-rc
 
