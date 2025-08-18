@@ -39,11 +39,7 @@ VM_FILES = \
 	etc/s6-linux-init/run-image/service/getty-hvc0/run \
 	etc/s6-linux-init/scripts/rc.init \
 	etc/sysctl.conf
-VM_DIRS = dev etc/s6-linux-init/env run proc sys var/lib/connman
-
-# These are separate because they need to be included, but putting
-# them as make dependencies would confuse make.
-VM_LINKS = bin lib sbin var/run
+VM_DIRS = etc/s6-linux-init/env var/lib/connman
 
 VM_BUILD_FILES = build/etc/s6-rc
 
@@ -53,7 +49,7 @@ build/empty:
 build/rootfs.erofs: ../../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) $(VM_BUILD_FILES) build/empty
 	( \
 	    cat $(PACKAGES_FILE) ;\
-	    for file in $(VM_FILES) $(VM_LINKS); do printf '%s\n%s\n' $$file $$file; done ;\
+	    for file in $(VM_FILES); do printf '%s\n%s\n' $$file $$file; done ;\
 	    for file in $(VM_BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(VM_DIRS) ;\
 	) | ../../../scripts/make-erofs.sh $@

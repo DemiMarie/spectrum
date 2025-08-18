@@ -116,5 +116,41 @@ find "$root" \
 find "$root/etc" "$root/var" ! -type l -execdir chmod u+w,go-w,ugo+rX -- '{}' +
 chmod 0755 "$root"
 
+# Fix permissions on / so that the subsequent commands work
+chmod 0755 "$root"
+
+# Create the basic mount points for pseudo-filesystems and tmpfs filesystems.
+# These should always be mounted over, so use 0400 permissions for them.
+# 0000 would be better, but it breaks mkfs.erofs as it tries to open the
+# directories for reading.
+mkdir -m 0400 "$root/dev" "$root/proc" "$root/run" "$root/sys" "$root/tmp"
+
+# Cause s6-linux-init to create /run/lock and /run/user
+# with the correct mode (0755) and create /home,
+# /var/cache, /var/log, and /var/spool directly.
+mkdir -m 0755 \
+	"$root/etc/s6-linux-init/run-image/lock" \
+	"$root/etc/s6-linux-init/run-image/user" \
+	"$root/home" \
+	"$root/var/cache" \
+	"$root/var/log" \
+	"$root/var/spool"
+
+# Create symbolic links that are always expected to exist.
+# They certainly need to exist in img/app, and it makes life
+# simpler for contributors if they are simply there always.
+chmod 0755 "$root/usr"
+ln -sf ../proc/self/mounts "$root/etc/mtab"
+ln -sf ../run "$root/var/run"
+ln -sf ../run/lock "$root/var/lock"
+ln -sf ../tmp "$root/var/tmp"
+ln -sf bin "$root/usr/sbin"
+ln -sf lib "$root/usr/lib64"
+ln -sf usr/bin "$root/bin"
+ln -sf usr/bin "$root/sbin"
+ln -sf usr/lib "$root/lib"
+ln -sf usr/lib "$root/lib64"
+chmod 0555 "$root/usr"
+
 # Make the erofs image.
 mkfs.erofs -x-1 -b4096 --all-root "$@" "$root"
