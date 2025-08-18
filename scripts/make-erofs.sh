@@ -8,6 +8,7 @@
 #        single directory structure, and could generate an EROFS image
 #        based on source:dest mappings directly.
 
+umask 0022 # for permissions
 ex_usage() {
 	echo "Usage: make-erofs.sh [options]... img < srcdest.txt" >&2
 	exit 1
@@ -18,8 +19,12 @@ if [ -z "${img-}" ]; then
 	ex_usage
 fi
 
-root="$(mktemp -d -- "$img.tmp.XXXXXXXXXX")"
-trap 'chmod -R +w -- "$root" && rm -rf -- "$root"' EXIT
+superroot="$(mktemp -d -- "$img.tmp.XXXXXXXXXX")"
+trap 'chmod -R +w -- "$root" && rm -rf -- "$superroot"' EXIT
+# $superroot has 0700 permissions, so create a subdirectory
+# with correct (0755) permissions and do all work there.
+root=$superroot/real_root
+mkdir -- "$root"
 
 while read -r arg1; do
 	read -r arg2 || ex_usage
