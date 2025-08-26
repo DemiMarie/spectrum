@@ -17,6 +17,7 @@ FILES = \
 	etc/mdev/listen \
 	etc/mdev/net/add \
 	etc/mdev/wait \
+	etc/os-release \
 	etc/parse-devname \
 	etc/passwd \
 	etc/s6-linux-init/env/WAYLAND_DISPLAY \
