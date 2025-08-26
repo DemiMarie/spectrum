@@ -21,6 +21,8 @@ if [ -z "${img-}" ]; then
 fi
 
 superroot="$(mktemp -d -- "$img.tmp.XXXXXXXXXX")"
+cat > "$superroot/input_files"
+exec < "$superroot/input_files"
 trap 'chmod -R +w -- "$root" && rm -rf -- "$superroot"' EXIT
 # $superroot has 0700 permissions, so create a subdirectory
 # with correct (0755) permissions and do all work there.
