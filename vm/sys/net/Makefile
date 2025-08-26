@@ -35,6 +35,7 @@ VM_FILES = \
 	etc/mdev.conf \
 	etc/mdev/iface \
 	etc/nftables.conf \
+	etc/os-release \
 	etc/passwd \
 	etc/s6-linux-init/run-image/service/getty-hvc0/run \
 	etc/s6-linux-init/scripts/rc.init \
