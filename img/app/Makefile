@@ -39,6 +39,7 @@ VM_FILES = \
 	etc/mdev/listen \
 	etc/mdev/virtiofs \
 	etc/mdev/wait \
+	etc/os-release \
 	etc/passwd \
 	etc/pipewire/pipewire.conf \
 	etc/resolv.conf \
