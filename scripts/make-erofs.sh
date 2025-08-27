@@ -28,6 +28,34 @@ trap 'chmod -R +w -- "$root" && rm -rf -- "$superroot"' EXIT
 root=$superroot/real_root
 mkdir -- "$root"
 
+check_path () {
+	# Various code can only handle paths that do not end with /
+	# and are in canonical form.  Reject others.
+	for i; do
+		case $i in
+		(''|.|..|./*|../*|*/|*/.|*/..|*//*|*/./*|*/../*)
+			printf 'Path "%s" is /, //, empty, or not canonical\n' "$i" >&2
+			exit 1
+			;;
+		(*[!A-Za-z0-9._@+/-]*)
+			printf 'Path "%s" has forbidden characters\n' "$i" >&2
+			exit 1
+			;;
+		(-*)
+			printf 'Path "%s" begins with -\n' "$i" >&2
+			exit 1
+			;;
+		(/nix/store/*|[!/]*)
+			:
+			;;
+		(*)
+			printf 'Path "%s" is neither relative nor a Nix store path\n' "$i" >&2
+			exit 1
+			;;
+		esac
+	done
+}
+
 while read -r arg1; do
 	read -r arg2 || ex_usage
 
@@ -38,6 +66,7 @@ while read -r arg1; do
 	echo
 
 	if [ "$arg2" = / ]; then
+		check_path "$arg1"
 		cp -RT -- "$arg1" "$root"
 		# Nix store paths are read-only, so fix up permissions
 		# so that subsequent copies can write to directories
@@ -46,6 +75,8 @@ while read -r arg1; do
 		find "$root" -type d -exec chmod 0755 -- '{}' +
 		continue
 	fi
+
+	check_path "$arg1" "$arg2"
 
 	parent=$(dirname "$arg2")
 	mkdir -p -- "$root/$parent"
