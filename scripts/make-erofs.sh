@@ -87,12 +87,12 @@ while read -r arg1; do
 		# Create the parent directory if it doesn't already
 		# exist.
 		parent=${arg2%/*}
+		if [ ! -d "$root/$parent" ]; then
+			mkdir -p -- "$root/$parent"
+		fi
 		;;
-	(*)
-		parent=.
-		;;
+	(*) :;; # parent $root which definitely exists
 	esac
-	mkdir -p -- "$root/$parent"
 	cp -RT -- "$arg1" "$root/$arg2"
 done
 
