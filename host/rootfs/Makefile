@@ -40,7 +40,8 @@ DIRS = \
 	ext \
 	proc \
 	run \
-	sys
+	sys \
+	var
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
