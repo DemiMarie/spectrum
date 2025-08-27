@@ -38,18 +38,18 @@ while read -r arg1; do
 	fi
 	echo
 
-	parent="$(dirname "$arg2")"
-	awk -v parent="$parent" -v root="$root" 'BEGIN {
-		n = split(parent, components, "/")
-		for (i = 1; i <= n; i++) {
-			printf "%s/", root
-			for (j = 1; j <= i; j++)
-				printf "%s/", components[j]
-			print
-		}
-	}' | xargs -rd '\n' chmod +w -- 2>/dev/null || :
-	mkdir -p -- "$root/$parent"
+	if [ "$arg2" = / ]; then
+		cp -RT -- "$arg1" "$root"
+		# Nix store paths are read-only, so fix up permissions
+		# so that subsequent copies can write to directories
+		# created by the above copy.  This means giving all
+		# directories 0755 permissions.
+		find "$root" -type d -exec chmod 0755 -- '{}' +
+		continue
+	fi
 
+	parent=$(dirname "$arg2")
+	mkdir -p -- "$root/$parent"
 	cp -RT -- "$arg1" "$root/$arg2"
 done
 
