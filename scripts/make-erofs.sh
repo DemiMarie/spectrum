@@ -79,7 +79,19 @@ while read -r arg1; do
 
 	check_path "$arg1" "$arg2"
 
-	parent=$(dirname "$arg2")
+	# The below simple version of dirname(1) can only handle
+	# a subset of all paths, but this subset includes all of
+	# the paths that check_path doesn't reject.
+	case $arg2 in
+	(*/*)
+		# Create the parent directory if it doesn't already
+		# exist.
+		parent=${arg2%/*}
+		;;
+	(*)
+		parent=.
+		;;
+	esac
 	mkdir -p -- "$root/$parent"
 	cp -RT -- "$arg1" "$root/$arg2"
 done
