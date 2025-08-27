@@ -95,4 +95,25 @@ while read -r arg1; do
 	cp -RT -- "$arg1" "$root/$arg2"
 done
 
+# Ensure that the permissions in the image are independent
+# of those in the git repository or Nix store, except for
+# the executable bit.  In particular, the mode of those
+# outside the Nix store might depend on the user's umask.
+# While the image itself is strictly read-only, it makes
+# sense to populate an overlayfs over /etc and /var, and
+# this overlayfs should be writable by root and readable
+# by all users.  The remaining paths should not be writable
+# by anyone, but should be world-readable.
+find "$root" \
+  -path "$root/nix/store" -prune -o \
+  -path "$root/etc" -prune -o \
+  -path "$root/var" -prune -o \
+  -type l -o \
+  -type d -a -perm 0555 -o \
+  -type f -a -perm 0444 -o \
+  -execdir chmod ugo-w,ugo+rX -- '{}' +
+find "$root/etc" "$root/var" ! -type l -execdir chmod u+w,go-w,ugo+rX -- '{}' +
+chmod 0755 "$root"
+
+# Make the erofs image.
 mkfs.erofs -x-1 -b4096 --all-root "$@" "$root"

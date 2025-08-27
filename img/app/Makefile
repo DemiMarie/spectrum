@@ -57,7 +57,7 @@ VM_FILES = \
 	etc/wireplumber/wireplumber.conf.d/99_spectrum.conf \
 	etc/xdg/xdg-desktop-portal/portals.conf
 
-VM_DIRS = dev run proc sys tmp \
+VM_DIRS = dev run proc sys tmp var \
 	etc/s6-linux-init/run-image/service \
 	etc/s6-linux-init/run-image/user \
 	etc/s6-linux-init/run-image/wait
