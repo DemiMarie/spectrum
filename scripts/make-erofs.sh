@@ -37,19 +37,45 @@ while read -r arg1; do
 	fi
 	echo
 
-	parent="$(dirname "$arg2")"
-	awk -v parent="$parent" -v root="$root" 'BEGIN {
-		n = split(parent, components, "/")
-		for (i = 1; i <= n; i++) {
-			printf "%s/", root
-			for (j = 1; j <= i; j++)
-				printf "%s/", components[j]
-			print
-		}
-	}' | xargs -rd '\n' chmod +w -- 2>/dev/null || :
-	mkdir -p -- "$root/$parent"
+	case $arg2 in
+	(/)
+		# Perform the copy.  -T means that if $arg1 and $root
+		# are both directories, the contents of $arg1 are copied
+		# to $root, rather than $arg1 itself being copied to $root.
+		cp -RT -- "$arg1" "$root"
 
-	cp -RT -- "$arg1" "$root/$arg2"
+		# Nix store paths are read-only, so fix up permissions
+		# so that subsequent copies can write to directories
+		# created by the above copy.  This means giving all
+		# directories 0755 permissions.
+		find "$root" -type d -exec chmod 0755 -- '{}' +
+		;;
+
+	# The below simple version of dirname(1) can only handle
+	# a subset of all paths, but this subset includes all of
+	# the paths needed here.  Reject the others.
+	(.|..|./*|../*|*/|*/.|*/..|*//*|*/./*|*/../*)
+		echo 'Bad path (non-canonical)' >&2
+		exit 1
+		;;
+
+	(*/*)
+		# Create the parent directory if it doesn't already
+		# exist.
+		parent=${arg2%/*}
+		if [ ! -d "$root/$parent" ]; then
+			mkdir -p -- "$root/$parent"
+		fi
+
+		# Do the copy.  See above for why -T is needed.
+		cp -RT -- "$arg1" "$root/$arg2"
+		;;
+	(*)
+		# There is no parent directory to create.
+		# Just do the copy.
+		cp -RT -- "$arg1" "$root/$arg2"
+		;;
+	esac
 done
 
 mkfs.erofs -x-1 -b4096 --all-root "$@" "$root"
