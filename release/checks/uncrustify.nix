@@ -14,6 +14,6 @@ runCommand "spectrum-uncrustify" {
   nativeBuildInputs = [ uncrustify ];
 } ''
   shopt -s globstar
-  uncrustify -c - --check $src/**/*.[ch]
+  uncrustify -c ${../../uncrustify.cfg} --check $src/**/*.[ch]
   touch $out
 '') (_: {})
