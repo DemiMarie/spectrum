@@ -8,7 +8,7 @@ if { ln -s /proc/self/fd/0 /dev/stdin }
 if { ln -s /proc/self/fd/1 /dev/stdout }
 if { ln -s /proc/self/fd/2 /dev/stderr }
 
-if { s6-rc-init -c /etc/s6-rc /run/service }
+if { s6-rc-init /run/service }
 
 if { modprobe overlay }
 if { mount -a --mkdir }
