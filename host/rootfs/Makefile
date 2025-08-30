@@ -105,7 +105,7 @@ LINKS = \
 	etc/s6-linux-init/run-image/opengl-driver \
 	etc/s6-linux-init/run-image/service/vmm/template/run
 
-BUILD_FILES = build/etc/s6-rc
+BUILD_FILES = build/etc/s6-rc/compiled
 
 $(dest): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo
 	( \
@@ -160,7 +160,7 @@ S6_RC_FILES = \
 # including files that aren't intended to be part of the input, like
 # temporary editor files or .license files.  So for all these reasons,
 # only explicitly listed files are made available to s6-rc-compile.
-build/etc/s6-rc: $(S6_RC_FILES)
+build/etc/s6-rc/compiled: $(S6_RC_FILES)
 	mkdir -p $$(dirname $@)
 	rm -rf $@
 

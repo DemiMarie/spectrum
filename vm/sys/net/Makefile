@@ -42,7 +42,7 @@ VM_FILES = \
 	etc/sysctl.conf
 VM_DIRS = etc/s6-linux-init/env var/lib/connman
 
-VM_BUILD_FILES = build/etc/s6-rc
+VM_BUILD_FILES = build/etc/s6-rc/compiled
 
 build/empty:
 	mkdir -p $@
@@ -75,7 +75,7 @@ VM_S6_RC_FILES = \
 	etc/s6-rc/sysctl/type \
 	etc/s6-rc/sysctl/up
 
-build/etc/s6-rc: $(VM_S6_RC_FILES)
+build/etc/s6-rc/compiled: $(VM_S6_RC_FILES)
 	mkdir -p $$(dirname $@)
 	rm -rf $@
 

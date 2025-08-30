@@ -68,7 +68,7 @@ VM_FIFOS = etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/fifo
 # them as make dependencies would confuse make.
 VM_LINKS = etc/ssl/certs/ca-certificates.crt
 
-VM_BUILD_FILES = build/etc/s6-rc
+VM_BUILD_FILES = build/etc/s6-rc/compiled
 
 build/fifo:
 	mkdir -p build
@@ -114,7 +114,7 @@ VM_S6_RC_FILES = \
 	etc/s6-rc/wireplumber/run \
 	etc/s6-rc/wireplumber/type
 
-build/etc/s6-rc: $(VM_S6_RC_FILES)
+build/etc/s6-rc/compiled: $(VM_S6_RC_FILES)
 	mkdir -p $$(dirname $@)
 	rm -rf $@
 
