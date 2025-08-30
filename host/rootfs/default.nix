@@ -95,18 +95,55 @@ let
       extraConfig = ''
         CONFIG_CHATTR n
         CONFIG_DEPMOD n
+        CONFIG_DUMPLEASES n
+        CONFIG_DUMPRELAY n
+        CONFIG_ENVUIDGUD n
         CONFIG_FINDFS n
+        CONFIG_HUSH n
         CONFIG_INIT n
         CONFIG_INSMOD n
         CONFIG_IP n
+        CONFIG_LPD n
+        CONFIG_LPQ n
+        CONFIG_LPR n
         CONFIG_LSATTR n
         CONFIG_LSMOD n
+        CONFIG_MAKEMIME n
         CONFIG_MKE2FS n
         CONFIG_MKFS_EXT2 n
         CONFIG_MODINFO n
         CONFIG_MODPROBE n
         CONFIG_MOUNT n
+        CONFIG_NTPD n
+        CONFIG_PING n
+        CONFIG_PING6 n
+        CONFIG_POPMAILDIR n
+        CONFIG_PSCAN n
+        CONFIG_REFORMMIME n
         CONFIG_RMMOD n
+        CONFIG_ROUTE n
+        CONFIG_SENDMAIL n
+        CONFIG_SETUIDGUD n
+        CONFIG_SLATTACH n
+        CONFIG_SSL_CLIENT n
+        CONFIG_SVC n
+        CONFIG_SVOK n
+        CONFIG_TC n
+        CONFIG_TCPSVD n
+        CONFIG_TELNET n
+        CONFIG_TELNETD n
+        CONFIG_TFTP n
+        CONFIG_TFTPD n
+        CONFIG_TRACEROUTE n
+        CONFIG_TRACEROUTE6 n
+        CONFIG_TUNCTL n
+        CONFIG_UDHCP6 n
+        CONFIG_UDHCPC n
+        CONFIG_UDHCPD n
+        CONFIG_UDPSVD n
+        CONFIG_WGET n
+        CONFIG_WHOIS n
+        CONFIG_ZCIP n
       '';
     })
   ] ++ (with pkgsGui; [ cosmic-files crosvm foot ]);
