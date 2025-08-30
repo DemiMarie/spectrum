@@ -5,7 +5,8 @@
 s6-ipcserver-socketbinder -a 0700 -B env/virtiofsd.sock
 
 if { fdmove 1 3 echo }
-fdclose 3
+fdmove -c 3 0
+redirfd -r 0 /dev/null
 
 export TMPDIR /run
 
@@ -14,4 +15,4 @@ export TMPDIR /run
 unshare -m --propagation slave
 if { mount --rbind -o ro /run/vm/by-id/${1}/fs /run/vm/by-id/${1}/fs }
 
-virtiofsd --fd 0 --shared-dir /run/vm/by-id/${1}/fs
+virtiofsd --fd 3 --shared-dir /run/vm/by-id/${1}/fs
