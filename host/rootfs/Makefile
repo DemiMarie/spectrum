@@ -4,66 +4,9 @@
 .POSIX:
 
 include ../../lib/common.mk
+include file-list.mk
 
 dest = build/rootfs.erofs
-
-FILES = \
-	image/etc/fonts/fonts.conf \
-	image/etc/fstab \
-	image/etc/group \
-	image/etc/init \
-	image/etc/login \
-	image/etc/mdev.conf \
-	image/etc/mdev/listen \
-	image/etc/mdev/net/add \
-	image/etc/mdev/wait \
-	image/etc/parse-devname \
-	image/etc/passwd \
-	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
-	image/etc/s6-linux-init/env/XDG_RUNTIME_DIR \
-	image/etc/s6-linux-init/run-image/service/dbus/notification-fd \
-	image/etc/s6-linux-init/run-image/service/dbus/run \
-	image/etc/s6-linux-init/run-image/service/dbus/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/dbus/template/run \
-	image/etc/s6-linux-init/run-image/service/getty-tty1/run \
-	image/etc/s6-linux-init/run-image/service/getty-tty2/run \
-	image/etc/s6-linux-init/run-image/service/getty-tty3/run \
-	image/etc/s6-linux-init/run-image/service/getty-tty4/run \
-	image/etc/s6-linux-init/run-image/service/s6-svscan-log/notification-fd \
-	image/etc/s6-linux-init/run-image/service/s6-svscan-log/run \
-	image/etc/s6-linux-init/run-image/service/serial-getty-generator/run \
-	image/etc/s6-linux-init/run-image/service/serial-getty/notification-fd \
-	image/etc/s6-linux-init/run-image/service/serial-getty/run \
-	image/etc/s6-linux-init/run-image/service/serial-getty/template/run \
-	image/etc/s6-linux-init/run-image/service/vhost-user-fs/notification-fd \
-	image/etc/s6-linux-init/run-image/service/vhost-user-fs/run \
-	image/etc/s6-linux-init/run-image/service/vhost-user-fs/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/vhost-user-fs/template/run \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/notification-fd \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/run \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/template/data/check \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/template/run \
-	image/etc/s6-linux-init/run-image/service/vmm/notification-fd \
-	image/etc/s6-linux-init/run-image/service/vmm/run \
-	image/etc/s6-linux-init/run-image/service/vmm/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/notification-fd \
-	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/run \
-	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/run \
-	image/etc/s6-linux-init/scripts/rc.init \
-	image/etc/xdg/weston/autolaunch \
-	image/etc/xdg/weston/weston.ini \
-	image/usr/bin/assign-devices \
-	image/usr/bin/create-vm-dependencies \
-	image/usr/bin/run-appimage \
-	image/usr/bin/run-vmm \
-	image/usr/bin/vm-console \
-	image/usr/bin/vm-import \
-	image/usr/bin/vm-start \
-	image/usr/bin/vm-stop \
-	image/usr/bin/xdg-open \
-	image/usr/share/dbus-1/services/org.freedesktop.portal.Documents.service
 
 DIRS = \
 	dev \
@@ -101,18 +44,9 @@ DIRS = \
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
-# These are separate because they need to be included, but putting
-# them as make dependencies would confuse make.
-LINKS = \
-	image/bin \
-	image/etc/s6-linux-init/run-image/opengl-driver \
-	image/etc/s6-linux-init/run-image/service/vmm/template/run \
-	image/lib \
-	image/sbin
-
 BUILD_FILES = build/etc/s6-rc
 
-$(dest): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo
+$(dest): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
 	{ \
 	    cat $(PACKAGES_FILE) ;\
 	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
@@ -128,41 +62,6 @@ build/fifo:
 build/empty:
 	mkdir -p $@
 
-S6_RC_FILES = \
-	image/etc/s6-rc/card0/type \
-	image/etc/s6-rc/card0/up \
-	image/etc/s6-rc/core/type \
-	image/etc/s6-rc/core/up \
-	image/etc/s6-rc/kvm/timeout-up \
-	image/etc/s6-rc/kvm/type \
-	image/etc/s6-rc/kvm/up \
-	image/etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
-	image/etc/s6-rc/mdevd-coldplug/type \
-	image/etc/s6-rc/mdevd-coldplug/up \
-	image/etc/s6-rc/mdevd/notification-fd \
-	image/etc/s6-rc/mdevd/run \
-	image/etc/s6-rc/mdevd/type \
-	image/etc/s6-rc/ok-all/contents.d/mdevd-coldplug \
-	image/etc/s6-rc/ok-all/contents.d/sys-vmms \
-	image/etc/s6-rc/ok-all/contents.d/vm-env \
-	image/etc/s6-rc/ok-all/type \
-	image/etc/s6-rc/static-nodes/type \
-	image/etc/s6-rc/static-nodes/up \
-	image/etc/s6-rc/sys-vmms/dependencies.d/vmm-env \
-	image/etc/s6-rc/sys-vmms/type \
-	image/etc/s6-rc/sys-vmms/up \
-	image/etc/s6-rc/vm-env/contents.d/static-nodes \
-	image/etc/s6-rc/vm-env/contents.d/weston \
-	image/etc/s6-rc/vm-env/type \
-	image/etc/s6-rc/vmm-env/contents.d/core \
-	image/etc/s6-rc/vmm-env/contents.d/kvm \
-	image/etc/s6-rc/vmm-env/contents.d/static-nodes \
-	image/etc/s6-rc/vmm-env/type \
-	image/etc/s6-rc/weston/dependencies.d/card0 \
-	image/etc/s6-rc/weston/notification-fd \
-	image/etc/s6-rc/weston/run \
-	image/etc/s6-rc/weston/type
-
 # s6-rc-compile's input is a directory, but that doesn't play nice
 # with Make, because it won't know to update if some file in the
 # directory is changed, or a file is created or removed in a
@@ -170,7 +69,7 @@ S6_RC_FILES = \
 # including files that aren't intended to be part of the input, like
 # temporary editor files or .license files.  So for all these reasons,
 # only explicitly listed files are made available to s6-rc-compile.
-build/etc/s6-rc: $(S6_RC_FILES)
+build/etc/s6-rc: $(S6_RC_FILES) file-list.mk
 	mkdir -p $$(dirname $@)
 	rm -rf $@
 	set -uo pipefail && dir=$$(mktemp -d) && \

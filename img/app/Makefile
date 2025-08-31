@@ -5,6 +5,7 @@
 .POSIX:
 
 include ../../lib/common.mk
+include file-list.mk
 
 prefix = build/host
 libdir = $(prefix)/lib
@@ -29,45 +30,13 @@ $(imgdir)/appvm/blk/root.img: ../../scripts/make-gpt.sh ../../scripts/sfdisk-fie
 	    build/rootfs.erofs:root:5460386f-2203-4911-8694-91400125c604:root
 	mv $@.tmp $@
 
-VM_FILES = \
-	image/etc/dbus-1/session.conf \
-	image/etc/fonts/fonts.conf \
-	image/etc/fstab \
-	image/etc/init \
-	image/etc/mdev.conf \
-	image/etc/mdev/iface \
-	image/etc/mdev/listen \
-	image/etc/mdev/virtiofs \
-	image/etc/mdev/wait \
-	image/etc/passwd \
-	image/etc/pipewire/pipewire.conf \
-	image/etc/resolv.conf \
-	image/etc/s6-linux-init/env/DBUS_SESSION_BUS_ADDRESS \
-	image/etc/s6-linux-init/env/DISPLAY \
-	image/etc/s6-linux-init/env/GTK_USE_PORTAL \
-	image/etc/s6-linux-init/env/NIX_XDG_DESKTOP_PORTAL_DIR \
-	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
-	image/etc/s6-linux-init/env/XDG_RUNTIME_DIR \
-	image/etc/s6-linux-init/run-image/service/getty-hvc0/run \
-	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/notification-fd \
-	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/run \
-	image/etc/s6-linux-init/scripts/rc.init \
-	image/etc/s6-linux-init/scripts/rc.shutdown \
-	image/etc/s6-linux-init/scripts/rc.shutdown.final \
-	image/etc/wireplumber/wireplumber.conf.d/99_spectrum.conf \
-	image/etc/xdg/xdg-desktop-portal/portals.conf
-
-VM_DIRS = dev run proc sys tmp \
+DIRS = dev run proc sys tmp \
 	etc/s6-linux-init/run-image/service \
 	etc/s6-linux-init/run-image/user \
 	etc/s6-linux-init/run-image/wait
-VM_FIFOS = etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/fifo
+FIFOS = etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/fifo
 
-# These are separate because they need to be included, but putting
-# them as make dependencies would confuse make.
-VM_LINKS = image/bin image/etc/ssl/certs/ca-certificates.crt image/sbin
-
-VM_BUILD_FILES = build/etc/s6-rc
+BUILD_FILES = build/etc/s6-rc
 
 build/fifo:
 	mkdir -p build
@@ -76,50 +45,21 @@ build/fifo:
 build/empty:
 	mkdir -p $@
 
-build/rootfs.erofs: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) $(VM_BUILD_FILES) build/empty build/fifo
+build/rootfs.erofs: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
 	{ \
 	    cat $(PACKAGES_FILE) ;\
-	    for file in $(VM_FILES) $(VM_LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
-	    for file in $(VM_BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
-	    printf 'build/empty\n%s\n' $(VM_DIRS) ;\
-	    printf 'build/fifo\n%s\n' $(VM_FIFOS) ;\
+	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
+	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
+	    printf 'build/empty\n%s\n' $(DIRS) ;\
+	    printf 'build/fifo\n%s\n' $(FIFOS) ;\
 	} | ../../scripts/make-erofs.sh $@
 
-VM_S6_RC_FILES = \
-	image/etc/s6-rc/app/dependencies.d/dbus \
-	image/etc/s6-rc/app/dependencies.d/pipewire \
-	image/etc/s6-rc/app/dependencies.d/wayland-proxy-virtwl \
-	image/etc/s6-rc/app/run \
-	image/etc/s6-rc/app/type \
-	image/etc/s6-rc/dbus/notification-fd \
-	image/etc/s6-rc/dbus/run \
-	image/etc/s6-rc/dbus/type \
-	image/etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
-	image/etc/s6-rc/mdevd-coldplug/type \
-	image/etc/s6-rc/mdevd-coldplug/up \
-	image/etc/s6-rc/mdevd/notification-fd \
-	image/etc/s6-rc/mdevd/run \
-	image/etc/s6-rc/mdevd/type \
-	image/etc/s6-rc/ok-all/contents.d/app \
-	image/etc/s6-rc/ok-all/contents.d/mdevd-coldplug \
-	image/etc/s6-rc/ok-all/contents.d/wireplumber \
-	image/etc/s6-rc/ok-all/type \
-	image/etc/s6-rc/pipewire/notification-fd \
-	image/etc/s6-rc/pipewire/run \
-	image/etc/s6-rc/pipewire/type \
-	image/etc/s6-rc/wayland-proxy-virtwl/notification-fd \
-	image/etc/s6-rc/wayland-proxy-virtwl/run \
-	image/etc/s6-rc/wayland-proxy-virtwl/type \
-	image/etc/s6-rc/wireplumber/dependencies.d/dbus \
-	image/etc/s6-rc/wireplumber/dependencies.d/pipewire \
-	image/etc/s6-rc/wireplumber/run \
-	image/etc/s6-rc/wireplumber/type
 
-build/etc/s6-rc: $(VM_S6_RC_FILES)
+build/etc/s6-rc: $(S6_RC_FILES) file-list.mk
 	mkdir -p $$(dirname $@)
 	rm -rf $@
 	set -uo pipefail && dir=$$(mktemp -d) && \
-	    { tar -c $(VM_S6_RC_FILES) | tar -C $$dir -x --strip-components 3; } && \
+	    { tar -c $(S6_RC_FILES) | tar -C $$dir -x --strip-components 3; } && \
 	    s6-rc-compile $@ $$dir; \
 	    exit=$$?; rm -r $$dir; exit $$exit
 
