@@ -93,28 +93,92 @@ let
 
     (busybox.override {
       extraConfig = ''
+        CONFIG_ACPID n
+        CONFIG_ARP n
+        CONFIG_ARPING n
+        CONFIG_BEEP n
+        CONFIG_BOOTCHARTD n
+        CONFIG_BRCTL n
+        CONFIG_CAL n
+        CONFIG_CHAT n
         CONFIG_CHATTR n
+        CONFIG_CHPST n
+        CONFIG_CROND n
+        CONFIG_CRONTAB n
         CONFIG_DEPMOD n
+        CONFIG_DEVMEM n
+        CONFIG_DHCPRELAY n
+        CONFIG_DNSD n
         CONFIG_DUMPLEASES n
         CONFIG_DUMPRELAY n
-        CONFIG_ENVUIDGUD n
+        CONFIG_FAKEIDENTD n
+        CONFIG_FEATURE_HWIB n
+        CONFIG_FEATURE_IP_ADDRESS n
+        CONFIG_FEATURE_IP_LINK n
+        CONFIG_FEATURE_IP_NEIGH n
+        CONFIG_FEATURE_IP_ROUTE n
+        CONFIG_FEATURE_IP_RULE n
+        CONFIG_FEATURE_IP_TUNNEL n
+        CONFIG_FEATURE_UNIX_LOCAL n
         CONFIG_FINDFS n
+        CONFIG_FLASHCP n
+        CONFIG_FLASH_ERASEALL n
+        CONFIG_FLASH_LOCK n
+        CONFIG_FLASH_UNLOCK n
+        CONFIG_FSCK n
+        CONFIG_FSCK_MINIX n
+        CONFIG_FTPD n
+        CONFIG_FTPGET n
+        CONFIG_FTPPUT n
+        CONFIG_HTTPD n
         CONFIG_HUSH n
+        CONFIG_I2CDETECT n
+        CONFIG_I2CDUMP n
+        CONFIG_I2CGET n
+        CONFIG_I2CSET n
+        CONFIG_I2CTRANSFER n
+        CONFIG_IFCONFIG n
+        CONFIG_IFDOWN n
+        CONFIG_IFENSLAVE n
+        CONFIG_IFPLUGD n
+        CONFIG_IFUP n
+        CONFIG_INETD n
         CONFIG_INIT n
+        CONFIG_INOTIFYD n
         CONFIG_INSMOD n
         CONFIG_IP n
+        CONFIG_IPADDR n
+        CONFIG_IPLINK n
+        CONFIG_IPROUTE n
+        CONFIG_IPRULE n
+        CONFIG_IPTUNNEL n
         CONFIG_LESS n
+        CONFIG_LINUXRC n
         CONFIG_LPD n
         CONFIG_LPQ n
         CONFIG_LPR n
         CONFIG_LSATTR n
         CONFIG_LSMOD n
+        CONFIG_MAKEDEVS n
         CONFIG_MAKEMIME n
+        CONFIG_MDEV n
+        CONFIG_MESG n
+        CONFIG_MIM n
+        CONFIG_MKDOSFS n
         CONFIG_MKE2FS n
         CONFIG_MKFS_EXT2 n
+        CONFIG_MKFS_REISER n
         CONFIG_MODINFO n
         CONFIG_MODPROBE n
+        CONFIG_MODPROBE_SMALL n
         CONFIG_MOUNT n
+        CONFIG_MT n
+        CONFIG_NAMDWRITE n
+        CONFIG_NAMEIF n
+        CONFIG_NANDDUMP n
+        CONFIG_NBDCLIENT n
+        CONFIG_NETSTAT n
+        CONFIG_NSLOOKUP n
         CONFIG_NTPD n
         CONFIG_PING n
         CONFIG_PING6 n
@@ -123,11 +187,16 @@ let
         CONFIG_REFORMMIME n
         CONFIG_RMMOD n
         CONFIG_ROUTE n
+        CONFIG_RUNSV n
+        CONFIG_RUNSVDIR n
         CONFIG_SENDMAIL n
-        CONFIG_SETUIDGUD n
+        CONFIG_SETARCH n
         CONFIG_SLATTACH n
         CONFIG_SSL_CLIENT n
+        CONFIG_START_STOP_DAEMON n
+        CONFIG_SV n
         CONFIG_SVC n
+        CONFIG_SVLOGD n
         CONFIG_SVOK n
         CONFIG_TC n
         CONFIG_TCPSVD n
@@ -138,10 +207,21 @@ let
         CONFIG_TRACEROUTE n
         CONFIG_TRACEROUTE6 n
         CONFIG_TUNCTL n
+        CONFIG_UBIATTACH n
+        CONFIG_UBIDETACH n
+        CONFIG_UBIMKVOL n
+        CONFIG_UBIRENAME n
+        CONFIG_UBIRMVOL n
+        CONFIG_UBIRSVOL n
+        CONFIG_UBIUPDATEVOL n
         CONFIG_UDHCP6 n
         CONFIG_UDHCPC n
+        CONFIG_UDHCPC6 n
         CONFIG_UDHCPD n
         CONFIG_UDPSVD n
+        CONFIG_UPDATEVOL n
+        CONFIG_VCONFIG n
+        CONFIG_WALL n
         CONFIG_WGET n
         CONFIG_WHOIS n
         CONFIG_ZCIP n
