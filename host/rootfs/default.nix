@@ -178,6 +178,7 @@ stdenvNoCC.mkDerivation {
     fileset = fileset.intersection src (fileset.unions [
       ./.
       ../../lib/common.mk
+      ../../lib/erofs.mk
       ../../scripts/make-erofs.sh
     ]);
   };
