@@ -44,6 +44,23 @@ NOTE: As a special convenience, it's not necessary to run `make clean`
 if the only change to the Nix files is modifying the packages
 installed in the VM.
 
+The list of files used for the VM image is stored in a separate file,
+`file-lists.mk`.  To update it, run `scripts/genfiles.sh`
+which will regenerate it from the output of `git ls-files`.  Any
+changes you made will be lost.  This script uses uses Git's index to
+generate the list, so you need to use `git add`, `git rm`, and `git mv`
+to ensure that Git knows about your changes.  It is not necessary to
+commit the changes.
+
+It is recommended that you add a Git pre-commit hook that calls
+`scripts/pre-commit.sh`.  This updates the `file-list.mk` files
+for you, so that each commit always includes the correct
+`file-list.mk`.  Sadly, Git does not run the pre-commit hook
+during rebases, so if you rebase you should use the script
+`scripts/git-rebase` instead of `git rebase`.  It tells
+Git to run `scripts/pre-commit.sh` after each commit and then
+calls `git commit --amend` to fixup the commit if needed.
+
 By default, `make run` runs the VM in Cloud Hypervisor, to match the
 Spectrum environment.  You can also add `VMM=crosvm` or `VMM=qemu` to
 your command line to run the VM in a different VMM.  One reason to do
