@@ -195,9 +195,13 @@ build/rootfs.verity.superblock: build/rootfs.verity
 	tail -n +2 build/rootfs.verity > $@
 
 build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/rootfs.verity.superblock build/rootfs.verity.roothash $(dest)
+	first_uuid=$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none) &&
+	first_uuid=$$(../../scripts/format-uuid.sh "$$first_uuid") &&
+	second_uuid=$$(head -c 32 build/rootfs.verity.roothash) &&
+	second_uuid=$$(../../scripts/format-uuid.sh "$$second_uuid") &&
 	../../scripts/make-gpt.sh $@.tmp \
-	    build/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(dest):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)")
+	    "build/rootfs.verity.superblock:verity:$$first_uuid" \
+	    $(dest):root:"$$second_uuid"
 	mv $@.tmp $@
 
 debug:
