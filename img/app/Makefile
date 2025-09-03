@@ -4,8 +4,8 @@
 
 .POSIX:
 
-include ../../lib/common.mk
-include file-list.mk
+basedir = ../..
+include $(basedir)/lib/erofs.mk
 
 prefix = build/host
 libdir = $(prefix)/lib
@@ -18,7 +18,6 @@ HOST_BUILD_FILES = \
 	$(imgdir)/appvm/vmlinux
 
 all: $(HOST_BUILD_FILES)
-.PHONY: all
 
 $(imgdir)/appvm/vmlinux: $(KERNEL)
 	mkdir -p $$(dirname $@)
@@ -36,32 +35,6 @@ DIRS = dev run proc sys tmp \
 	etc/s6-linux-init/run-image/wait
 FIFOS = etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/fifo
 
-BUILD_FILES = build/etc/s6-rc
-
-build/fifo:
-	mkdir -p build
-	mkfifo -m 0600 $@
-
-build/empty:
-	mkdir -p $@
-
-build/rootfs.erofs: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
-	( \
-	    cat $(PACKAGES_FILE) ;\
-	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file $${file#image/}; done ;\
-	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
-	    printf 'build/empty\n%s\n' $(DIRS) ;\
-	    printf 'build/fifo\n%s\n' $(FIFOS) ;\
-	) | ../../scripts/make-erofs.sh $@
-
-
-build/etc/s6-rc: $(S6_RC_FILES) file-list.mk
-	mkdir -p $$(dirname $@)
-	rm -rf $@
-	set -uo pipefail; dir=$$(mktemp -d) || exit; \
-	    { tar -c $(S6_RC_FILES) | tar -C $$dir -x --strip-components 3; } && \
-	    s6-rc-compile $@ $$dir; \
-	    exit=$$?; rm -r $$dir; exit $$exit
 
 debug:
 	$(GDB) -q \
@@ -138,14 +111,5 @@ run-crosvm: $(imgdir)/appvm/blk/root.img start-vhost-user-gpu start-virtiofsd
 	    $(KERNEL)
 .PHONY: run-crosvm
 
-update-file-list:
-	../../scripts/genfiles.awk image > file-list.mk
-
-.PHONY: update-file-list
-
 run: run-$(VMM)
 .PHONY: run
-
-clean:
-	rm -rf build
-.PHONY: clean

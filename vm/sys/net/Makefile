@@ -3,21 +3,22 @@
 
 .POSIX:
 
-include ../../../lib/common.mk
-include file-list.mk
+basedir = ../../..
+include $(basedir)/lib/erofs.mk
 
 prefix = build/host
 libdir = $(prefix)/lib
 vmdir = $(libdir)/spectrum/vm
 
 VMM = cloud-hypervisor
+DIRS =
+FIFOS =
 
 HOST_BUILD_FILES = \
 	$(vmdir)/netvm/blk/root.img \
 	$(vmdir)/netvm/vmlinux
 
 all: $(HOST_BUILD_FILES)
-.PHONY: all
 
 $(vmdir)/netvm/vmlinux: $(KERNEL)
 	mkdir -p $$(dirname $@)
@@ -28,27 +29,6 @@ $(vmdir)/netvm/blk/root.img: ../../../scripts/make-gpt.sh ../../../scripts/sfdis
 	../../../scripts/make-gpt.sh $@.tmp \
 	    build/rootfs.erofs:root:ea21da27-0391-48da-9235-9d2ab2ca7844:root
 	mv $@.tmp $@
-
-BUILD_FILES = build/etc/s6-rc
-
-build/empty:
-	mkdir -p $@
-
-build/rootfs.erofs: ../../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty file-list.mk
-	( \
-	    cat $(PACKAGES_FILE) ;\
-	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
-	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
-	    printf 'build/empty\n%s\n' $(DIRS) ;\
-	) | ../../../scripts/make-erofs.sh $@
-
-build/etc/s6-rc: $(S6_RC_FILES) file-list.mk
-	mkdir -p $$(dirname $@)
-	rm -rf $@
-	set -uo pipefail; dir=$$(mktemp -d) && \
-	    { tar -c $(VM_S6_RC_FILES) | tar -C $$dir -x --strip-components 3; } && \
-	    s6-rc-compile $@ $$dir; \
-	    exit=$$?; rm -r $$dir; exit $$exit
 
 debug:
 	$(GDB) -q \
@@ -101,14 +81,5 @@ run-crosvm: $(vmdir)/netvm/blk/root.img
 	    $(KERNEL)
 .PHONY: run-crosvm
 
-update-file-list:
-	../../scripts/genfiles.awk image > file-list.mk
-
-.PHONY: update-file-list
-
 run: run-$(VMM)
 .PHONY: run
-
-clean:
-	rm -rf build
-.PHONY: clean
