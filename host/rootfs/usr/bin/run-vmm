@@ -50,6 +50,7 @@ background -d {
     id=router-${client_id},tap=router-${client_id},mac=${mac}
 }
 unexport !
-fdclose 3
+fdmove -c 3 0
+redirfd -r 0 /dev/null
 
-cloud-hypervisor --api-socket fd=0
+cloud-hypervisor --api-socket fd=3
