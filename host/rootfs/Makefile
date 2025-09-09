@@ -54,7 +54,6 @@ FILES = \
 	etc/s6-linux-init/scripts/rc.init \
 	etc/xdg/weston/autolaunch \
 	etc/xdg/weston/weston.ini \
-	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service \
 	usr/bin/assign-devices \
 	usr/bin/create-vm-dependencies \
 	usr/bin/run-appimage \
@@ -63,7 +62,8 @@ FILES = \
 	usr/bin/vm-import \
 	usr/bin/vm-start \
 	usr/bin/vm-stop \
-	usr/bin/xdg-open
+	usr/bin/xdg-open \
+	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service
 
 DIRS = \
 	dev \
@@ -155,8 +155,8 @@ S6_RC_FILES = \
 	etc/s6-rc/vmm-env/type \
 	etc/s6-rc/weston/dependencies \
 	etc/s6-rc/weston/notification-fd \
-	etc/s6-rc/weston/type \
-	etc/s6-rc/weston/run
+	etc/s6-rc/weston/run \
+	etc/s6-rc/weston/type
 
 # s6-rc-compile's input is a directory, but that doesn't play nice
 # with Make, because it won't know to update if some file in the
