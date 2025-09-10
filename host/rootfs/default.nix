@@ -125,7 +125,7 @@ let
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
   usrPackages = [
-    appvm kernel firmware netvm
+    appvm kernel.modules firmware netvm
   ] ++ (with pkgsGui; [ mesa dejavu_fonts westonLite ]);
 
   appvms = {

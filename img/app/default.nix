@@ -92,7 +92,7 @@ let
 
   packagesSysroot = runCommand "packages-sysroot" {} ''
     mkdir -p $out/etc/ssl/certs
-    ln -s ${appimageFhsenv}/{lib64,usr} ${kernel}/lib $out
+    ln -s ${appimageFhsenv}/{lib64,usr} ${kernel.modules}/lib $out
     ln -s ${cacert}/etc/ssl/certs/* $out/etc/ssl/certs
   '';
 in

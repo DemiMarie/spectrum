@@ -72,7 +72,7 @@ let
 
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
-  usrPackages = [ connman dbus firmware kernel terminfo ];
+  usrPackages = [ connman dbus firmware kernel.modules terminfo ];
 
   packagesSysroot = runCommand "packages-sysroot" {
     inherit packages;

@@ -13,7 +13,8 @@ let
   inherit (lib) concatMapStringsSep;
 
   modules = makeModulesClosure {
-    inherit (rootfs) firmware kernel;
+    inherit (rootfs) firmware;
+    kernel = rootfs.kernel.modules;
     rootModules = with rootfs.nixosAllHardware.config.boot.initrd;
       lib.subtractLists [ "virtio_net" "vmxnet3" ]
         (availableKernelModules ++ kernelModules ++ [
