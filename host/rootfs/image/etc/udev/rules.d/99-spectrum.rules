@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# systemd-udevd unsets PATH, so fix that.
+ACTION=="remove", GOTO="spectrum-end"
+ENV{PCI_CLASS}!="2????", GOTO="spectrum-end"
+
+# net-add unbinds and rebinds the driver, so avoid calling
+# it more than once.
+IMPORT{db}="SPECTRUM_DRIVER_ASSIGNED"
+ENV{SPECTRUM_DRIVER_ASSIGNED}=="yes", GOTO="spectrum-end"
+# systemd-udevd unsets PATH, so fix that.
+RUN+="/usr/bin/env PATH=/usr/bin /usr/libexec/net-add"
+ENV{SPECTRUM_DRIVER_ASSIGNED}="yes"
+LABEL="spectrum-end"
