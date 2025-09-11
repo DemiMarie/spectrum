@@ -337,6 +337,7 @@ enum {
 };
 
 static const struct option longopts[] = {
+	{ "oom-score-adj", required_argument, NULL, 'o' },
 	{ "help", no_argument, NULL, 'h' },
 	{ "s6-notify-fd", required_argument, NULL, S6_NOTIFY_FD },
 	{ "notify-socket", required_argument, NULL, SYSTEMD_NOTIFY_SOCKET },
@@ -355,7 +356,8 @@ static void usage(int arg) {
 	      // and allows providing a default in the future (such as /run/sd-notify-adapter/PID).
 	      "      --notify-socket                     Socket to listen for notifications on (mandatory)\n"
 	      "      --lock-fd lock_fd                   Keep lock_fd open\n"
-	      "      --arg0=ARG0                         Set the argv[0] passed to the child process\n",
+	      "      --arg0=ARG0                         Set the argv[0] passed to the child process\n"
+	      "      --oom-score-adj=ADJUSTMENT          Adjust the OOM score of the process and its children.\n",
 	      arg ? stderr : stdout);
 	flush_and_exit(arg);
 }
@@ -377,6 +379,7 @@ int main(int argc, char **argv) {
 	const char *lastopt;
 	const char *socket_path = NULL;
 	int lock_fd = -1;
+	int oom_score_adj = INT_MIN;
 	for (;;) {
 		int longindex = -1;
 		lastopt = argv[optind];
@@ -401,6 +404,12 @@ int main(int argc, char **argv) {
 			}
 		}
 		switch (res) {
+		case 'o':
+			oom_score_adj = parse_int(optarg);
+			if (oom_score_adj < -1000 || oom_score_adj > 1000) {
+				errx(EX_USAGE, "Invalid OOM score adjustment %s", optarg);
+			}
+			break;
 		case 'h':
 			usage(0);
 		case S6_NOTIFY_FD:
@@ -475,6 +484,18 @@ int main(int argc, char **argv) {
 	event.data.u64 = SIGNAL_FD;
 	check_posix_bool(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, signal_fd, &event), "epoll_ctl");
 	int dev_null = check_posix(open("/dev/null", O_RDWR | O_CLOEXEC | O_NOCTTY, 0666), "open(/dev/null)");
+
+	/* Adjust OOM score if desired */
+	if (oom_score_adj != INT_MIN) {
+		char *p;
+		int fd = check_posix(open("/proc/self/oom_score_adj",
+		                          O_WRONLY | O_CLOEXEC | O_NOCTTY | O_NOFOLLOW),
+		                     "open(\"/proc/self/oom_score_adj\")");
+		int to_write = check_posix(asprintf(&p, "%d\n", oom_score_adj), "asprintf");
+		ssize_t written = check_posix(write(fd, p, (size_t)to_write), "write(\"/proc/self/oom_score_adj\")");
+		assert(written == to_write);
+		free(p);
+	}
 
 	// Fork
 	pid_t child_pid = check_posix(fork(), "fork");
