@@ -322,13 +322,15 @@ static void process_notification(int fd, struct msghdr *const msg, const char *c
 
 static const struct option longopts[] = {
 	{ "help", no_argument, NULL, 'h' },
+	{ "arg0", required_argument, NULL, '0' },
 	{ NULL, 0, NULL, 0 },
 };
 
 static _Noreturn void usage(int arg) {
-	fputs("Usage: notification-fd -- notification-fd program arguments...\n"
+	fputs("Usage: notification-fd [--arg0 argv[0]] -- notification-fd program arguments...\n"
 	      "\n"
-	      "  -h, --help                              Print this message\n",
+	      "  -h, --help                              Print this message\n"
+	      "  --arg0=ARG0                             Set the argv[0] passed to the child process\n",
 	      arg ? stderr : stdout);
 	flush_and_exit(arg);
 }
@@ -339,6 +341,8 @@ enum {
 };
 
 int main(int argc, char **argv) {
+	char *arg0 = NULL;
+
 	if (argc < 1) {
 		errx(EX_USAGE, "argv[0] is NULL");
 	}
@@ -372,6 +376,12 @@ int main(int argc, char **argv) {
 		switch (res) {
 		case 'h':
 			usage(0);
+		case '0':
+			if (arg0 != NULL) {
+				errx(EX_USAGE, "--arg0 must not be given multiple times");
+			}
+			arg0 = optarg;
+			break;
 		default:
 			assert(0); /* not reached */
 		}
@@ -423,6 +433,8 @@ int main(int argc, char **argv) {
 	pid_t child_pid = check_posix(fork(), "fork");
 	if (child_pid == 0) {
 		const char *progname = args_to_exec[0];
+		if (arg0 != NULL)
+			args_to_exec[0] = arg0;
 		close(notification_fd);
 		execvp(progname, args_to_exec);
 		err(errno == ENOENT ? 127 : 126, "execve: %s", progname);
