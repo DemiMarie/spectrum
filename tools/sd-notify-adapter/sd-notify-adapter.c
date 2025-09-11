@@ -19,12 +19,9 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/un.h>
-#include <sysexits.h>
 #include <unistd.h>
 
 #define ARRAY_SIZE(s) (sizeof(s)/sizeof(s[0]))
-
-static bool ready;
 
 enum {
 	socket_fd,
@@ -34,57 +31,53 @@ enum {
 #define READY "READY=1"
 #define READY_SIZE (sizeof(READY) - 1)
 
-static void
-process_notification(struct iovec *const msg) {
-	ssize_t data = recv(socket_fd, msg->iov_base, msg->iov_len,
-	                    MSG_DONTWAIT | MSG_TRUNC | MSG_PEEK);
-	if (data == -1) {
-		if (errno == EINTR) {
+static void process_notification(struct iovec *const msg)
+{
+	ssize_t first_recv_size = recv(socket_fd, msg->iov_base, msg->iov_len,
+	                               MSG_DONTWAIT | MSG_TRUNC | MSG_PEEK);
+	if (first_recv_size == -1) {
+		if (errno == EINTR)
 			return; // signal caught
-		}
-		if (errno == EAGAIN || errno == EWOULDBLOCK) {
+		if (errno == EAGAIN || errno == EWOULDBLOCK)
 			return; // spurious wakeup
-		}
-		err(EX_OSERR, "recv from notification socket");
+		err(EXIT_FAILURE, "recv from notification socket");
 	}
-	assert(data >= 0 && data <= INT_MAX);
-	size_t size = (size_t)data;
+	assert(first_recv_size >= 0);
+	size_t size = (size_t)first_recv_size;
 	if (size == 0)
 		return; // avoid arithmetic on NULL pointer
 	if (size > msg->iov_len) {
-		char *b = (size == 0 ? malloc(size) : realloc(msg->iov_base, size));
-		if (b == NULL) {
-			err(EX_OSERR, "allocation failure");
-		}
-		msg->iov_base = b;
+		msg->iov_base = realloc(msg->iov_base, size);
+		if (msg->iov_base == NULL)
+			err(EXIT_FAILURE, "allocation failure");
 		msg->iov_len = size;
 	}
-	data = recv(socket_fd, msg->iov_base, msg->iov_len,
-	            MSG_CMSG_CLOEXEC | MSG_DONTWAIT | MSG_TRUNC);
-	if (data < 0) {
-		if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK)
+	ssize_t second_recv_size = recv(socket_fd, msg->iov_base, msg->iov_len,
+	                                MSG_CMSG_CLOEXEC | MSG_TRUNC);
+	if (second_recv_size == -1) {
+		if (errno == EINTR)
 			return;
-		err(EX_OSERR, "recv from notification socket");
+		err(EXIT_FAILURE, "recv from notification socket");
 	}
+	assert(first_recv_size == second_recv_size);
 	for (char *next, *cursor = msg->iov_base, *end = cursor + size;
 	     cursor != NULL; cursor = (next == NULL ? NULL : next + 1)) {
 		next = memchr(cursor, '\n', (size_t)(end - cursor));
 		size_t message_size = (size_t)((next == NULL ? end : next) - cursor);
 		if (message_size == READY_SIZE &&
 		    memcmp(cursor, READY, READY_SIZE) == 0) {
-			data = write(notification_fd, "\n", 1);
-			if (data != 1) {
-				err(EX_OSERR, "writing to notification descriptor");
-			}
+			ssize_t write_size = write(notification_fd, "\n", 1);
+			if (write_size != 1)
+				err(EXIT_FAILURE, "writing to notification descriptor");
 			exit(0);
 		}
 	}
 }
 
-int main(int argc, char **argv [[gnu::unused]]) {
-	if (argc != 1) {
-		errx(EX_USAGE, "stdin is listening socket, stdout is notification pipe");
-	}
+int main(int argc, char **)
+{
+	if (argc != 1)
+		errx(EXIT_FAILURE, "stdin is listening socket, stdout is notification pipe");
 	// Main event loop.
 	struct iovec v = {
 		.iov_base = NULL,
@@ -103,25 +96,19 @@ int main(int argc, char **argv [[gnu::unused]]) {
 				.revents = 0,
 			},
 		};
-		int r = poll(p, 2, -1);
+		int r = poll(p, ARRAY_SIZE(p), -1);
 		if (r < 0) {
 			if (errno == EINTR)
 				continue;
-			err(EX_OSERR, "poll");
+			err(EXIT_FAILURE, "poll");
 		}
 		if (p[0].revents) {
 			if (p[0].revents & POLLERR)
-				errx(EX_OSERR, "unexpected POLLERR");
+				errx(EXIT_FAILURE, "unexpected POLLERR");
 			if (p[0].revents & POLLIN)
 				process_notification(&v);
-			break;
 		}
-		if (p[1].revents) {
-			if (ready) {
-				// Normal exit
-				return 0;
-			}
-			errx(EX_PROTOCOL, "s6 closed its pipe before the child was ready");
-		}
+		if (p[1].revents)
+			errx(EXIT_FAILURE, "s6 closed its pipe before the child was ready");
 	}
 }

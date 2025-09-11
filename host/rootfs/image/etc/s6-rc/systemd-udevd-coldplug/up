@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+# SPDX-FileCopyrightText: systemd is free software; you can redistribute it and/or modify it
+#                         under the terms of the GNU Lesser General Public License as published by
+#                         the Free Software Foundation; either version 2.1 of the License, or
+#                         (at your option) any later version.
+udevadm trigger --type=all --action=add --prioritized-subsystem=module,block,tpmrm,net,tty,input

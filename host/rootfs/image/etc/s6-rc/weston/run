@@ -4,9 +4,9 @@
 
 unexport WAYLAND_DISPLAY
 
-foreground {
-  umask 077
-  mkdir /run/user/0
+if {
+  umask 0022
+  mkdir -p -m 0700 /run/user/0
 }
 unexport ?
 
@@ -20,4 +20,5 @@ redirfd -r 0 /dev/tty1
 
 importas -i home HOME
 cd $home
+if { udevadm wait /dev/dri/card0 }
 weston
