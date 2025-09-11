@@ -121,8 +121,40 @@ static void check_fd_usable(int fd, bool writable) {
 	}
 }
 
-// Begin non-reusable code
+static int compare_ints(const void *fst, const void *snd) {
+	int first = *(const int *)fst;
+	int second = *(const int *)snd;
+	return first < second ? -1 : (first > second ? 1 : 0);
+}
 
+// Close file descriptors that are not on the provided list
+// and are not stdin, stdout, or stderr.  fds argument is
+// sorted in-place.
+static void close_unwanted_fds(int *fds, size_t count)
+{
+	int last_to_keep = 2;
+	qsort(fds, count, sizeof(fds[0]), compare_ints);
+	for (size_t i = 0; i < count; ++i) {
+		if (fds[i] <= 2) {
+			// Never close stdin, stdout, stderr, or a negative FD.
+			assert(fds[i] >= -1);
+			continue;
+		}
+		if (fds[i] - last_to_keep > 1) {
+			// 'man 2 close_range' guarantees that no errors can occur.
+			if (syscall(SYS_close_range, (long)last_to_keep + 1L, (long)fds[i] - 1L, 0L)) {
+				assert(!"close_range failed");
+			}
+		}
+		last_to_keep = fds[i];
+	}
+	// 'man 2 close_range' guarantees that no errors can occur.
+	if (syscall(SYS_close_range, (long)((unsigned)last_to_keep + 1U), (long)~0U, 0L)) {
+		assert(!"close_range failed");
+	}
+}
+
+// Begin non-reusable code
 static void handler(struct signalfd_siginfo *info, int child_pid) {
 	if (info->ssi_signo != SIGCHLD) {
 		kill(child_pid, info->ssi_signo);
@@ -300,13 +332,15 @@ static void process_notification(int fd, struct msghdr *const msg, const char *c
 
 enum {
 	S6_NOTIFY_FD = 256,
-	SYSTEMD_NOTIFY_SOCKET = 257,
+	SYSTEMD_NOTIFY_SOCKET,
+	LOCK_FD,
 };
 
 static const struct option longopts[] = {
 	{ "help", no_argument, NULL, 'h' },
 	{ "s6-notify-fd", required_argument, NULL, S6_NOTIFY_FD },
 	{ "notify-socket", required_argument, NULL, SYSTEMD_NOTIFY_SOCKET },
+	{ "lock-fd", required_argument, NULL, LOCK_FD },
 	{ NULL, 0, NULL, 0 },
 };
 
@@ -318,7 +352,8 @@ static void usage(int arg) {
 	      "      --s6-notify-fd                      File descriptor for S6-style notification\n"
 	      // This avoids confusion with positional parameters (program and arguments)
 	      // and allows providing a default in the future (such as /run/sd-notify-adapter/PID).
-	      "      --notify-socket                     Socket to listen for notifications on (mandatory)\n",
+	      "      --notify-socket                     Socket to listen for notifications on (mandatory)\n"
+	      "      --lock-fd lock_fd                   Keep lock_fd open\n",
 	      arg ? stderr : stdout);
 	flush_and_exit(arg);
 }
@@ -338,6 +373,7 @@ int main(int argc, char **argv) {
 	}
 	const char *lastopt;
 	const char *socket_path = NULL;
+	int lock_fd = -1;
 	for (;;) {
 		int longindex = -1;
 		lastopt = argv[optind];
@@ -384,6 +420,15 @@ int main(int argc, char **argv) {
 			}
 			socket_path = optarg;
 			break;
+		case LOCK_FD:
+			if (lock_fd != -1) {
+				errx(EX_USAGE, "--lock-fd must not be given more than once\n");
+			}
+			lock_fd = parse_int(optarg);
+			if (lock_fd < 3) {
+				errx(EX_USAGE, "Invalid lock file descriptor %s\n", optarg);
+			}
+			break;
 		default:
 			assert(0); // not reached
 		}
@@ -420,6 +465,7 @@ int main(int argc, char **argv) {
 	int signal_fd = check_posix(signalfd(-1, &new_mask, SFD_NONBLOCK | SFD_CLOEXEC), "signalfd");
 	event.data.u64 = SIGNAL_FD;
 	check_posix_bool(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, signal_fd, &event), "epoll_ctl");
+	int dev_null = check_posix(open("/dev/null", O_RDWR | O_CLOEXEC | O_NOCTTY, 0666), "open(/dev/null)");
 
 	// Fork
 	pid_t child_pid = check_posix(fork(), "fork");
@@ -440,6 +486,19 @@ int main(int argc, char **argv) {
 	}
 
 	// Main event loop.
+	dup2(dev_null, 0);
+	dup2(dev_null, 1);
+
+	// Close extra file descriptors in the parent, to avoid keeping an extra reference
+	// to the file description.  Otherwise the child closing the write end of a pipe
+	// would not cause another process to get EOF.  This also closes the FD to /dev/null
+	// opened above.
+	{
+		int fds_to_sort[] = { notification_fd, epoll_fd, signal_fd, notify_socket_fd, lock_fd };
+		close_unwanted_fds(fds_to_sort, ARRAY_SIZE(fds_to_sort));
+	}
+
+	// Main event loop
 	union {
 		struct cmsghdr hdr;
 		char buf[CMSG_SPACE(sizeof(struct ucred)) + CMSG_SPACE(sizeof(int) * 253)];
