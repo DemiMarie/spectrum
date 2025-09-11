@@ -7,10 +7,6 @@ FILES = \
 	image/etc/group \
 	image/etc/init \
 	image/etc/login \
-	image/etc/mdev.conf \
-	image/etc/mdev/listen \
-	image/etc/mdev/net/add \
-	image/etc/mdev/wait \
 	image/etc/parse-devname \
 	image/etc/passwd \
 	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
@@ -46,6 +42,7 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/notification-fd \
 	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/run \
 	image/etc/s6-linux-init/scripts/rc.init \
+	image/etc/udev/rules.d/99-spectrum.rules \
 	image/etc/xdg/weston/autolaunch \
 	image/etc/xdg/weston/weston.ini \
 	image/usr/bin/assign-devices \
@@ -57,6 +54,7 @@ FILES = \
 	image/usr/bin/vm-start \
 	image/usr/bin/vm-stop \
 	image/usr/bin/xdg-open \
+	image/usr/libexec/net-add \
 	image/usr/share/dbus-1/services/org.freedesktop.portal.Documents.service
 
 LINKS = \
@@ -64,24 +62,14 @@ LINKS = \
 	image/etc/s6-linux-init/run-image/opengl-driver \
 	image/etc/s6-linux-init/run-image/service/vmm/template/run \
 	image/lib \
-	image/sbin
+	image/sbin \
+	image/usr/bin/systemd-udevd
 
 S6_RC_FILES = \
-	image/etc/s6-rc/card0/type \
-	image/etc/s6-rc/card0/up \
 	image/etc/s6-rc/core/type \
 	image/etc/s6-rc/core/up \
-	image/etc/s6-rc/kvm/timeout-up \
-	image/etc/s6-rc/kvm/type \
-	image/etc/s6-rc/kvm/up \
-	image/etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
-	image/etc/s6-rc/mdevd-coldplug/type \
-	image/etc/s6-rc/mdevd-coldplug/up \
-	image/etc/s6-rc/mdevd/notification-fd \
-	image/etc/s6-rc/mdevd/run \
-	image/etc/s6-rc/mdevd/type \
-	image/etc/s6-rc/ok-all/contents.d/mdevd-coldplug \
 	image/etc/s6-rc/ok-all/contents.d/sys-vmms \
+	image/etc/s6-rc/ok-all/contents.d/systemd-udevd-coldplug \
 	image/etc/s6-rc/ok-all/contents.d/vm-env \
 	image/etc/s6-rc/ok-all/type \
 	image/etc/s6-rc/static-nodes/type \
@@ -89,14 +77,21 @@ S6_RC_FILES = \
 	image/etc/s6-rc/sys-vmms/dependencies.d/vmm-env \
 	image/etc/s6-rc/sys-vmms/type \
 	image/etc/s6-rc/sys-vmms/up \
+	image/etc/s6-rc/systemd-udevd-coldplug/dependencies.d/systemd-udevd \
+	image/etc/s6-rc/systemd-udevd-coldplug/type \
+	image/etc/s6-rc/systemd-udevd-coldplug/up \
+	image/etc/s6-rc/systemd-udevd/notification-fd \
+	image/etc/s6-rc/systemd-udevd/run \
+	image/etc/s6-rc/systemd-udevd/type \
 	image/etc/s6-rc/vm-env/contents.d/static-nodes \
+	image/etc/s6-rc/vm-env/contents.d/systemd-udevd-coldplug \
 	image/etc/s6-rc/vm-env/contents.d/weston \
 	image/etc/s6-rc/vm-env/type \
 	image/etc/s6-rc/vmm-env/contents.d/core \
-	image/etc/s6-rc/vmm-env/contents.d/kvm \
 	image/etc/s6-rc/vmm-env/contents.d/static-nodes \
+	image/etc/s6-rc/vmm-env/contents.d/systemd-udevd-coldplug \
 	image/etc/s6-rc/vmm-env/type \
-	image/etc/s6-rc/weston/dependencies.d/card0 \
+	image/etc/s6-rc/weston/dependencies.d/systemd-udevd-coldplug \
 	image/etc/s6-rc/weston/notification-fd \
 	image/etc/s6-rc/weston/run \
 	image/etc/s6-rc/weston/type

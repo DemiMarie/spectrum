@@ -4,10 +4,7 @@
 
 unexport WAYLAND_DISPLAY
 
-foreground {
-  umask 077
-  mkdir /run/user/0
-}
+if { mkdir -p -m 0700 /run/user/0 }
 unexport ?
 
 backtick USER { id -un }
@@ -20,4 +17,5 @@ redirfd -r 0 /dev/tty1
 
 importas -i home HOME
 cd $home
+if { udevadm wait /dev/dri/card0 }
 weston
