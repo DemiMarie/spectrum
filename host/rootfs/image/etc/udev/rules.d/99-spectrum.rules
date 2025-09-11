@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# systemd-udevd has a built-in module loading feature,
+# but it seems to not work for some reason or another.
+# This works.
+ACTION!="remove", ENV{MODALIAS}!="", RUN+="/usr/bin/modprobe -q $env{MODALIAS}"
+# systemd-udevd unsets PATH, so fix that.
+ACTION!="remove", ENV{PCI_CLASS}=="2????", RUN+="/usr/bin/env PATH=/usr/bin /usr/libexec/net-add"

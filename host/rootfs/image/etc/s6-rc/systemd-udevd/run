@@ -1,0 +1,14 @@
+#!/bin/execlineb -P
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# systemd-udevd is a multi-call binary, and
+# the third argument to sd-notify-adapter is
+# passed as argv[0], so this invokes systemd-udevd
+# despite looking like it does not.
+sd-notify-adapter
+--arg0=systemd-udevd
+--s6-notify-fd=3
+--notify-socket=/run/sd-notify-wrapper/systemd-udevd
+--
+udevadm
