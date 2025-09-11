@@ -106,6 +106,21 @@ static void flush_and_exit(int status) {
 	exit(status);
 }
 
+#if O_RDONLY > 3 || O_WRONLY > 3 || O_RDWR > 3
+# error unsupported O_* constants
+#endif
+
+static void check_fd_usable(int fd, bool writable) {
+	int raw_flags = fcntl(fd, F_GETFL);
+	if (raw_flags == -1) {
+		err(errno == EBADF ? EX_USAGE : EX_OSERR, "fcntl(%d, F_GETFD)", fd);
+	}
+	int flags = raw_flags & 3;
+	if (flags != O_RDWR && flags != (writable ? O_WRONLY : O_RDONLY)) {
+		errx(EX_USAGE, "File descriptor %d is not %s (flags 0x%x)", fd, writable ? "writable" : "readable", raw_flags);
+	}
+}
+
 // Begin non-reusable code
 
 static void handler(struct signalfd_siginfo *info, int child_pid) {
@@ -318,6 +333,9 @@ int main(int argc, char **argv) {
 	if (argc < 1) {
 		errx(EX_USAGE, "argc == 0");
 	}
+	for (int i = 0; i < 3; ++i) {
+		check_fd_usable(i, i != 0);
+	}
 	const char *lastopt;
 	const char *socket_path = NULL;
 	for (;;) {
@@ -358,6 +376,7 @@ int main(int argc, char **argv) {
 			check_posix_bool(ioctl(notification_fd, FIOCLEX),
 			                 "Bad FD argument to --s6-notify-fd: %d",
 			                 notification_fd);
+			check_fd_usable(notification_fd, true);
 			break;
 		case SYSTEMD_NOTIFY_SOCKET:
 			if (socket_path != NULL) {
@@ -391,9 +410,6 @@ int main(int argc, char **argv) {
 
 	// Open file descriptors.
 	int epoll_fd = check_posix(epoll_create1(EPOLL_CLOEXEC), "epoll_create1");
-	if (epoll_fd < 3) {
-		errx(EX_USAGE, "Invoked with file descriptor 0, 1, or 2 closed");
-	}
 	int notify_socket_fd = bind_notification_socket(socket_path);
 	struct epoll_event event = { .events = EPOLLIN, .data.u64 = NOTIFY_FD };
 	check_posix_bool(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, notify_socket_fd, &event), "epoll_ctl");
