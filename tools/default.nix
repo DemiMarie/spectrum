@@ -70,6 +70,7 @@ stdenv.mkDerivation (finalAttrs: {
       ./lsvm
       ./start-vmm
       ./subprojects
+      ./sd-notify-adapter
     ]));
   };
   sourceRoot = "source/tools";
