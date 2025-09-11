@@ -125,6 +125,29 @@ static void check_fd_usable(int fd, bool writable) {
 	}
 }
 
+static int compare_ints(const void *fst, const void *snd) {
+	int first = *(const int *)fst;
+	int second = *(const int *)snd;
+	return first < second ? -1 : (first > second ? 1 : 0);
+}
+
+// 'man 2 close_range' guarantees that no errors can occur.
+static void close_unwanted_fds(int last_to_keep, int *fds, size_t count)
+{
+	qsort(fds, count, sizeof(fds[0]), compare_ints);
+	for (size_t i = 0; i < count; ++i) {
+		if (fds[i] - last_to_keep > 1) {
+			if (syscall(SYS_close_range, (long)last_to_keep + 1L, (long)fds[i] - 1L, 0L)) {
+				assert(!"close_range failed");
+			}
+		}
+		last_to_keep = fds[i];
+	}
+	if (syscall(SYS_close_range, (long)((unsigned)last_to_keep + 1U), (long)~0U, 0L)) {
+		assert(!"close_range failed");
+	}
+}
+
 /* Begin non-reusable code */
 
 static void handler(struct signalfd_siginfo *info, int child_pid) {
@@ -394,6 +417,7 @@ int main(int argc, char **argv) {
 	check_posix_bool(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, notify_socket_fd, &event), "epoll_ctl");
 	event.data.u64 = SIGNAL_FD;
 	check_posix_bool(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, signal_fd, &event), "epoll_ctl");
+	int dev_null = check_posix(open("/dev/null", O_RDWR | O_CLOEXEC | O_NOCTTY, 0666), "open(/dev/null)");
 
 	/* fork */
 	pid_t child_pid = check_posix(fork(), "fork");
@@ -402,6 +426,18 @@ int main(int argc, char **argv) {
 		close(notification_fd);
 		execvp(progname, args_to_exec);
 		err(errno == ENOENT ? 127 : 126, "execve: %s", progname);
+	}
+
+	dup2(dev_null, 0);
+	dup2(dev_null, 1);
+
+	// Close extra file descriptors in the parent, to avoid keeping an extra reference
+	// to the file description.  Otherwise the child closing the write end of a pipe
+	// would not cause another process to get EOF.  This also closes the FD to /dev/null
+	// opened above.
+	{
+		int fds_to_sort[] = { notification_fd, epoll_fd, signal_fd, notify_socket_fd };
+		close_unwanted_fds(2, fds_to_sort, ARRAY_SIZE(fds_to_sort));
 	}
 
 	/* Main event loop */
