@@ -8,62 +8,62 @@ include ../../lib/common.mk
 dest = build/rootfs.erofs
 
 FILES = \
-	etc/fonts/fonts.conf \
-	etc/fstab \
-	etc/group \
-	etc/init \
-	etc/login \
-	etc/mdev.conf \
-	etc/mdev/listen \
-	etc/mdev/net/add \
-	etc/mdev/wait \
-	etc/parse-devname \
-	etc/passwd \
-	etc/s6-linux-init/env/WAYLAND_DISPLAY \
-	etc/s6-linux-init/env/XDG_RUNTIME_DIR \
-	etc/s6-linux-init/run-image/service/dbus/notification-fd \
-	etc/s6-linux-init/run-image/service/dbus/run \
-	etc/s6-linux-init/run-image/service/dbus/template/notification-fd \
-	etc/s6-linux-init/run-image/service/dbus/template/run \
-	etc/s6-linux-init/run-image/service/getty-tty1/run \
-	etc/s6-linux-init/run-image/service/getty-tty2/run \
-	etc/s6-linux-init/run-image/service/getty-tty3/run \
-	etc/s6-linux-init/run-image/service/getty-tty4/run \
-	etc/s6-linux-init/run-image/service/s6-svscan-log/notification-fd \
-	etc/s6-linux-init/run-image/service/s6-svscan-log/run \
-	etc/s6-linux-init/run-image/service/serial-getty-generator/run \
-	etc/s6-linux-init/run-image/service/serial-getty/notification-fd \
-	etc/s6-linux-init/run-image/service/serial-getty/run \
-	etc/s6-linux-init/run-image/service/serial-getty/template/run \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/notification-fd \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/run \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/template/notification-fd \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/template/run \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/notification-fd \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/run \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/template/data/check \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/template/notification-fd \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/template/run \
-	etc/s6-linux-init/run-image/service/vmm/notification-fd \
-	etc/s6-linux-init/run-image/service/vmm/run \
-	etc/s6-linux-init/run-image/service/vmm/template/notification-fd \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/notification-fd \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/run \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/notification-fd \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/run \
-	etc/s6-linux-init/scripts/rc.init \
-	etc/xdg/weston/autolaunch \
-	etc/xdg/weston/weston.ini \
-	usr/bin/assign-devices \
-	usr/bin/create-vm-dependencies \
-	usr/bin/run-appimage \
-	usr/bin/run-vmm \
-	usr/bin/vm-console \
-	usr/bin/vm-import \
-	usr/bin/vm-start \
-	usr/bin/vm-stop \
-	usr/bin/xdg-open \
-	usr/share/dbus-1/services/org.freedesktop.portal.Documents.service
+	image/etc/fonts/fonts.conf \
+	image/etc/fstab \
+	image/etc/group \
+	image/etc/init \
+	image/etc/login \
+	image/etc/mdev.conf \
+	image/etc/mdev/listen \
+	image/etc/mdev/net/add \
+	image/etc/mdev/wait \
+	image/etc/parse-devname \
+	image/etc/passwd \
+	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
+	image/etc/s6-linux-init/env/XDG_RUNTIME_DIR \
+	image/etc/s6-linux-init/run-image/service/dbus/notification-fd \
+	image/etc/s6-linux-init/run-image/service/dbus/run \
+	image/etc/s6-linux-init/run-image/service/dbus/template/notification-fd \
+	image/etc/s6-linux-init/run-image/service/dbus/template/run \
+	image/etc/s6-linux-init/run-image/service/getty-tty1/run \
+	image/etc/s6-linux-init/run-image/service/getty-tty2/run \
+	image/etc/s6-linux-init/run-image/service/getty-tty3/run \
+	image/etc/s6-linux-init/run-image/service/getty-tty4/run \
+	image/etc/s6-linux-init/run-image/service/s6-svscan-log/notification-fd \
+	image/etc/s6-linux-init/run-image/service/s6-svscan-log/run \
+	image/etc/s6-linux-init/run-image/service/serial-getty-generator/run \
+	image/etc/s6-linux-init/run-image/service/serial-getty/notification-fd \
+	image/etc/s6-linux-init/run-image/service/serial-getty/run \
+	image/etc/s6-linux-init/run-image/service/serial-getty/template/run \
+	image/etc/s6-linux-init/run-image/service/vhost-user-fs/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vhost-user-fs/run \
+	image/etc/s6-linux-init/run-image/service/vhost-user-fs/template/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vhost-user-fs/template/run \
+	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/run \
+	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/template/data/check \
+	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/template/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/template/run \
+	image/etc/s6-linux-init/run-image/service/vmm/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vmm/run \
+	image/etc/s6-linux-init/run-image/service/vmm/template/notification-fd \
+	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/notification-fd \
+	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/run \
+	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/notification-fd \
+	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/run \
+	image/etc/s6-linux-init/scripts/rc.init \
+	image/etc/xdg/weston/autolaunch \
+	image/etc/xdg/weston/weston.ini \
+	image/usr/share/dbus-1/services/org.freedesktop.portal.Documents.service \
+	image/usr/bin/assign-devices \
+	image/usr/bin/create-vm-dependencies \
+	image/usr/bin/run-appimage \
+	image/usr/bin/run-vmm \
+	image/usr/bin/vm-console \
+	image/usr/bin/vm-import \
+	image/usr/bin/vm-start \
+	image/usr/bin/vm-stop \
+	image/usr/bin/xdg-open
 
 DIRS = \
 	dev \
@@ -104,18 +104,18 @@ FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 # These are separate because they need to be included, but putting
 # them as make dependencies would confuse make.
 LINKS = \
-	bin \
-	etc/s6-linux-init/run-image/opengl-driver \
-	etc/s6-linux-init/run-image/service/vmm/template/run \
-	lib \
-	sbin
+	image/bin \
+	image/etc/s6-linux-init/run-image/opengl-driver \
+	image/etc/s6-linux-init/run-image/service/vmm/template/run \
+	image/lib \
+	image/sbin
 
 BUILD_FILES = build/etc/s6-rc
 
 $(dest): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo
 	( \
 	    cat $(PACKAGES_FILE) ;\
-	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file $$file; done ;\
+	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
 	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(DIRS) ;\
 	    printf 'build/fifo\n%s\n' $(FIFOS) ;\
@@ -129,34 +129,34 @@ build/empty:
 	mkdir -p $@
 
 S6_RC_FILES = \
-	etc/s6-rc/card0/type \
-	etc/s6-rc/card0/up \
-	etc/s6-rc/core/type \
-	etc/s6-rc/core/up \
-	etc/s6-rc/kvm/timeout-up \
-	etc/s6-rc/kvm/type \
-	etc/s6-rc/kvm/up \
-	etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
-	etc/s6-rc/mdevd-coldplug/type \
-	etc/s6-rc/mdevd-coldplug/up \
-	etc/s6-rc/mdevd/notification-fd \
-	etc/s6-rc/mdevd/run \
-	etc/s6-rc/mdevd/type \
-	etc/s6-rc/ok-all/contents \
-	etc/s6-rc/ok-all/type \
-	etc/s6-rc/static-nodes/type \
-	etc/s6-rc/static-nodes/up \
-	etc/s6-rc/sys-vmms/dependencies.d/vmm-env \
-	etc/s6-rc/sys-vmms/type \
-	etc/s6-rc/sys-vmms/up \
-	etc/s6-rc/vm-env/contents \
-	etc/s6-rc/vm-env/type \
-	etc/s6-rc/vmm-env/contents \
-	etc/s6-rc/vmm-env/type \
-	etc/s6-rc/weston/dependencies.d/card0 \
-	etc/s6-rc/weston/notification-fd \
-	etc/s6-rc/weston/run \
-	etc/s6-rc/weston/type
+	image/etc/s6-rc/card0/type \
+	image/etc/s6-rc/card0/up \
+	image/etc/s6-rc/core/type \
+	image/etc/s6-rc/core/up \
+	image/etc/s6-rc/kvm/timeout-up \
+	image/etc/s6-rc/kvm/type \
+	image/etc/s6-rc/kvm/up \
+	image/etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
+	image/etc/s6-rc/mdevd-coldplug/type \
+	image/etc/s6-rc/mdevd-coldplug/up \
+	image/etc/s6-rc/mdevd/notification-fd \
+	image/etc/s6-rc/mdevd/run \
+	image/etc/s6-rc/mdevd/type \
+	image/etc/s6-rc/ok-all/contents \
+	image/etc/s6-rc/ok-all/type \
+	image/etc/s6-rc/static-nodes/type \
+	image/etc/s6-rc/static-nodes/up \
+	image/etc/s6-rc/sys-vmms/dependencies.d/vmm-env \
+	image/etc/s6-rc/sys-vmms/type \
+	image/etc/s6-rc/sys-vmms/up \
+	image/etc/s6-rc/vm-env/contents \
+	image/etc/s6-rc/vm-env/type \
+	image/etc/s6-rc/vmm-env/contents \
+	image/etc/s6-rc/vmm-env/type \
+	image/etc/s6-rc/weston/dependencies.d/card0 \
+	image/etc/s6-rc/weston/notification-fd \
+	image/etc/s6-rc/weston/run \
+	image/etc/s6-rc/weston/type
 
 # s6-rc-compile's input is a directory, but that doesn't play nice
 # with Make, because it won't know to update if some file in the
@@ -170,7 +170,7 @@ build/etc/s6-rc: $(S6_RC_FILES)
 	rm -rf $@
 
 	dir=$$(mktemp -d) && \
-	    tar -c $(S6_RC_FILES) | tar -C $$dir -x --strip-components 2 && \
+	    tar -c $(S6_RC_FILES) | tar -C $$dir -x --strip-components 3 && \
 	    s6-rc-compile $@ $$dir; \
 	    exit=$$?; rm -r $$dir; exit $$exit
 

@@ -30,32 +30,32 @@ $(imgdir)/appvm/blk/root.img: ../../scripts/make-gpt.sh ../../scripts/sfdisk-fie
 	mv $@.tmp $@
 
 VM_FILES = \
-	etc/dbus-1/session.conf \
-	etc/fonts/fonts.conf \
-	etc/fstab \
-	etc/init \
-	etc/mdev.conf \
-	etc/mdev/iface \
-	etc/mdev/listen \
-	etc/mdev/virtiofs \
-	etc/mdev/wait \
-	etc/passwd \
-	etc/pipewire/pipewire.conf \
-	etc/resolv.conf \
-	etc/s6-linux-init/env/DBUS_SESSION_BUS_ADDRESS \
-	etc/s6-linux-init/env/DISPLAY \
-	etc/s6-linux-init/env/GTK_USE_PORTAL \
-	etc/s6-linux-init/env/NIX_XDG_DESKTOP_PORTAL_DIR \
-	etc/s6-linux-init/env/WAYLAND_DISPLAY \
-	etc/s6-linux-init/env/XDG_RUNTIME_DIR \
-	etc/s6-linux-init/run-image/service/getty-hvc0/run \
-	etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/notification-fd \
-	etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/run \
-	etc/s6-linux-init/scripts/rc.init \
-	etc/s6-linux-init/scripts/rc.shutdown \
-	etc/s6-linux-init/scripts/rc.shutdown.final \
-	etc/wireplumber/wireplumber.conf.d/99_spectrum.conf \
-	etc/xdg/xdg-desktop-portal/portals.conf
+	image/etc/dbus-1/session.conf \
+	image/etc/fonts/fonts.conf \
+	image/etc/fstab \
+	image/etc/init \
+	image/etc/mdev.conf \
+	image/etc/mdev/iface \
+	image/etc/mdev/listen \
+	image/etc/mdev/virtiofs \
+	image/etc/mdev/wait \
+	image/etc/passwd \
+	image/etc/pipewire/pipewire.conf \
+	image/etc/resolv.conf \
+	image/etc/s6-linux-init/env/DBUS_SESSION_BUS_ADDRESS \
+	image/etc/s6-linux-init/env/DISPLAY \
+	image/etc/s6-linux-init/env/GTK_USE_PORTAL \
+	image/etc/s6-linux-init/env/NIX_XDG_DESKTOP_PORTAL_DIR \
+	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
+	image/etc/s6-linux-init/env/XDG_RUNTIME_DIR \
+	image/etc/s6-linux-init/run-image/service/getty-hvc0/run \
+	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/notification-fd \
+	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/run \
+	image/etc/s6-linux-init/scripts/rc.init \
+	image/etc/s6-linux-init/scripts/rc.shutdown \
+	image/etc/s6-linux-init/scripts/rc.shutdown.final \
+	image/etc/wireplumber/wireplumber.conf.d/99_spectrum.conf \
+	image/etc/xdg/xdg-desktop-portal/portals.conf
 
 VM_DIRS = dev run proc sys tmp \
 	etc/s6-linux-init/run-image/service \
@@ -65,7 +65,7 @@ VM_FIFOS = etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/fifo
 
 # These are separate because they need to be included, but putting
 # them as make dependencies would confuse make.
-VM_LINKS = bin etc/ssl/certs/ca-certificates.crt sbin
+VM_LINKS = image/bin image/etc/ssl/certs/ca-certificates.crt image/sbin
 
 VM_BUILD_FILES = build/etc/s6-rc
 
@@ -79,46 +79,46 @@ build/empty:
 build/rootfs.erofs: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) $(VM_BUILD_FILES) build/empty build/fifo
 	( \
 	    cat $(PACKAGES_FILE) ;\
-	    for file in $(VM_FILES) $(VM_LINKS); do printf '%s\n%s\n' $$file $$file; done ;\
+	    for file in $(VM_FILES) $(VM_LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
 	    for file in $(VM_BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(VM_DIRS) ;\
 	    printf 'build/fifo\n%s\n' $(VM_FIFOS) ;\
 	) | ../../scripts/make-erofs.sh $@
 
 VM_S6_RC_FILES = \
-	etc/s6-rc/app/dependencies.d/dbus \
-	etc/s6-rc/app/dependencies.d/pipewire \
-	etc/s6-rc/app/dependencies.d/wayland-proxy-virtwl \
-	etc/s6-rc/app/run \
-	etc/s6-rc/app/type \
-	etc/s6-rc/dbus/notification-fd \
-	etc/s6-rc/dbus/run \
-	etc/s6-rc/dbus/type \
-	etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
-	etc/s6-rc/mdevd-coldplug/type \
-	etc/s6-rc/mdevd-coldplug/up \
-	etc/s6-rc/mdevd/notification-fd \
-	etc/s6-rc/mdevd/run \
-	etc/s6-rc/mdevd/type \
-	etc/s6-rc/ok-all/contents \
-	etc/s6-rc/ok-all/type \
-	etc/s6-rc/pipewire/notification-fd \
-	etc/s6-rc/pipewire/run \
-	etc/s6-rc/pipewire/type \
-	etc/s6-rc/wayland-proxy-virtwl/notification-fd \
-	etc/s6-rc/wayland-proxy-virtwl/run \
-	etc/s6-rc/wayland-proxy-virtwl/type \
-	etc/s6-rc/wireplumber/dependencies.d/dbus \
-	etc/s6-rc/wireplumber/dependencies.d/pipewire \
-	etc/s6-rc/wireplumber/run \
-	etc/s6-rc/wireplumber/type
+	image/etc/s6-rc/app/dependencies.d/dbus \
+	image/etc/s6-rc/app/dependencies.d/pipewire \
+	image/etc/s6-rc/app/dependencies.d/wayland-proxy-virtwl \
+	image/etc/s6-rc/app/run \
+	image/etc/s6-rc/app/type \
+	image/etc/s6-rc/dbus/notification-fd \
+	image/etc/s6-rc/dbus/run \
+	image/etc/s6-rc/dbus/type \
+	image/etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
+	image/etc/s6-rc/mdevd-coldplug/type \
+	image/etc/s6-rc/mdevd-coldplug/up \
+	image/etc/s6-rc/mdevd/notification-fd \
+	image/etc/s6-rc/mdevd/run \
+	image/etc/s6-rc/mdevd/type \
+	image/etc/s6-rc/ok-all/contents \
+	image/etc/s6-rc/ok-all/type \
+	image/etc/s6-rc/pipewire/notification-fd \
+	image/etc/s6-rc/pipewire/run \
+	image/etc/s6-rc/pipewire/type \
+	image/etc/s6-rc/wayland-proxy-virtwl/notification-fd \
+	image/etc/s6-rc/wayland-proxy-virtwl/run \
+	image/etc/s6-rc/wayland-proxy-virtwl/type \
+	image/etc/s6-rc/wireplumber/dependencies.d/dbus \
+	image/etc/s6-rc/wireplumber/dependencies.d/pipewire \
+	image/etc/s6-rc/wireplumber/run \
+	image/etc/s6-rc/wireplumber/type
 
 build/etc/s6-rc: $(VM_S6_RC_FILES)
 	mkdir -p $$(dirname $@)
 	rm -rf $@
 
 	dir=$$(mktemp -d) && \
-	    tar -c $(VM_S6_RC_FILES) | tar -C $$dir -x --strip-components 2 && \
+	    tar -c $(VM_S6_RC_FILES) | tar -C $$dir -x --strip-components 3 && \
 	    s6-rc-compile $@ $$dir; \
 	    exit=$$?; rm -r $$dir; exit $$exit
 

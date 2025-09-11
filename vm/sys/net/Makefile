@@ -29,21 +29,21 @@ $(vmdir)/netvm/blk/root.img: ../../../scripts/make-gpt.sh ../../../scripts/sfdis
 	mv $@.tmp $@
 
 VM_FILES = \
-	etc/dbus-1/system.conf \
-	etc/fstab \
-	etc/init \
-	etc/mdev.conf \
-	etc/mdev/iface \
-	etc/nftables.conf \
-	etc/passwd \
-	etc/s6-linux-init/run-image/service/getty-hvc0/run \
-	etc/s6-linux-init/scripts/rc.init \
-	etc/sysctl.conf
-VM_DIRS = dev etc/s6-linux-init/env proc run sys var/lib/connman
+	image/etc/dbus-1/system.conf \
+	image/etc/fstab \
+	image/etc/init \
+	image/etc/mdev.conf \
+	image/etc/mdev/iface \
+	image/etc/nftables.conf \
+	image/etc/passwd \
+	image/etc/s6-linux-init/run-image/service/getty-hvc0/run \
+	image/etc/s6-linux-init/scripts/rc.init \
+	image/etc/sysctl.conf
+VM_DIRS = dev etc/s6-linux-init/env run proc sys var/lib/connman
 
 # These are separate because they need to be included, but putting
 # them as make dependencies would confuse make.
-VM_LINKS = bin lib sbin var/run
+VM_LINKS = image/bin image/lib image/sbin image/var/run
 
 VM_BUILD_FILES = build/etc/s6-rc
 
@@ -53,37 +53,37 @@ build/empty:
 build/rootfs.erofs: ../../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) $(VM_BUILD_FILES) build/empty
 	( \
 	    cat $(PACKAGES_FILE) ;\
-	    for file in $(VM_FILES) $(VM_LINKS); do printf '%s\n%s\n' $$file $$file; done ;\
+	    for file in $(VM_FILES) $(VM_LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
 	    for file in $(VM_BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(VM_DIRS) ;\
 	) | ../../../scripts/make-erofs.sh $@
 
 VM_S6_RC_FILES = \
-	etc/s6-rc/connman/dependencies.d/dbus \
-	etc/s6-rc/connman/run \
-	etc/s6-rc/connman/type \
-	etc/s6-rc/dbus/notification-fd \
-	etc/s6-rc/dbus/run \
-	etc/s6-rc/dbus/type \
-	etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
-	etc/s6-rc/mdevd-coldplug/type \
-	etc/s6-rc/mdevd-coldplug/up \
-	etc/s6-rc/mdevd/notification-fd \
-	etc/s6-rc/mdevd/run \
-	etc/s6-rc/mdevd/type \
-	etc/s6-rc/nftables/type \
-	etc/s6-rc/nftables/up \
-	etc/s6-rc/ok-all/contents \
-	etc/s6-rc/ok-all/type \
-	etc/s6-rc/sysctl/type \
-	etc/s6-rc/sysctl/up
+	image/etc/s6-rc/connman/dependencies.d/dbus \
+	image/etc/s6-rc/connman/run \
+	image/etc/s6-rc/connman/type \
+	image/etc/s6-rc/dbus/notification-fd \
+	image/etc/s6-rc/dbus/run \
+	image/etc/s6-rc/dbus/type \
+	image/etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
+	image/etc/s6-rc/mdevd-coldplug/type \
+	image/etc/s6-rc/mdevd-coldplug/up \
+	image/etc/s6-rc/mdevd/notification-fd \
+	image/etc/s6-rc/mdevd/run \
+	image/etc/s6-rc/mdevd/type \
+	image/etc/s6-rc/nftables/type \
+	image/etc/s6-rc/nftables/up \
+	image/etc/s6-rc/ok-all/contents \
+	image/etc/s6-rc/ok-all/type \
+	image/etc/s6-rc/sysctl/type \
+	image/etc/s6-rc/sysctl/up
 
 build/etc/s6-rc: $(VM_S6_RC_FILES)
 	mkdir -p $$(dirname $@)
 	rm -rf $@
 
 	dir=$$(mktemp -d) && \
-	    tar -c $(VM_S6_RC_FILES) | tar -C $$dir -x --strip-components 2 && \
+	    tar -c $(VM_S6_RC_FILES) | tar -C $$dir -x --strip-components 3 && \
 	    s6-rc-compile $@ $$dir; \
 	    exit=$$?; rm -r $$dir; exit $$exit
 
