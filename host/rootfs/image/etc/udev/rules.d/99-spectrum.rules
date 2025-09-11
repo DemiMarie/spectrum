@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# systemd-udevd has a built-in module loading feature,
+# but it seems to not work for some reason or another.
+# This works.
+ACTION!="remove", ENV{MODALIAS}!="", RUN+="/usr/bin/modprobe -q $env{MODALIAS}"
+# systemd-udevd unsets PATH, so fix that.
+ACTION=="remove", GOTO="spectrum-end"
+ENV{PCI_CLASS}!="2????", GOTO="spectrum-end"
+IMPORT{db}!="spectrum_driver_assigned", GOTO="spectrum-end"
+ENV{SPECTRUM_DRIVER_ASSIGNED}=="yes", GOTO="spectrum-end"
+RUN+="/usr/bin/env PATH=/usr/bin /usr/libexec/net-add"
+ENV{SPECTRUM_DRIVER_ASSIGNED}="yes"
+LABEL="spectrum-end"
