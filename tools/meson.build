@@ -21,6 +21,7 @@ if get_option('host')
 
   subdir('lsvm')
   subdir('start-vmm')
+  subdir('sd-notify-adapter')
 endif
 
 if get_option('guest')
