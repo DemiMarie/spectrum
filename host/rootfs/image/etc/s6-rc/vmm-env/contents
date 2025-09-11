@@ -2,5 +2,7 @@
 # SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
 #
 core
-kvm
-static-nodes
+# systemd runs systemd-udev-trigger.service before sysinit.target.
+# Therefore, anything using libudev that isn't an early boot service
+# might expect udev coldplug to have finished.
+systemd-udevd-coldplug

@@ -6,88 +6,47 @@ import ../../lib/call-package.nix (
 { callSpectrumPackage, lseek, src, pkgsMusl, pkgsStatic, linux_latest }:
 pkgsStatic.callPackage (
 
-{ spectrum-host-tools
-, lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
-, busybox, cloud-hypervisor, cryptsetup, dbus, execline, inkscape
-, iproute2, inotify-tools, jq, kmod, mdevd, s6, s6-linux-init, socat
-, util-linuxMinimal, virtiofsd, xorg, xdg-desktop-portal-spectrum-host
+{ busybox, cloud-hypervisor, cryptsetup, dbus, erofs-utils, execline
+, inkscape, inotify-tools, iproute2, jq, kmod, lib, mdevd, nixos
+, runCommand, s6, s6-linux-init, s6-rc, socat, spectrum-host-tools
+, stdenvNoCC, util-linuxMinimal, virtiofsd, writeClosure
+, xdg-desktop-portal-spectrum-host, xorg
 }:
-
 let
-  inherit (nixosAllHardware.config.hardware) firmware;
   inherit (lib)
-    concatMapStringsSep concatStrings escapeShellArgs fileset optionalAttrs
+    concatMapStringsSep concatStrings escapeShellArgs fileset
     mapAttrsToList systems trivial;
-
   pkgsGui = pkgsMusl.extend (
-    final: super:
-    (optionalAttrs (systems.equals pkgsMusl.stdenv.hostPlatform super.stdenv.hostPlatform) {
-      flatpak = super.flatpak.override {
-        withMalcontent = false;
-      };
-
-      libgudev = super.libgudev.overrideAttrs ({ ... }: {
-        # Tests use umockdev, which is not compatible with libudev-zero.
-        doCheck = false;
-      });
-
-      qt6 = super.qt6.overrideScope (_: prev: {
-        qttranslations = prev.qttranslations.override {
-          qttools = prev.qttools.override {
-            qtbase = prev.qtbase.override {
-              qttranslations = null;
-              systemdSupport = false;
-            };
-            qtdeclarative = null;
-          };
-        };
-
-        qtbase = prev.qtbase.override {
-          systemdSupport = false;
-        };
-      });
-
-      systemd = super.systemd.overrideAttrs ({ meta ? { }, ... }: {
+    _final: super:
+    (lib.optionalAttrs (systems.equals pkgsMusl.stdenv.hostPlatform super.stdenv.hostPlatform) {
+      malcontent = super.malcontent.overrideAttrs ({ meta ? { }, ... }: {
         meta = meta // {
           platforms = [ ];
         };
       });
+   }));
+in
+pkgsGui.callPackage (
+{ cosmic-files, crosvm, dejavu_fonts, foot, mesa
+, systemdMinimal, westonLite, xdg-desktop-portal
+, xdg-desktop-portal-gtk
+}:
 
-      upower = super.upower.override {
-        # Not ideal, but it's the best way to get rid of an installed
-        # test that needs umockdev.
-        withIntrospection = false;
-      };
-
-      udev = final.libudev-zero;
-
-      weston = super.weston.overrideAttrs ({ mesonFlags ? [], ... }: {
-        mesonFlags = mesonFlags ++ [
-          "-Dsystemd=false"
-        ];
-      });
-
-      xdg-desktop-portal = (super.xdg-desktop-portal.override {
-        enableSystemd = false;
-      }).overrideAttrs ({ ... }: {
-        # Tests use umockdev.
-        doCheck = false;
-      });
-    })
-  );
-
-  foot = pkgsGui.foot.override { allowPgo = false; };
+let
+  inherit (nixosAllHardware.config.hardware) firmware;
+  no_pgo_foot = foot.override { allowPgo = false; };
 
   packages = [
-    cloud-hypervisor cryptsetup dbus execline inotify-tools iproute2
-    jq kmod mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools
-    virtiofsd xdg-desktop-portal-spectrum-host
+    cloud-hypervisor crosvm cryptsetup dbus execline inotify-tools
+    iproute2 jq kmod mdevd s6 s6-linux-init s6-rc socat
+    spectrum-host-tools virtiofsd xdg-desktop-portal-spectrum-host
 
     (busybox.override {
       extraConfig = ''
         CONFIG_CHATTR n
         CONFIG_DEPMOD n
         CONFIG_FINDFS n
+        CONFIG_HALT n
         CONFIG_INIT n
         CONFIG_INSMOD n
         CONFIG_IP n
@@ -98,10 +57,13 @@ let
         CONFIG_MODINFO n
         CONFIG_MODPROBE n
         CONFIG_MOUNT n
+        CONFIG_POWEROFF n
+        CONFIG_REBOOT n
         CONFIG_RMMOD n
+        CONFIG_SHUTDOWN n
       '';
     })
-  ] ++ (with pkgsGui; [ cosmic-files crosvm foot ]);
+  ];
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
@@ -111,14 +73,14 @@ let
 
   kernel = linux_latest;
 
-  appvm = callSpectrumPackage ../../img/app { inherit (foot) terminfo; };
-  netvm = callSpectrumPackage ../../vm/sys/net { inherit (foot) terminfo; };
+  appvm = callSpectrumPackage ../../img/app { inherit (no_pgo_foot) terminfo; };
+  netvm = callSpectrumPackage ../../vm/sys/net { inherit (no_pgo_foot) terminfo; };
 
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
   usrPackages = [
     appvm kernel.modules firmware netvm
-  ] ++ (with pkgsGui; [ mesa dejavu_fonts westonLite ]);
+    mesa dejavu_fonts westonLite ];
 
   appvms = {
     appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};
@@ -136,16 +98,16 @@ let
     # Weston doesn't support SVG icons.
     inkscape -w 20 -h 20 \
         -o $out/usr/share/icons/hicolor/20x20/apps/com.system76.CosmicFiles.png \
-        ${pkgsGui.cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
+        ${cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
 
     ln -st $out/usr/bin \
         ${concatMapStringsSep " " (p: "${p}/bin/*") packages} \
-        ${pkgsGui.xdg-desktop-portal}/libexec/xdg-document-portal \
-        ${pkgsGui.xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
+        ${xdg-desktop-portal}/libexec/xdg-document-portal \
+        ${xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
     ln -st $out/usr/share/dbus-1 \
         ${dbus}/share/dbus-1/session.conf
     ln -st $out/usr/share/dbus-1/services \
-        ${pkgsGui.xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
+        ${xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
 
     for pkg in ${escapeShellArgs usrPackages}; do
         lndir -ignorelinks -silent "$pkg" "$out/usr"
@@ -159,6 +121,10 @@ let
     # programs we want.
     # https://lore.kernel.org/util-linux/87zgrl6ufb.fsf@alyssa.is/
     ln -s ${util-linuxMinimal}/bin/{findfs,uuidgen,lsblk,mount} $out/usr/bin
+
+    # TODO: this is another hack and it should be possible
+    # to build systemd without this.
+    ln -s -- ${lib.escapeShellArg systemdMinimal}/bin/udevadm "$out/usr/bin"
   '';
 in
 
@@ -195,7 +161,7 @@ stdenvNoCC.mkDerivation {
   unsafeDiscardReferences = { out = true; };
 
   passthru = {
-    inherit appvm firmware kernel nixosAllHardware packagesSysroot pkgsGui;
+    inherit appvm firmware kernel nixosAllHardware packagesSysroot;
   };
 
   meta = with lib; {
@@ -203,4 +169,4 @@ stdenvNoCC.mkDerivation {
     platforms = platforms.linux;
   };
 }
-) {}) (_: {})
+) {}) {}) (_: {})

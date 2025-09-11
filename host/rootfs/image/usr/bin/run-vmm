@@ -53,4 +53,7 @@ unexport !
 fdmove -c 3 0
 redirfd -r 0 /dev/null
 
+# Do this last so that udev has as much
+# time to set up KVM as possible.
+if { udevadm wait /dev/kvm }
 cloud-hypervisor --api-socket fd=3
