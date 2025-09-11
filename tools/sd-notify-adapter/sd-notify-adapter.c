@@ -341,6 +341,7 @@ static const struct option longopts[] = {
 	{ "s6-notify-fd", required_argument, NULL, S6_NOTIFY_FD },
 	{ "notify-socket", required_argument, NULL, SYSTEMD_NOTIFY_SOCKET },
 	{ "lock-fd", required_argument, NULL, LOCK_FD },
+	{ "arg0", required_argument, NULL, '0' },
 	{ NULL, 0, NULL, 0 },
 };
 
@@ -353,7 +354,8 @@ static void usage(int arg) {
 	      // This avoids confusion with positional parameters (program and arguments)
 	      // and allows providing a default in the future (such as /run/sd-notify-adapter/PID).
 	      "      --notify-socket                     Socket to listen for notifications on (mandatory)\n"
-	      "      --lock-fd lock_fd                   Keep lock_fd open\n",
+	      "      --lock-fd lock_fd                   Keep lock_fd open\n"
+	      "      --arg0=ARG0                         Set the argv[0] passed to the child process\n",
 	      arg ? stderr : stdout);
 	flush_and_exit(arg);
 }
@@ -371,6 +373,7 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < 3; ++i) {
 		check_fd_usable(i, i != 0);
 	}
+	char *arg0 = NULL;
 	const char *lastopt;
 	const char *socket_path = NULL;
 	int lock_fd = -1;
@@ -429,6 +432,12 @@ int main(int argc, char **argv) {
 				errx(EX_USAGE, "Invalid lock file descriptor %s\n", optarg);
 			}
 			break;
+		case '0':
+			if (arg0 != NULL) {
+				errx(EX_USAGE, "--arg0 must not be given multiple times");
+			}
+			arg0 = optarg;
+			break;
 		default:
 			assert(0); // not reached
 		}
@@ -470,7 +479,7 @@ int main(int argc, char **argv) {
 	// Fork
 	pid_t child_pid = check_posix(fork(), "fork");
 	if (child_pid == 0) {
-		const char *progname = args_to_exec[0];
+		const char *progname = arg0 != NULL ? arg0 : args_to_exec[0];
 		execvp(progname, args_to_exec);
 		err(errno == ENOENT ? 127 : 126, "execve: %s", progname);
 	}
