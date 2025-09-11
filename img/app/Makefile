@@ -116,9 +116,8 @@ VM_S6_RC_FILES = \
 build/etc/s6-rc: $(VM_S6_RC_FILES)
 	mkdir -p $$(dirname $@)
 	rm -rf $@
-
-	dir=$$(mktemp -d) && \
-	    tar -c $(VM_S6_RC_FILES) | tar -C $$dir -x --strip-components 3 && \
+	set -uo pipefail && dir=$$(mktemp -d) && \
+	    { tar -c $(VM_S6_RC_FILES) | tar -C $$dir -x --strip-components 3; } && \
 	    s6-rc-compile $@ $$dir; \
 	    exit=$$?; rm -r $$dir; exit $$exit
 
