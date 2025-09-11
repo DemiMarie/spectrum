@@ -1,0 +1,11 @@
+#!/bin/execlineb -P
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+if { rm -f /run/sd-notify-wrapper/systemd-udevd }
+background {
+   s6-ipcserver-socketbinder -b0 -m -a 0600 /run/sd-notify-wrapper/systemd-udevd
+   fdmove 1 3
+   sd-notify-adapter
+}
+export NOTIFY_SOCKET /run/sd-notify-wrapper/systemd-udevd
+exec -a systemd-udevd udevadm
