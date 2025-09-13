@@ -59,13 +59,13 @@ build/rootfs.erofs: ../../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) 
 	) | ../../../scripts/make-erofs.sh $@
 
 VM_S6_RC_FILES = \
-	etc/s6-rc/connman/dependencies \
+	etc/s6-rc/connman/dependencies.d/dbus \
 	etc/s6-rc/connman/run \
 	etc/s6-rc/connman/type \
 	etc/s6-rc/dbus/notification-fd \
 	etc/s6-rc/dbus/run \
 	etc/s6-rc/dbus/type \
-	etc/s6-rc/mdevd-coldplug/dependencies \
+	etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
 	etc/s6-rc/mdevd-coldplug/type \
 	etc/s6-rc/mdevd-coldplug/up \
 	etc/s6-rc/mdevd/notification-fd \

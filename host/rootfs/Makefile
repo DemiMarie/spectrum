@@ -136,7 +136,7 @@ S6_RC_FILES = \
 	etc/s6-rc/kvm/timeout-up \
 	etc/s6-rc/kvm/type \
 	etc/s6-rc/kvm/up \
-	etc/s6-rc/mdevd-coldplug/dependencies \
+	etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
 	etc/s6-rc/mdevd-coldplug/type \
 	etc/s6-rc/mdevd-coldplug/up \
 	etc/s6-rc/mdevd/notification-fd \
@@ -146,14 +146,14 @@ S6_RC_FILES = \
 	etc/s6-rc/ok-all/type \
 	etc/s6-rc/static-nodes/type \
 	etc/s6-rc/static-nodes/up \
-	etc/s6-rc/sys-vmms/dependencies \
+	etc/s6-rc/sys-vmms/dependencies.d/vmm-env \
 	etc/s6-rc/sys-vmms/type \
 	etc/s6-rc/sys-vmms/up \
 	etc/s6-rc/vm-env/contents \
 	etc/s6-rc/vm-env/type \
 	etc/s6-rc/vmm-env/contents \
 	etc/s6-rc/vmm-env/type \
-	etc/s6-rc/weston/dependencies \
+	etc/s6-rc/weston/dependencies.d/card0 \
 	etc/s6-rc/weston/notification-fd \
 	etc/s6-rc/weston/run \
 	etc/s6-rc/weston/type
