@@ -50,9 +50,5 @@ background { rm /dev/rootfs /dev/verity }
 if { mount /dev/mapper/root-verity /mnt/root }
 wait { $mdevd_pid }
 
-if { mount --move /proc /mnt/root/proc }
-if { mount --move /sys /mnt/root/sys }
-if { mount --move /dev /mnt/root/dev }
-
 switch_root /mnt/root
 /etc/init

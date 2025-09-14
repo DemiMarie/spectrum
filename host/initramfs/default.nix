@@ -43,6 +43,7 @@ let
         CONFIG_MODINFO n
         CONFIG_MODPROBE n
         CONFIG_RMMOD n
+        CONFIG_SWITCH_ROOT n
       '';
     })
   ];
@@ -56,7 +57,7 @@ let
     # TODO: this is a hack and we should just build the util-linux
     # programs we want.
     # https://lore.kernel.org/util-linux/87zgrl6ufb.fsf@alyssa.is/
-    cp ${util-linuxMinimal}/bin/{findfs,lsblk} $out/bin
+    cp ${util-linuxMinimal}/bin/{findfs,lsblk,switch_root} $out/bin
   '';
 
   microcode = runCommand "microcode.cpio" {
