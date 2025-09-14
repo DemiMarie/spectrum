@@ -78,7 +78,6 @@ run: $(dest) build/rootfs.verity.roothash $(RUN_IMAGE)
 	    -cpu max \
 	    -gdb unix:build/gdb.sock,server,nowait \
 	    -parallel none \
-	    -serial none \
 	    -chardev vc,id=virtiocon0 \
 	    -device virtio-serial \
 	    -device virtconsole,chardev=virtiocon0 \
