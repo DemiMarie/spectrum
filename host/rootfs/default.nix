@@ -8,8 +8,8 @@ pkgsStatic.callPackage (
 
 { spectrum-host-tools
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
-, bcachefs-tools, busybox, cloud-hypervisor, cryptsetup, dbus, execline
-, inkscape, iproute2, inotify-tools, jq, kmod, mdevd, s6, s6-linux-init, socat
+, busybox, cloud-hypervisor, cryptsetup, dbus, execline, inkscape
+, iproute2, inotify-tools, jq, kmod, mdevd, s6, s6-linux-init, socat
 , util-linuxMinimal, virtiofsd, xorg, xdg-desktop-portal-spectrum-host
 }:
 
@@ -79,17 +79,9 @@ let
   foot = pkgsGui.foot.override { allowPgo = false; };
 
   packages = [
-    bcachefs-tools cloud-hypervisor dbus execline inotify-tools
-    iproute2 jq kmod mdevd s6 s6-linux-init s6-rc socat
-    spectrum-host-tools virtiofsd xdg-desktop-portal-spectrum-host
-
-    (cryptsetup.override {
-      programs = {
-        cryptsetup = false;
-        cryptsetup-reencrypt = false;
-        integritysetup = false;
-      };
-    })
+    cloud-hypervisor cryptsetup dbus execline inotify-tools iproute2
+    jq kmod mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools
+    virtiofsd xdg-desktop-portal-spectrum-host
 
     (busybox.override {
       extraConfig = ''
