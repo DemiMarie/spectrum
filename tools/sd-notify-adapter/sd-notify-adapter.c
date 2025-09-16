@@ -39,6 +39,8 @@
 #include <fcntl.h>
 #include <getopt.h>
 #include <sys/epoll.h>
+#include <sys/ioctl.h>
+#include <sys/prctl.h>
 #include <sys/resource.h>
 #include <sys/signalfd.h>
 #include <sys/socket.h>
@@ -338,6 +340,7 @@ enum {
 
 static const struct option longopts[] = {
 	{ "oom-score-adj", required_argument, NULL, 'o' },
+	{ "die-with-parent", required_argument, NULL, 'd' },
 	{ "help", no_argument, NULL, 'h' },
 	{ "s6-notify-fd", required_argument, NULL, S6_NOTIFY_FD },
 	{ "notify-socket", required_argument, NULL, SYSTEMD_NOTIFY_SOCKET },
@@ -357,7 +360,9 @@ static void usage(int arg) {
 	      "      --notify-socket                     Socket to listen for notifications on (mandatory)\n"
 	      "      --lock-fd lock_fd                   Keep lock_fd open\n"
 	      "      --arg0=ARG0                         Set the argv[0] passed to the child process\n"
-	      "      --oom-score-adj=ADJUSTMENT          Adjust the OOM score of the process and its children.\n",
+	      "      --oom-score-adj=ADJUSTMENT          Adjust the OOM score of the process and its children.\n"
+	      "      --die-with-parent=SIGNAL            Kill both this process and its child with SIGNAL if\n"
+	      "                                          the parent process dies\n",
 	      arg ? stderr : stdout);
 	flush_and_exit(arg);
 }
@@ -365,6 +370,7 @@ static void usage(int arg) {
 enum {
 	NOTIFY_FD,
 	SIGNAL_FD,
+	PARENT_PIPE_FD,
 };
 
 int main(int argc, char **argv) {
@@ -380,6 +386,7 @@ int main(int argc, char **argv) {
 	const char *socket_path = NULL;
 	int lock_fd = -1;
 	int oom_score_adj = INT_MIN;
+	int exit_signal = 0;
 	for (;;) {
 		int longindex = -1;
 		lastopt = argv[optind];
@@ -447,6 +454,17 @@ int main(int argc, char **argv) {
 			}
 			arg0 = optarg;
 			break;
+		case 'd':
+			if (exit_signal) {
+				errx(EX_USAGE, "Parent death signal cannot be given more than once");
+			}
+			exit_signal = parse_int(optarg);
+			if ((exit_signal < 1 || exit_signal > 31) &&
+			    (exit_signal < SIGRTMIN && exit_signal > SIGRTMAX)) {
+				errx(EX_USAGE, "invalid signal specification '%s'", optarg);
+			}
+			check_posix_bool(prctl(PR_SET_PDEATHSIG, exit_signal), "prctl(PR_SET_PDEATHSIG)");
+			break;
 		default:
 			assert(0); // not reached
 		}
@@ -483,6 +501,14 @@ int main(int argc, char **argv) {
 	int signal_fd = check_posix(signalfd(-1, &new_mask, SFD_NONBLOCK | SFD_CLOEXEC), "signalfd");
 	event.data.u64 = SIGNAL_FD;
 	check_posix_bool(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, signal_fd, &event), "epoll_ctl");
+	event = (struct epoll_event) { .events = 0, .data.u64 = PARENT_PIPE_FD };
+	int r = epoll_ctl(epoll_fd, EPOLL_CTL_ADD, notification_fd, &event);
+	if (r != 0) {
+		assert(r == -1);
+		if (errno != EPERM) {
+			err(EX_OSERR, "epoll_ctl");
+		}
+	}
 	int dev_null = check_posix(open("/dev/null", O_RDWR | O_CLOEXEC | O_NOCTTY, 0666), "open(/dev/null)");
 
 	/* Adjust OOM score if desired */
@@ -497,10 +523,57 @@ int main(int argc, char **argv) {
 		free(p);
 	}
 
+	// To work around a kernel race condition [1], the child process needs
+	// to handshake with its parent after calling prctl(PR_SET_PDEATHSIG).
+	// However, this is not necessary if the parent is PID 1 in its PID
+	// namespace, as if it exits all of its children die with SIGKILL.
+	//
+	// It is not necessary to close these file descriptors.  The kernel
+	// will close them when the child calls execve().  Since the FDs
+	// are not in the list passed to close_unwanted_fds(), they will
+	// be closed by close_range().
+	//
+	// [1]: https://lore.kernel.org/lkml/20250913-fix-prctl-pdeathsig-race-v1-1-44e2eb426fe9@gmail.com
+	int race_prevention_fds[2] = { -1, -1 };
+	if (exit_signal != 0 && getpid() != 1) {
+		check_posix_bool(socketpair(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, 0,
+		                            race_prevention_fds),
+		                 "socketpair");
+	}
+
 	// Fork
 	pid_t child_pid = check_posix(fork(), "fork");
 	if (child_pid == 0) {
 		const char *progname = arg0 != NULL ? arg0 : args_to_exec[0];
+		if (notification_fd != -1) {
+			close(notification_fd);
+		}
+		if (arg0 != NULL) {
+			args_to_exec[0] = arg0;
+		}
+		close(notification_fd);
+		if (race_prevention_fds[1] != -1) {
+			ssize_t write_result;
+			char buf[] = { 0 };
+			check_posix_bool(prctl(PR_SET_PDEATHSIG, exit_signal), "prctl(PR_SET_PDEATHSIG)");
+			do {
+				write_result = write(race_prevention_fds[1], buf, sizeof(buf));
+			} while (write_result == -1 && errno == EINTR);
+			if (write_result != 1) {
+				err(126, "write to parent");
+			}
+			assert(write_result == 1);
+			do {
+				write_result = read(race_prevention_fds[1], buf, sizeof(buf));
+			} while (write_result == -1 && errno == EINTR);
+			if (write_result == 0) {
+				errx(126, "Parent process died unexpectedly");
+			}
+			if (write_result != 1) {
+				err(126, "read from parent");
+			}
+			assert(buf[0] == 1);
+		}
 		execvp(progname, args_to_exec);
 		err(errno == ENOENT ? 127 : 126, "execve: %s", progname);
 	}
@@ -516,13 +589,35 @@ int main(int argc, char **argv) {
 	}
 
 	// Main event loop.
+	if (race_prevention_fds[0] != -1) {
+		ssize_t read_result;
+		char buf[] = { 1 };
+		do {
+			read_result = read(race_prevention_fds[0], buf, sizeof(buf));
+		} while (read_result == -1 && errno == EINTR);
+		if (read_result == 0) {
+			errx(126, "Child process died unexpectedly");
+		}
+		if (read_result != 1) {
+			err(126, "read from child");
+		}
+		assert(buf[0] == 0);
+		buf[0] = 1;
+		do {
+			read_result = write(race_prevention_fds[0], buf, sizeof(buf));
+		} while (read_result == -1 && errno == EINTR);
+		if (read_result != 1) {
+			err(126, "write to child");
+		}
+	}
+
 	dup2(dev_null, 0);
 	dup2(dev_null, 1);
 
 	// Close extra file descriptors in the parent, to avoid keeping an extra reference
 	// to the file description.  Otherwise the child closing the write end of a pipe
 	// would not cause another process to get EOF.  This also closes the FD to /dev/null
-	// opened above.
+	// and the race prevention FDs.
 	{
 		int fds_to_sort[] = { notification_fd, epoll_fd, signal_fd, notify_socket_fd, lock_fd };
 		close_unwanted_fds(fds_to_sort, ARRAY_SIZE(fds_to_sort));
@@ -575,6 +670,64 @@ int main(int argc, char **argv) {
 				// No other return value makes sense.
 				assert(bytes_read == (ssize_t)sizeof(info));
 				handler(&info, child_pid);
+				break;
+			}
+			case PARENT_PIPE_FD: /* pipe to s6-supervise */
+			{
+				if ((out_event->events & EPOLLERR) == 0) {
+					break;
+				}
+				int bytes_unread = -1;
+				warnx("Notification pipe closed");
+
+				/*
+				 * This prevents races.  There are three cases:
+				 *
+				 * 1. The parent died before being notified of readiness.
+				 *    In this case, 'ready' will be false.
+				 *
+				 * 2. The parent died before after being notified of
+				 *    readiness, but before reading all the bytes from its
+				 *    pipe.  In this case, there will be a non-zero number
+				 *    of bytes left in the pipe, which FIONREAD will detect.
+				 *
+				 * 3. The parent closed the pipe after reading all of the bytes.
+				 *    In this case, the following happens-before relationships exist:
+				 *
+				 *    1. prctl(PR_SET_PDEATHSIG) happens-before
+				 *       writing data to the pipe.
+				 *
+				 *    2. Writing data to the pipe happens-before
+				 *       the parent reading data from the pipe.
+				 *
+				 *    3. Reading data from the pipe happens-before
+				 *       the parent exiting, if it ever does exit.
+				 *
+				 *    Therefore, prctl(PR_SET_PDEATHSIG) happens-before the parent exiting,
+				 *    and therefore the Linux kernel will see it if it tears down the
+				 *    parent process.
+				 */
+				if (!ready) {
+					warnx("s6-supervise died before being informed of readiness");
+					if (exit_signal != 0) {
+						exit(EX_OSERR);
+					}
+				} else {
+					check_posix_bool(ioctl(notification_fd, FIONREAD, &bytes_unread), "ioctl(FIONREAD)");
+					if (bytes_unread != 0) {
+						warnx("s6-supervise died with %d bytes in notification pipe",
+						      bytes_unread);
+						if (exit_signal != 0) {
+							exit(EX_OSERR);
+						}
+					}
+				}
+
+				if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, notification_fd, NULL) == 0) {
+					// TODO: just exit here?  This looks like a kernel bug.
+					close(notification_fd);
+					notification_fd = -1;
+				}
 				break;
 			}
 			default:
