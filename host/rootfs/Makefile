@@ -126,14 +126,15 @@ build/empty:
 	mkdir -p $@
 
 S6_RC_FILES = \
+	image/etc/s6-rc/basic/contents \
+	image/etc/s6-rc/basic/type \
 	image/etc/s6-rc/core/type \
 	image/etc/s6-rc/core/up \
 	image/etc/s6-rc/kvm/timeout-up \
 	image/etc/s6-rc/kvm/type \
 	image/etc/s6-rc/kvm/up \
-	image/etc/s6-rc/ok-all/contents \
-	image/etc/s6-rc/ok-all/type \
-	image/etc/s6-rc/sys-vmms/dependencies.d/vmm-env \
+	image/etc/s6-rc/sys-vmms/dependencies.d/basic \
+	image/etc/s6-rc/sys-vmms/dependencies.d/weston \
 	image/etc/s6-rc/sys-vmms/type \
 	image/etc/s6-rc/sys-vmms/up \
 	image/etc/s6-rc/systemd-udevd-coldplug/dependencies.d/systemd-udevd \
@@ -143,9 +144,7 @@ S6_RC_FILES = \
 	image/etc/s6-rc/systemd-udevd/notification-fd \
 	image/etc/s6-rc/systemd-udevd/run \
 	image/etc/s6-rc/systemd-udevd/type \
-	image/etc/s6-rc/vmm-env/contents \
-	image/etc/s6-rc/vmm-env/type \
-	image/etc/s6-rc/weston/dependencies.d/systemd-udevd-coldplug \
+	image/etc/s6-rc/weston/dependencies.d/basic \
 	image/etc/s6-rc/weston/notification-fd \
 	image/etc/s6-rc/weston/run \
 	image/etc/s6-rc/weston/type

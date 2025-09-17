@@ -12,4 +12,4 @@ if { ln -s /proc/self/fd/2 /dev/stderr }
 if { mount --make-shared /run }
 if { mount -a --mkdir }
 
-s6-rc change ok-all
+s6-rc change sys-vmms
