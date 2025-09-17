@@ -9,6 +9,8 @@ project('spectrum-tools', 'c',
   })
 
 add_project_arguments('-Wno-error=attributes', language : 'c')
+add_project_arguments('-Werror=missing-prototypes', language : 'c')
+add_project_arguments('-Werror=missing-declarations', language : 'c')
 
 if get_option('host')
   add_languages('rust')
