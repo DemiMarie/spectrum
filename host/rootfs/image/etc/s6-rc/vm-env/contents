@@ -1,6 +1,13 @@
 # SPDX-License-Identifier: CC0-1.0
 # SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
-#
-static-nodes
-systemd-udevd-coldplug
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# This file contains s6 atomics and bundles that
+# need to be started before starting any VMs.
+
+# Basic initialization
+basic
+# KVM being available
+kvm
+# Wayland compositor ready
 weston
