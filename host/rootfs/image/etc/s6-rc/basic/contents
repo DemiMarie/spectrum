@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# This file contains all atomics and bundles needed for basic system
+# initialization.  Everything that is not meant to run in early boot
+# should depend on this.
+
+# This ensures that core files are written to the right place.
+core
+
+# This ensures that static nodes are created.
+static-nodes
+
+# systemd runs systemd-udev-trigger.service before sysinit.target.
+# Therefore, anything using libudev that isn't an early boot service
+# might expect udev coldplug to have finished.
+systemd-udevd-coldplug
