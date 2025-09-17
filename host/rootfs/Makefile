@@ -128,6 +128,10 @@ build/empty:
 	mkdir -p $@
 
 S6_RC_FILES = \
+	image/etc/s6-rc/basic/contents.d/core \
+	image/etc/s6-rc/basic/contents.d/static-nodes \
+	image/etc/s6-rc/basic/contents.d/systemd-udevd-coldplug \
+	image/etc/s6-rc/basic/type \
 	image/etc/s6-rc/core/type \
 	image/etc/s6-rc/core/up \
 	image/etc/s6-rc/ok-all/contents \
@@ -144,11 +148,12 @@ S6_RC_FILES = \
 	image/etc/s6-rc/systemd-udevd/notification-fd \
 	image/etc/s6-rc/systemd-udevd/run \
 	image/etc/s6-rc/systemd-udevd/type \
-	image/etc/s6-rc/vm-env/contents \
+	image/etc/s6-rc/vm-env/contents.d/basic \
+	image/etc/s6-rc/vm-env/contents.d/weston \
 	image/etc/s6-rc/vm-env/type \
-	image/etc/s6-rc/vmm-env/contents \
+	image/etc/s6-rc/vmm-env/contents.d/vm-env \
 	image/etc/s6-rc/vmm-env/type \
-	image/etc/s6-rc/weston/dependencies.d/systemd-udevd-coldplug \
+	image/etc/s6-rc/weston/dependencies.d/basic \
 	image/etc/s6-rc/weston/notification-fd \
 	image/etc/s6-rc/weston/run \
 	image/etc/s6-rc/weston/type

@@ -1,8 +1,0 @@
-# SPDX-License-Identifier: CC0-1.0
-# SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
-#
-core
-# systemd runs systemd-udev-trigger.service before sysinit.target.
-# Therefore, anything using libudev that isn't an early boot service
-# might expect udev coldplug to have finished.
-systemd-udevd-coldplug

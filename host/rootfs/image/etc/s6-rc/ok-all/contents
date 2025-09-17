@@ -1,6 +1,19 @@
 # SPDX-License-Identifier: CC0-1.0
 # SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
-#
-systemd-udevd-coldplug
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# This file contains the services that need to be started even
+# if nothing else depends on them.  It should not include services
+# that are only needed by other services.  For instance, it would
+# not be appropriate for this file to reference systemd-udevd.
+# However, services should be included in this file whenever they
+# are directly needed by the user, even if they depend on another
+# service in this files.  For instance, sys-vmms depends on weston,
+# but it is still included.
+
+# VMMs that should be started at boot.  In the future
+# it might make sense to start them only as needed.
 sys-vmms
-vm-env
+
+# The Wayland compositor.
+weston
