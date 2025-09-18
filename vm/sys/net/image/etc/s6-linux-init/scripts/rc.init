@@ -4,6 +4,11 @@
 
 if { s6-rc-init -c /etc/s6-rc /run/service }
 
+if { ln -s /proc/self/fd /dev }
+if { ln -s /proc/self/fd/0 /dev/stdin }
+if { ln -s /proc/self/fd/1 /dev/stdout }
+if { ln -s /proc/self/fd/2 /dev/stderr }
+
 if { mkdir -p /dev/pts /dev/shm }
 if { mount -a }
 
