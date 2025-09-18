@@ -40,9 +40,6 @@ extern "C" {
     /// # Safety
     ///
     /// The rest of the result is only valid if the returned fd is not -1.
-    // SAFETY: &Path is sized, so it's okay to pass a reference to it
-    // to C, as long as it's opaque to C.
-    #[allow(improper_ctypes)]
     pub fn net_setup(name: *const c_char, len: c_int) -> NetConfigC;
 }
 
