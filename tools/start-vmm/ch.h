@@ -8,3 +8,5 @@ struct net_config {
 	char id[18];
 	uint8_t mac[6];
 };
+
+struct net_config net_setup(const char name[static 1], int name_len);
