@@ -228,7 +228,7 @@ run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
 	    -device virtconsole,chardev=virtiocon0 \
 	    -drive file=build/live.img,if=virtio,format=raw,readonly=on \
 	    -drive file=/proc/self/fd/3,if=virtio,format=raw \
-	    -append "console=hvc0 roothash=$$(< build/rootfs.verity.roothash) intel_iommu=on nokaslr" \
+	    -append "earlycon console=hvc0 roothash=$$(< build/rootfs.verity.roothash) intel_iommu=on nokaslr" \
 	    -device virtio-keyboard \
 	    -device virtio-mouse \
 	    -device virtio-gpu \
