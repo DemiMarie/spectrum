@@ -1,6 +1,7 @@
 #!/bin/sh -eu
 #
 # SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 # SPDX-License-Identifier: EUPL-1.2+
 #
 # FIXME: It would be nice to replace this script with a program that
@@ -30,7 +31,14 @@ while read -r arg1; do
 	fi
 	echo
 
-	parent="$(dirname "$arg2")"
+	# The below simple version of dirname(1) can only handle
+	# a subset of all paths, but this subset includes all of
+	# the ones passed in practice other than /.
+	case $arg2 in
+	(*/*) parent=${arg2%/*};;
+	(*) parent=.;;
+	esac
+
 	awk -v parent="$parent" -v root="$root" 'BEGIN {
 		n = split(parent, components, "/")
 		for (i = 1; i <= n; i++) {
