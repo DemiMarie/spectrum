@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021-2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-License-Identifier: MIT
 
 import ../../lib/call-package.nix (
@@ -10,7 +10,7 @@ import ../../lib/call-package.nix (
 pkgsStatic.callPackage ({ execline, kmod, mdevd, cryptsetup, util-linuxMinimal }:
 
 let
-  inherit (lib) concatMapStringsSep;
+  inherit (lib) concatMapStringsSep filter foldl isString last split tail;
 
   modules = makeModulesClosure {
     inherit (rootfs) firmware;
@@ -69,14 +69,22 @@ let
     find kernel | cpio -oH newc -R +0:+0 --reproducible > $out
   '';
 
+  storeComponents = tail (filter isString (split "/" builtins.storeDir));
+
   packagesCpio = runCommand "packages.cpio" {
     nativeBuildInputs = [ cpio ];
+
     storePaths = writeClosure [ packagesSysroot ];
+    storePrefixes = foldl
+      (acc: elem: acc ++ [ "${if acc == [] then "" else last acc}/${elem}" ])
+      []
+      storeComponents;
+
     __structuredAttrs = true;
     unsafeDiscardReferences = { out = true; };
   } ''
     cd ${packagesSysroot}
-    (printf "/nix\n/nix/store\n" && find . $(< $storePaths)) |
+    (printf "%s\n" "''${storePrefixes[@]}" && find . $(< $storePaths)) |
         cpio -o -H newc -R +0:+0 --reproducible > $out
   '';
 in
