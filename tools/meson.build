@@ -23,6 +23,6 @@ if get_option('host')
   subdir('start-vmm')
 endif
 
-if get_option('guest')
+if get_option('app')
   subdir('xdg-desktop-portal-spectrum')
 endif

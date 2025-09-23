@@ -4,8 +4,8 @@
 option('host', type : 'boolean', value : false,
   description : 'Build tools for the Spectrum host')
 
-option('guest', type : 'boolean',
-  description : 'Build tools for Spectrum guests')
+option('app', type : 'boolean',
+  description : 'Build tools for Spectrum app VMs')
 
 option('hostfsrootdir', type : 'string', value : '/run/host',
   description : 'Path where the virtio-fs provided by the host will be mounted')

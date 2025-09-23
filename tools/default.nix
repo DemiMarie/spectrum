@@ -6,7 +6,7 @@ import ../lib/call-package.nix (
 , meson, ninja, pkg-config, rustc
 , clang-tools, clippy
 , dbus
-, guestSupport ? true
+, appSupport ? true
 , hostSupport ? false
 }:
 
@@ -64,7 +64,7 @@ stdenv.mkDerivation (finalAttrs: {
     fileset = lib.fileset.intersection src (lib.fileset.unions ([
       ./meson.build
       ./meson_options.txt
-    ] ++ lib.optionals guestSupport [
+    ] ++ lib.optionals appSupport [
       ./xdg-desktop-portal-spectrum
     ] ++ lib.optionals hostSupport [
       ./lsvm
@@ -76,9 +76,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   depsBuildBuild = lib.optionals hostSupport [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ meson ninja ]
-    ++ lib.optionals guestSupport [ pkg-config ]
+    ++ lib.optionals appSupport [ pkg-config ]
     ++ lib.optionals hostSupport [ rustc ];
-  buildInputs = lib.optionals guestSupport [ dbus ];
+  buildInputs = lib.optionals appSupport [ dbus ];
 
   postPatch = lib.optionals hostSupport (lib.concatMapStringsSep "\n" (crate: ''
     mkdir -p subprojects/packagecache
@@ -86,7 +86,7 @@ stdenv.mkDerivation (finalAttrs: {
   '') packageCache);
 
   mesonFlags = [
-    (lib.mesonBool "guest" guestSupport)
+    (lib.mesonBool "app" appSupport)
     (lib.mesonBool "host" hostSupport)
     "-Dhostfsrootdir=/run/virtiofs/virtiofs0"
     "-Dtests=false"

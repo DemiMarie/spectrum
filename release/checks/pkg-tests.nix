@@ -12,7 +12,7 @@ import ../../lib/call-package.nix (
   integration = lib.recurseIntoAttrs (callSpectrumPackage ./integration {}).tests;
 
   tools = lib.recurseIntoAttrs (callSpectrumPackage ../../tools {
-    guestSupport = true;
+    appSupport = true;
     hostSupport = true;
   }).tests;
 }) (_: {})

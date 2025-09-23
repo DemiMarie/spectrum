@@ -37,9 +37,9 @@ let
 
     lseek = self.callSpectrumPackage ../tools/lseek {};
     rootfs = self.callSpectrumPackage ../host/rootfs {};
-    spectrum-guest-tools = self.callSpectrumPackage ../tools {};
+    spectrum-app-tools = self.callSpectrumPackage ../tools {};
     spectrum-host-tools = self.callSpectrumPackage ../tools {
-      guestSupport = false;
+      appSupport = false;
       hostSupport = true;
     };
     xdg-desktop-portal-spectrum-host =

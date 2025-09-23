@@ -4,7 +4,7 @@
 import ../lib/call-package.nix ({ callSpectrumPackage, clang-tools, clippy, rustfmt }:
 
 (callSpectrumPackage ./. {
-  guestSupport = true;
+  appSupport = true;
   hostSupport = true;
 }).overrideAttrs ({ hardeningDisable ? [], nativeBuildInputs ? [], ... }: {
   # Not compatible with Meson's default -O0.
