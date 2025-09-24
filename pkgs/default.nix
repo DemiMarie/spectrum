@@ -42,6 +42,10 @@ let
       appSupport = false;
       hostSupport = true;
     };
+    spectrum-driver-tools = self.callSpectrumPackage ../tools {
+      appSupport = false;
+      driverSupport = true;
+    };
     xdg-desktop-portal-spectrum-host =
       self.callSpectrumPackage ../tools/xdg-desktop-portal-spectrum-host {};
 

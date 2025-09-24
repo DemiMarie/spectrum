@@ -6,6 +6,7 @@ import ../lib/call-package.nix ({ callSpectrumPackage, clang-tools, clippy, rust
 (callSpectrumPackage ./. {
   appSupport = true;
   hostSupport = true;
+  driverSupport = true;
 }).overrideAttrs ({ hardeningDisable ? [], nativeBuildInputs ? [], ... }: {
   # Not compatible with Meson's default -O0.
   hardeningDisable = hardeningDisable ++ [ "fortify" ];

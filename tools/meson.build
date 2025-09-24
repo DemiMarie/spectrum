@@ -28,3 +28,7 @@ endif
 if get_option('app')
   subdir('xdg-desktop-portal-spectrum')
 endif
+
+if get_option('driver')
+  subdir('xdp-forwarder')
+endif

@@ -14,5 +14,6 @@ import ../../lib/call-package.nix (
   tools = lib.recurseIntoAttrs (callSpectrumPackage ../../tools {
     appSupport = true;
     hostSupport = true;
+    driverSupport = true;
   }).tests;
 }) (_: {})

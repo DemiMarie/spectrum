@@ -1,13 +1,17 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2022-2025 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
 
 import ../lib/call-package.nix (
 { src, lib, stdenv, fetchCrate, fetchurl, runCommand, buildPackages
 , meson, ninja, pkg-config, rustc
 , clang-tools, clippy, jq
 , dbus
+# clang 19 (current nixpkgs default) is too old to support -fwrapv-pointer
+, clang_21, libbpf
 , appSupport ? true
 , hostSupport ? false
+, driverSupport ? false
 }:
 
 let
@@ -70,15 +74,18 @@ stdenv.mkDerivation (finalAttrs: {
       ./lsvm
       ./start-vmm
       ./subprojects
+    ] ++ lib.optionals driverSupport [
+      ./xdp-forwarder
     ]));
   };
   sourceRoot = "source/tools";
 
   depsBuildBuild = lib.optionals hostSupport [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ meson ninja ]
-    ++ lib.optionals appSupport [ pkg-config ]
-    ++ lib.optionals hostSupport [ rustc ];
-  buildInputs = lib.optionals appSupport [ dbus ];
+    ++ lib.optionals (appSupport || driverSupport) [ pkg-config ]
+    ++ lib.optionals hostSupport [ rustc ]
+    ++ lib.optionals driverSupport [ clang_21 ];
+  buildInputs = lib.optionals appSupport [ dbus ] ++ lib.optionals driverSupport [ libbpf ];
 
   postPatch = lib.optionals hostSupport (lib.concatMapStringsSep "\n" (crate: ''
     mkdir -p subprojects/packagecache
@@ -88,11 +95,15 @@ stdenv.mkDerivation (finalAttrs: {
   mesonFlags = [
     (lib.mesonBool "app" appSupport)
     (lib.mesonBool "host" hostSupport)
+    (lib.mesonBool "driver" driverSupport)
     "-Dhostfsrootdir=/run/virtiofs/virtiofs0"
     "-Dtests=false"
     "-Dunwind=false"
     "-Dwerror=true"
   ];
+
+  # Not supported for target bpf
+  hardeningDisable = lib.optionals driverSupport [ "zerocallusedregs" ];
 
   passthru.tests = {
     clang-tidy = finalAttrs.finalPackage.overrideAttrs (
@@ -105,6 +116,8 @@ stdenv.mkDerivation (finalAttrs: {
           fileset = lib.fileset.union (lib.fileset.fromSource src) ../.clang-tidy;
         };
 
+        # clang-tools needs to be before clang, otherwise it will not use
+        # the Nix include path correctly and fail to find headers
         nativeBuildInputs = [ clang-tools jq ] ++ nativeBuildInputs;
 
         buildPhase = ''

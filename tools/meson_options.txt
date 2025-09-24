@@ -7,6 +7,9 @@ option('host', type : 'boolean', value : false,
 option('app', type : 'boolean',
   description : 'Build tools for Spectrum app VMs')
 
+option('driver', type : 'boolean', value : false,
+  description : 'Build tools for Spectrum driver VMs')
+
 option('hostfsrootdir', type : 'string', value : '/run/host',
   description : 'Path where the virtio-fs provided by the host will be mounted')
 
