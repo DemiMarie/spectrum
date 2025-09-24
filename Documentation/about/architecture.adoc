@@ -68,3 +68,23 @@ nix-build img/live --no-out-link | xargs -o nix-tree
 
 See the https://diode.zone/w/8DBDQ6HQUe5UUdLkpDuL35[video] of Spectrum live
 image interactive analysis with nix-tree.
+
+== Networking
+
+The net-vm's purpose is running the Linux drivers for any physical
+interfaces on the spectrum system.
+
+A net-vm (there could be multiple, one per IOMMU-group) will load the
+xdp-forwarder XDP programs on the passed-through physical interfaces as well
+as the downstream virtio interface going into the router (recognized by
+its special MAC address) using mdev events.
+
+The net-vm needs to multiplex between the physical interfaces, as there
+might be several interfaces in the same IOMMU-group.
+
+For this, the xdp-forwarder applies a
+VLAN tag corresponding to the interface id, and redirects the packets to
+the router interface (identified by the router_iface bpf map).
+In the other direction the XDP program loaded on the router interface
+removes one layer of VLAN tagging, and redirects the packets to the
+interface read from the VLAN tag.
