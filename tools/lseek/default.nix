@@ -30,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
           fileset = lib.fileset.union (lib.fileset.fromSource src) ../../.clang-tidy;
         };
 
-        nativeBuildInputs = nativeBuildInputs ++ [ clang-tools ];
+        nativeBuildInputs = [ clang-tools ] ++ nativeBuildInputs;
 
         buildPhase = ''
           clang-tidy --warnings-as-errors='*' lseek.c --

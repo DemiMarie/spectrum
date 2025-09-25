@@ -105,7 +105,7 @@ stdenv.mkDerivation (finalAttrs: {
           fileset = lib.fileset.union (lib.fileset.fromSource src) ../.clang-tidy;
         };
 
-        nativeBuildInputs = nativeBuildInputs ++ [ clang-tools jq ];
+        nativeBuildInputs = [ clang-tools jq ] ++ nativeBuildInputs;
 
         buildPhase = ''
           jq -r '.[].file | select(endswith(".c"))' compile_commands.json |
