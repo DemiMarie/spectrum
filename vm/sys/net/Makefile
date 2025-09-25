@@ -39,7 +39,7 @@ VM_FILES = \
 	image/etc/s6-linux-init/run-image/service/getty-hvc0/run \
 	image/etc/s6-linux-init/scripts/rc.init \
 	image/etc/sysctl.conf
-VM_DIRS = dev etc/s6-linux-init/env run proc sys var/lib/connman
+VM_DIRS = dev etc/s6-linux-init/env proc run sys var/lib/connman
 
 # These are separate because they need to be included, but putting
 # them as make dependencies would confuse make.

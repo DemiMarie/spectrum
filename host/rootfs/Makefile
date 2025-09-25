@@ -54,7 +54,6 @@ FILES = \
 	image/etc/s6-linux-init/scripts/rc.init \
 	image/etc/xdg/weston/autolaunch \
 	image/etc/xdg/weston/weston.ini \
-	image/usr/share/dbus-1/services/org.freedesktop.portal.Documents.service \
 	image/usr/bin/assign-devices \
 	image/usr/bin/create-vm-dependencies \
 	image/usr/bin/run-appimage \
@@ -63,7 +62,8 @@ FILES = \
 	image/usr/bin/vm-import \
 	image/usr/bin/vm-start \
 	image/usr/bin/vm-stop \
-	image/usr/bin/xdg-open
+	image/usr/bin/xdg-open \
+	image/usr/share/dbus-1/services/org.freedesktop.portal.Documents.service
 
 DIRS = \
 	dev \
@@ -95,8 +95,8 @@ DIRS = \
 	etc/s6-linux-init/run-image/vm/by-name \
 	etc/s6-linux-init/run-image/wait \
 	ext \
-	run \
 	proc \
+	run \
 	sys
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
