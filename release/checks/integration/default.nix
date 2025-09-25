@@ -3,7 +3,7 @@
 
 import ../../../lib/call-package.nix (
 { callSpectrumPackage, src, lib, stdenv, runCommand, writeShellScript
-, clang-tools, meson, ninja, e2fsprogs, glib, tar2ext4, libressl, qemu_kvm
+, clang-tools, jq, meson, ninja, e2fsprogs, glib, tar2ext4, libressl, qemu_kvm
 }:
 
 let
@@ -101,10 +101,11 @@ stdenv.mkDerivation (finalAttrs: {
             fileset = lib.fileset.union (lib.fileset.fromSource src) ../../../.clang-tidy;
           };
 
-          nativeBuildInputs = nativeBuildInputs ++ [ clang-tools ];
+          nativeBuildInputs = nativeBuildInputs ++ [ clang-tools jq ];
 
           buildPhase = ''
-            clang-tidy --warnings-as-errors='*' -p . ../*.c
+            jq -r '.[].file | select(endswith(".c"))' compile_commands.json |
+                xargs clang-tidy --warnings-as-errors='*'
             touch $out
             exit 0
           '';

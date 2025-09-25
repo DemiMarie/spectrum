@@ -4,7 +4,7 @@
 import ../lib/call-package.nix (
 { src, lib, stdenv, fetchCrate, fetchurl, runCommand, buildPackages
 , meson, ninja, pkg-config, rustc
-, clang-tools, clippy
+, clang-tools, clippy, jq
 , dbus
 , appSupport ? true
 , hostSupport ? false
@@ -105,10 +105,11 @@ stdenv.mkDerivation (finalAttrs: {
           fileset = lib.fileset.union (lib.fileset.fromSource src) ../.clang-tidy;
         };
 
-        nativeBuildInputs = nativeBuildInputs ++ [ clang-tools ];
+        nativeBuildInputs = nativeBuildInputs ++ [ clang-tools jq ];
 
         buildPhase = ''
-          clang-tidy --warnings-as-errors='*' ../**/*.c
+          jq -r '.[].file | select(endswith(".c"))' compile_commands.json |
+              xargs clang-tidy --warnings-as-errors='*'
           touch $out
           exit 0
         '';
