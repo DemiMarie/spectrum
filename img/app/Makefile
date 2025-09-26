@@ -100,7 +100,9 @@ VM_S6_RC_FILES = \
 	image/etc/s6-rc/mdevd/notification-fd \
 	image/etc/s6-rc/mdevd/run \
 	image/etc/s6-rc/mdevd/type \
-	image/etc/s6-rc/ok-all/contents \
+	image/etc/s6-rc/ok-all/contents.d/app \
+	image/etc/s6-rc/ok-all/contents.d/mdevd-coldplug \
+	image/etc/s6-rc/ok-all/contents.d/wireplumber \
 	image/etc/s6-rc/ok-all/type \
 	image/etc/s6-rc/pipewire/notification-fd \
 	image/etc/s6-rc/pipewire/run \

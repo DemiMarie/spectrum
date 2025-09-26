@@ -142,16 +142,21 @@ S6_RC_FILES = \
 	image/etc/s6-rc/mdevd/notification-fd \
 	image/etc/s6-rc/mdevd/run \
 	image/etc/s6-rc/mdevd/type \
-	image/etc/s6-rc/ok-all/contents \
+	image/etc/s6-rc/ok-all/contents.d/mdevd-coldplug \
+	image/etc/s6-rc/ok-all/contents.d/sys-vmms \
+	image/etc/s6-rc/ok-all/contents.d/vm-env \
 	image/etc/s6-rc/ok-all/type \
 	image/etc/s6-rc/static-nodes/type \
 	image/etc/s6-rc/static-nodes/up \
 	image/etc/s6-rc/sys-vmms/dependencies.d/vmm-env \
 	image/etc/s6-rc/sys-vmms/type \
 	image/etc/s6-rc/sys-vmms/up \
-	image/etc/s6-rc/vm-env/contents \
+	image/etc/s6-rc/vm-env/contents.d/static-nodes \
+	image/etc/s6-rc/vm-env/contents.d/weston \
 	image/etc/s6-rc/vm-env/type \
-	image/etc/s6-rc/vmm-env/contents \
+	image/etc/s6-rc/vmm-env/contents.d/core \
+	image/etc/s6-rc/vmm-env/contents.d/kvm \
+	image/etc/s6-rc/vmm-env/contents.d/static-nodes \
 	image/etc/s6-rc/vmm-env/type \
 	image/etc/s6-rc/weston/dependencies.d/card0 \
 	image/etc/s6-rc/weston/notification-fd \

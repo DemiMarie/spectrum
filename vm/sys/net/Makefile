@@ -73,7 +73,8 @@ VM_S6_RC_FILES = \
 	image/etc/s6-rc/mdevd/type \
 	image/etc/s6-rc/nftables/type \
 	image/etc/s6-rc/nftables/up \
-	image/etc/s6-rc/ok-all/contents \
+	image/etc/s6-rc/ok-all/contents.d/mdevd-coldplug \
+	image/etc/s6-rc/ok-all/contents.d/sysctl \
 	image/etc/s6-rc/ok-all/type \
 	image/etc/s6-rc/sysctl/type \
 	image/etc/s6-rc/sysctl/up
