@@ -1,0 +1,63 @@
+#!/usr/bin/env -S EXECLINE_STRICT=2 execlineb --
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+backtick dir { mktemp -d /run/vm/by-id/XXXXXX }
+backtick -E id_ { importas -i -S dir basename -- $dir }
+multisubstitute {
+  importas -i source_directory 1
+  importas -i vm_type 2
+  importas -i -S dir
+  define id $id_
+  define configdir /run/configs/${id_}
+  define fsdir /run/configs/${id_}/fs
+}
+
+if {
+  if { mkdir -p ${fsdir} }
+  if { redirfd -w 1 ${fsdir}/type printf "%s\\n" ${vm_type} }
+  if { touch ${fsdir}/run }
+  if { mount --rbind ${source_directory} ${fsdir}/run }
+  if {
+    ln -s /usr/lib/spectrum/img/appvm/blk /usr/lib/spectrum/img/appvm/vmlinux
+      ${configdir}
+  }
+  if { ln -s ${dir}/config }
+  create-vm-dependencies ${id}
+}
+
+piperw 4 3
+background {
+  fdclose 3
+  fdmove 0 4
+
+  # Wait for the VMM to be up, then start the VM.
+  if { redirfd -w 1 /dev/null head -1 }
+  vm-start $id
+}
+fdclose 4
+
+foreground { run-vmm $id }
+fdclose 3
+
+if {
+  forx -pE service {
+    dbus
+    vhost-user-fs
+    vhost-user-gpu
+    xdg-desktop-portal-spectrum-host
+  }
+  s6-instance-delete /run/service/${service} $id
+}
+
+if {
+  forx -E mount {
+    ${configdir}/fs/run
+    ${dir}/fs/config
+    ${dir}/fs/doc
+  }
+  umount $mount
+}
+
+rm -r -- $dir $configdir

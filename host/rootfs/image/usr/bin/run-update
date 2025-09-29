@@ -1,0 +1,54 @@
+#!/bin/execlineb -S1
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+
+backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
+backtick -E id { basename -- $dir }
+
+if { mkdir -p /run/configs/${id}/fs }
+if { redirfd -w 1 /run/configs/${id}/fs/type echo appimage }
+if { touch /run/configs/${id}/fs/run }
+if { mount --rbind $1 /run/configs/${id}/fs/run }
+if {
+  ln -s /usr/lib/spectrum/img/appvm/blk /usr/lib/spectrum/img/appvm/vmlinux
+    /run/configs/${id}
+}
+
+if { ln -s /run/configs/${id} ${dir}/config }
+
+if { create-vm-dependencies $id }
+
+piperw 4 3
+background {
+  fdclose 3
+  fdmove 0 4
+
+  # Wait for the VMM to be up, then start the VM.
+  if { redirfd -w 1 /dev/null head -1 }
+  vm-start $id
+}
+fdclose 4
+
+foreground { run-vmm $id }
+fdclose 3
+
+if {
+  forx -pE service {
+    dbus
+    vhost-user-fs
+    vhost-user-gpu
+    xdg-desktop-portal-spectrum-host
+  }
+  s6-instance-delete /run/service/${service} $id
+}
+
+if {
+  forx -E mount {
+    /run/configs/${id}/fs/run
+    ${dir}/fs/config
+    ${dir}/fs/doc
+  }
+  umount $mount
+}
+
+rm -r $dir /run/configs/${id}

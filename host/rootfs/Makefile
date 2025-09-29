@@ -38,9 +38,11 @@ DIRS = \
 	etc/s6-linux-init/run-image/vm/by-name \
 	etc/s6-linux-init/run-image/wait \
 	ext \
+	home \
 	proc \
 	run \
-	sys
+	sys \
+	tmp
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
@@ -114,7 +116,10 @@ run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$ext" && \
-	mkfs.btrfs "$$ext" && \
+	dir=$$(mktemp -d) && \
+	mkdir -- "$$dir/tmp" "$$dir/home" && \
+	fakeroot -- mkfs.btrfs --rootdir "$$dir" --subvol tmp --subvol home -- "$$ext" && \
+	rm -rf -- "$$dir" && \
 	exec 3<>"$$ext" && \
 	rm -f "$$ext" && \
 	set +x && \

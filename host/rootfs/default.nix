@@ -13,6 +13,7 @@ pkgsStatic.callPackage (
 , busybox, cloud-hypervisor, cryptsetup, dbus, execline, inkscape
 , iproute2, inotify-tools, jq, kmod, mdevd, s6, s6-linux-init, socat
 , util-linuxMinimal, virtiofsd, xorg, xdg-desktop-portal-spectrum-host
+, btrfs-progs
 }:
 
 let
@@ -49,12 +50,6 @@ let
         };
       });
 
-      systemd = super.systemd.overrideAttrs ({ meta ? { }, ... }: {
-        meta = meta // {
-          platforms = [ ];
-        };
-      });
-
       upower = super.upower.override {
         # Not ideal, but it's the best way to get rid of an installed
         # test that needs umockdev.
@@ -81,9 +76,10 @@ let
   foot = pkgsGui.foot.override { allowPgo = false; };
 
   packages = [
+    btrfs-progs
     cloud-hypervisor cryptsetup dbus execline inotify-tools iproute2
     jq kmod mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools
-    virtiofsd xdg-desktop-portal-spectrum-host
+    systemd virtiofsd xdg-desktop-portal-spectrum-host
 
     (busybox.override {
       extraConfig = ''
