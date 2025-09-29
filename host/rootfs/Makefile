@@ -10,6 +10,7 @@ include file-list.mk
 dest = build/rootfs.erofs
 
 DIRS = \
+	boot \
 	dev \
 	etc/s6-linux-init/env \
 	etc/s6-linux-init/run-image/configs \
@@ -47,11 +48,13 @@ DIRS = \
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
-BUILD_FILES = build/etc/s6-rc
+BUILD_FILES = build/etc/s6-rc build/etc/os-release
 
 $(dest): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
+	set -euo pipefail; \
 	{ \
 	    cat $(PACKAGES_FILE) ;\
+	    printf '%s\n%s\n' ../../update-signing-keys.gpg /etc/systemd/import-pubring.gpg; \
 	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
 	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(DIRS) ;\
@@ -98,6 +101,9 @@ debug:
 	    -ex 'target remote build/gdb.sock' \
 	    $(VMLINUX)
 .PHONY: debug
+
+build/etc/os-release: os-release.in build/etc
+	sed 's#@VERSION@#$(VERSION)#g' < os-release.in > $@
 
 run: build/live.img $(EXT_FS) build/rootfs.verity.roothash ../../lib/kcmdline-utils.mk
 	@set -x && \

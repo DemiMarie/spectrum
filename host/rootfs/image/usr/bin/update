@@ -1,0 +1,56 @@
+#!/bin/execlineb -WS1
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# Steps:
+#
+# 1. Take a global, system-wide lock.
+# 2. Create a BTRFS subvolume for the sys.updates VM to write the updates.
+# 3. Bind-mount this subvolume into the VM's shared directory.
+# 4. Start sys.updates to get the updates.
+# 5. Wait for the VM to shut down.
+# 6. Take a BTRFS snapshot of the subvolume.
+# 7. Call syncfs() to flush all of the data on the subvolume.
+# 8. Inspect the contents of the subvolume.
+#    Check that everything is a regular file and that the names are reasonable.
+#    Check that SHA256SUMS and SHA256SUMS.gpg are present.
+# 9. Call systemd-sysupdate to run the actual update.
+
+if { mkdir -p -m 0700 /run/updater }
+if {
+  case $1 {
+    /[0-9A-Za-z._/-]+ { true }
+  }
+  foreground { fdmove -c 1 2 echo 'Update directory path has forbidden characters or is not absolute' }
+  exit 1
+}
+execline-cd $1
+s6-setlock /run/update-lock
+foreground {
+  # This might fail with a "File exists" error, but that is fine.
+  foreground { redirfd -w 2 /dev/null btrfs subvolume create -- shared }
+  if { umask 0022 mkdir -p shared/etc/systemd shared/update-destination }
+  # TODO: use a safe copy program that is not vulnerable to symlink attacks.
+  # This should be okay as the directory has not been shared yet, but better
+  # safe than sorry.  Also nosymfollow should be a mitigation, but still,
+  # better safe than sorry.
+  if { cp /etc/systemd/import-pubring.gpg shared/etc/systemd }
+  if {
+    if {
+      backtick -E update_vm_id {
+        backtick -E id_path { readlink /run/vm/by-name/sys.appvm-updates }
+        basename -- $id_path
+      }
+      vm-start $update_vm_id shared
+    }
+    if { btrfs subvolume snapshot -- shared private }
+    if { sync -- private }
+    if { updates-dir-check private/update-destination }
+    unshare --mount
+    if { mount --bind -o ro -- private/update-destination /run/updater }
+    /usr/lib/systemd/systemd-sysupdate update
+  }
+}
+importas -i sysupdate_exit_status "?"
+foreground { btrfs subvolume delete -- shared private }
+exit $sysupdate_exit_status

@@ -1,6 +1,24 @@
-#!/bin/execlineb -S1
+#!/bin/execlineb -Ws0
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2022-2023, 2025 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+if {
+  case "${#}" {
+    1 { true }
+    2 {
+      multisubstitute {
+        define sourcedir ${2}
+        define fsdir /run/vm/by-id/${1}/fs/user
+      }
+      if { mkdir -p ${fsdir} }
+      foreground { redirfd -w 2 /dev/null umount ${fsdir} }
+      mount --bind -- ${sourcedir} ${fsdir}
+    }
+  }
+  foreground { fdmove -c 1 2 echo "Bad number of arguments ${#} (expected 1 or 3)" }
+  exit 100
+}
 
 foreground { s6-rc -bu change vm-env }
 
@@ -20,4 +38,7 @@ foreground {
   redirfd -w 2 /dev/null
   s6-svwait -U /run/service/vmm/instance/${1}
 }
-ch-remote --api-socket /run/vm/by-id/${1}/vmm boot
+if { ch-remote --api-socket /run/vm/by-id/${1}/vmm boot }
+case "${#}" {
+  2 { s6-svwait -D /run/service/vmm/instance/${1} }
+}

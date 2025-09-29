@@ -8,10 +8,10 @@ import ../../lib/call-package.nix (
 }:
 pkgsStatic.callPackage (
 
-{ busybox, cloud-hypervisor, cryptsetup, dbus, erofs-utils, execline
-, inkscape, inotify-tools, iproute2, jq, lib, mdevd, nixos
-, runCommand, s6, s6-linux-init, s6-rc, socat, spectrum-host-tools
-, stdenvNoCC, util-linux, virtiofsd, writeClosure
+{ btrfs-progs, bash, busybox, cloud-hypervisor, cryptsetup, dbus
+, erofs-utils, execline, inkscape, inotify-tools, iproute2, jq, lib
+, mdevd, nixos, runCommand, s6, s6-linux-init, s6-rc, socat
+, spectrum-host-tools, stdenvNoCC, util-linux, virtiofsd, writeClosure
 , xdg-desktop-portal-spectrum-host, xorg
 }:
 let
@@ -40,8 +40,8 @@ let
   no_pgo_foot = foot.override { allowPgo = false; };
 
   packages = [
-    cloud-hypervisor crosvm cryptsetup dbus execline inotify-tools
-    iproute2 jq mdevd s6 s6-linux-init s6-rc socat
+    btrfs-progs cloud-hypervisor crosvm cryptsetup dbus execline
+    inotify-tools iproute2 jq mdevd s6 s6-linux-init s6-rc socat
     spectrum-host-tools virtiofsd xdg-desktop-portal-spectrum-host
 
     (busybox.override {
@@ -90,6 +90,7 @@ let
     appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};
     appvm-foot = callSpectrumPackage ../../vm/app/foot.nix {};
     appvm-gnome-text-editor = callSpectrumPackage ../../vm/app/gnome-text-editor.nix {};
+    appvm-updates = callSpectrumPackage ../../vm/app/updates.nix {};
   };
 
   packagesSysroot = runCommand "packages-sysroot" {
@@ -135,13 +136,15 @@ stdenvNoCC.mkDerivation {
       ../../lib/common.mk
       ../../lib/kcmdline-utils.mk
       ../../lib/verity.mk
+      ../../lib/kcmdline-utils.mk
       ../../scripts/make-erofs.sh
       ../../version
+      ../../update-signing-keys.gpg
     ]);
   };
   sourceRoot = "source/host/rootfs";
 
-  nativeBuildInputs = [ erofs-utils spectrum-build-tools s6-rc ];
+  nativeBuildInputs = [ erofs-utils spectrum-build-tools s6-rc bash btrfs-progs ];
 
   env = {
     PACKAGES = runCommand "packages" {} ''
