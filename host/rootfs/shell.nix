@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2022 Unikie
 
 import ../../lib/call-package.nix (
-{ callSpectrumPackage, rootfs, pkgsStatic, srcOnly, stdenv
+{ callSpectrumPackage, rootfs, srcOnly, stdenv
 , btrfs-progs, cryptsetup, jq, netcat, qemu_kvm, reuse, util-linux
 , verity
 }:
