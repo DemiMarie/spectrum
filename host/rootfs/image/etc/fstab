@@ -4,3 +4,5 @@ proc	/proc		proc	defaults		0	0
 devpts	/dev/pts	devpts	defaults,gid=4,mode=620	0	0
 tmpfs	/dev/shm	tmpfs	defaults		0	0
 sysfs	/sys		sysfs	defaults		0	0
+/dev/vdb	/home		btrfs   defaults,noatime,subvol=home	1	2
+/dev/vdb	/tmp		btrfs	defaults,noatime,subvol=tmp	1	0

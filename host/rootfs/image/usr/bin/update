@@ -1,0 +1,36 @@
+#!/bin/execlineb -S0
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# Phases:
+# 0. Take a global, system-wide lock.
+# 1. Create a BTRFS subvolume for the VM to put its data in.
+# 2. Start a VM to get the data.
+# 3. Add the subvolume into the VM.
+# 4. Wait for the VM to shut down.
+# 5. Take a BTRFS snapshot of the subvolume.
+# 6. Call syncfs() to flush all of the data on the subvolume.
+# 7. Inspect the contents of the subvolume.
+#    Check that everything is a regular file and that the names are reasonable.
+#    Check that SHA256SUMS and SHA256SUMS.gpg are present.
+# 8. In the future, use Sequoia or filtering code to check the signature.
+#    Also use a patched GnuPG.
+# 9. Call systemd-sysupdate to run the actual update.
+
+s6-setlock /tmp/updates
+backtick -E shared_dir { mktemp -d /tmp/updates/tmp.XXXXXX }
+foreground {
+   if { btrfs subvolume create ${shared_dir} }
+   if { run-vm-base nix ${shared_dir} }
+   if { btrfs snapshot -- ${shared_dir} /tmp/updates/snapshot }
+   if { sync -- /tmp/updates/snapshot }
+   if { update-dir-check /tmp/updates/snapshot }
+   systemd-sysupdate
+}
+multisubstitute {
+   importas -i sysupdate_exit_status "?"
+   # Avoid sequential substitution
+   define shared_dir_ ${shared_dir}
+}
+foreground { btrfs subvolume delete -- ${shared_dir_} /tmp/updates/snapshot }
+exit ${sysupdate_exit_status}

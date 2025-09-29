@@ -12,4 +12,9 @@ if { ln -s /proc/self/fd/2 /dev/stderr }
 if { mount --make-shared /run }
 if { mount -a --mkdir }
 
+# FHS says that /tmp does not persist across reboots, so clear it out.
+# TODO: do not destroy and recreate its contents.
+if { find /tmp -mindepth 1 -delete }
+if { systemd-tmpfiles --boot }
+
 s6-rc change ok-all

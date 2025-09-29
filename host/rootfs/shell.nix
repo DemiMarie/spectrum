@@ -3,8 +3,9 @@
 # SPDX-FileCopyrightText: 2022 Unikie
 
 import ../../lib/call-package.nix (
-{ callSpectrumPackage, rootfs, pkgsStatic, srcOnly, stdenv
+{ callSpectrumPackage, rootfs, srcOnly, stdenv
 , btrfs-progs, cryptsetup, jq, netcat, qemu_kvm, reuse, util-linux
+, fakeroot
 }:
 
 rootfs.overrideAttrs (
@@ -12,7 +13,7 @@ rootfs.overrideAttrs (
 
 {
   nativeBuildInputs = nativeBuildInputs ++ [
-    btrfs-progs cryptsetup jq netcat qemu_kvm reuse util-linux
+    btrfs-progs cryptsetup jq netcat qemu_kvm reuse util-linux fakeroot
   ];
 
   env = env // {

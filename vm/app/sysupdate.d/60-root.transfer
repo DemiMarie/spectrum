@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: CC0
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# Uses example code from systemd man pages which is under MIT-0
+# (no attribution required).
+[Transfer]
+ProtectVersion=%A
+Verify=yes
+
+[Source]
+Type=url-file
+Path=https://demimarie.github.io/spectrum-updates/
+MatchPattern=spectrumOS_@v_@u.root
+
+[Target]
+Type=regular-file
+Path=explicit
+MatchPattern=spectrumOS_@v_@u.root
