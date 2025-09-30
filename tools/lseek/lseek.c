@@ -10,6 +10,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <sys/types.h>
+
 noreturn static void ex_usage(void)
 {
 	fputs("Usage: lseek [ -C | -E | -S ] fd offset prog...\n", stderr);
