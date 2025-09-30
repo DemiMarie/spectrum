@@ -68,7 +68,7 @@ stdenv.mkDerivation (finalAttrs: {
     root = ../.;
     fileset = lib.fileset.intersection src (lib.fileset.unions ([
       ./meson.build
-      ./meson_options.txt
+      ./meson.options
     ] ++ lib.optionals buildSupport [
       ./lseek.c
     ] ++ lib.optionals appSupport [
