@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
 
 import ../../lib/call-package.nix (
-{ lseek, src, terminfo, pkgsStatic, buildFHSEnv, appimageTools }:
+{ spectrum-build-tools, src, terminfo, pkgsStatic, buildFHSEnv, appimageTools }:
 
 pkgsStatic.callPackage (
 { lib, stdenvNoCC, runCommand, writeClosure
@@ -112,7 +112,7 @@ stdenvNoCC.mkDerivation {
   };
   sourceRoot = "source/img/app";
 
-  nativeBuildInputs = [ erofs-utils jq lseek s6-rc util-linux ];
+  nativeBuildInputs = [ erofs-utils jq spectrum-build-tools s6-rc util-linux ];
 
   env = {
     KERNEL = "${kernel}/${baseNameOf kernelTarget}";

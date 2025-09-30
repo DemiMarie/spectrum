@@ -35,8 +35,11 @@ let
     callSpectrumPackage =
       path: (import path { inherit (self) callPackage; }).override;
 
-    lseek = self.callSpectrumPackage ../tools/lseek {};
     rootfs = self.callSpectrumPackage ../host/rootfs {};
+    spectrum-build-tools = self.callSpectrumPackage ../tools {
+      appSupport = false;
+      buildSupport = true;
+    };
     spectrum-app-tools = self.callSpectrumPackage ../tools {};
     spectrum-host-tools = self.callSpectrumPackage ../tools {
       appSupport = false;

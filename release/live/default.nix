@@ -3,7 +3,8 @@
 # SPDX-FileCopyrightText: 2022 Unikie
 
 import ../../lib/call-package.nix (
-{ callSpectrumPackage, lseek, rootfs, src, lib, pkgsStatic, stdenvNoCC
+{ callSpectrumPackage, spectrum-build-tools, rootfs, src
+, lib, pkgsStatic, stdenvNoCC
 , cryptsetup, dosfstools, jq, mtools, util-linux
 , systemdUkify
 }:
@@ -39,7 +40,7 @@ stdenv.mkDerivation {
   sourceRoot = "source/release/live";
 
   nativeBuildInputs = [
-    cryptsetup dosfstools jq lseek mtools systemd util-linux
+    cryptsetup dosfstools jq spectrum-build-tools mtools systemd util-linux
   ];
 
   env = {

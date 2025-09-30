@@ -3,7 +3,9 @@
 # SPDX-FileCopyrightText: 2022 Unikie
 
 import ../../lib/call-package.nix (
-{ callSpectrumPackage, lseek, src, pkgsMusl, pkgsStatic, linux_latest }:
+{ callSpectrumPackage, spectrum-build-tools, src
+, pkgsMusl, pkgsStatic, linux_latest
+}:
 pkgsStatic.callPackage (
 
 { spectrum-host-tools
@@ -175,7 +177,7 @@ stdenvNoCC.mkDerivation {
   };
   sourceRoot = "source/host/rootfs";
 
-  nativeBuildInputs = [ erofs-utils lseek s6-rc ];
+  nativeBuildInputs = [ erofs-utils spectrum-build-tools s6-rc ];
 
   env = {
     PACKAGES = runCommand "packages" {} ''

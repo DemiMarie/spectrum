@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2021-2023 Alyssa Ross <hi@alyssa.is>
 
-import ../../../lib/call-package.nix ({ lseek, src, terminfo, pkgsStatic }:
+import ../../../lib/call-package.nix (
+{ spectrum-build-tools, src, terminfo, pkgsStatic }:
 pkgsStatic.callPackage (
 
 { lib, stdenvNoCC, nixos, runCommand, writeClosure
@@ -111,7 +112,7 @@ stdenvNoCC.mkDerivation {
   };
   sourceRoot = "source/vm/sys/net";
 
-  nativeBuildInputs = [ erofs-utils jq lseek s6-rc util-linux ];
+  nativeBuildInputs = [ erofs-utils jq spectrum-build-tools s6-rc util-linux ];
 
   env = {
     KERNEL = "${kernel}/${baseNameOf kernelTarget}";

@@ -9,6 +9,7 @@ import ../lib/call-package.nix (
 , dbus
 # clang 19 (current nixpkgs default) is too old to support -fwrapv-pointer
 , clang_21, libbpf
+, buildSupport ? false
 , appSupport ? true
 , hostSupport ? false
 , driverSupport ? false
@@ -68,6 +69,8 @@ stdenv.mkDerivation (finalAttrs: {
     fileset = lib.fileset.intersection src (lib.fileset.unions ([
       ./meson.build
       ./meson_options.txt
+    ] ++ lib.optionals buildSupport [
+      ./lseek.c
     ] ++ lib.optionals appSupport [
       ./xdg-desktop-portal-spectrum
     ] ++ lib.optionals hostSupport [
@@ -93,6 +96,7 @@ stdenv.mkDerivation (finalAttrs: {
   '') packageCache);
 
   mesonFlags = [
+    (lib.mesonBool "build" buildSupport)
     (lib.mesonBool "app" appSupport)
     (lib.mesonBool "host" hostSupport)
     (lib.mesonBool "driver" driverSupport)

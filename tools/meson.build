@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
 project('spectrum-tools', 'c',
   default_options : {
@@ -12,12 +12,16 @@ add_project_arguments('-Wno-error=attributes', language : 'c')
 add_project_arguments('-Werror=missing-prototypes', language : 'c')
 add_project_arguments('-Werror=missing-declarations', language : 'c')
 
+if not get_option('unwind')
+  add_project_arguments('-C', 'panic=abort', language : 'rust')
+endif
+
+if get_option('build')
+  executable('lseek', 'lseek.c', c_args : '-D_XOPEN_SOURCE', install : true)
+endif
+
 if get_option('host')
   add_languages('rust')
-
-  if not get_option('unwind')
-    add_project_arguments('-C', 'panic=abort', language : 'rust')
-  endif
 
   miniserde_dep = dependency('miniserde-rs')
 

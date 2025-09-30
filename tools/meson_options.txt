@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2022-2025 Alyssa Ross <hi@alyssa.is>
 
+option('build', type : 'boolean', value : false,
+  description : 'Build tools for building Spectrum')
 option('host', type : 'boolean', value : false,
   description : 'Build tools for the Spectrum host')
-
 option('app', type : 'boolean',
   description : 'Build tools for Spectrum app VMs')
-
 option('driver', type : 'boolean', value : false,
   description : 'Build tools for Spectrum driver VMs')
 

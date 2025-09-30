@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 import ../../lib/call-package.nix (
-{ src, lseek, rootfs
+{ src, spectrum-build-tools, rootfs
 , lib, stdenvNoCC, makeModulesClosure, runCommand, writeClosure, pkgsStatic
 , busybox, cpio, microcodeAmd, microcodeIntel
 }:
@@ -107,7 +107,7 @@ stdenvNoCC.mkDerivation {
     MICROCODE = microcode;
   };
 
-  nativeBuildInputs = [ cpio lseek ];
+  nativeBuildInputs = [ cpio spectrum-build-tools ];
 
   makeFlags = [ "dest=$(out)" ];
 

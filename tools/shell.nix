@@ -4,6 +4,7 @@
 import ../lib/call-package.nix ({ callSpectrumPackage, clang-tools, clippy, rustfmt }:
 
 (callSpectrumPackage ./. {
+  buildSupport = true;
   appSupport = true;
   hostSupport = true;
   driverSupport = true;
