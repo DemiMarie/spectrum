@@ -1,6 +1,6 @@
 #!/bin/sh -eu
 #
-# SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2023-2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 # SPDX-License-Identifier: EUPL-1.2+
 #
@@ -39,15 +39,28 @@ while read -r arg1; do
 	(*) parent=.;;
 	esac
 
-	awk -v parent="$parent" -v root="$root" 'BEGIN {
-		n = split(parent, components, "/")
-		for (i = 1; i <= n; i++) {
-			printf "%s/", root
-			for (j = 1; j <= i; j++)
-				printf "%s/", components[j]
-			print
-		}
-	}' | xargs -rd '\n' chmod +w -- 2>/dev/null || :
+	# Ensure any existing directories we want to write into are writable.
+	(
+		set --
+		while :; do
+			abs="$root/$parent"
+			if [ -e "$abs" ] && ! [ -w "$abs" ]; then
+				set -- "$abs" "$@"
+			fi
+
+			# shellcheck disable=SC2030 # shadowed on purpose
+			case "$parent" in
+				*/*) parent="${parent%/*}" ;;
+				*) break ;;
+			esac
+		done
+
+		if [ "$#" -ne 0 ]; then
+			chmod +w -- "$@"
+		fi
+	)
+
+	# shellcheck disable=SC2031 # shadowed in subshell on purpose
 	mkdir -p -- "$root/$parent"
 
 	cp -RT -- "$arg1" "$root/$arg2"
