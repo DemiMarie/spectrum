@@ -34,9 +34,8 @@ int router(struct xdp_md *ctx)
 		return XDP_DROP;
 
 	int vlid = vlan_tag_pop(ctx, eth);
-	if (vlid < 0) {
+	if (vlid < 0)
 		return XDP_DROP;
-	}
 
 	return bpf_redirect(vlid, 0);
 }
