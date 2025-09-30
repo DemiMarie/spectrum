@@ -51,12 +51,12 @@ build/empty:
 	mkdir -p $@
 
 build/rootfs.erofs: ../../../scripts/make-erofs.sh $(PACKAGES_FILE) $(VM_FILES) $(VM_BUILD_FILES) build/empty
-	( \
+	{ \
 	    cat $(PACKAGES_FILE) ;\
 	    for file in $(VM_FILES) $(VM_LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
 	    for file in $(VM_BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(VM_DIRS) ;\
-	) | ../../../scripts/make-erofs.sh $@
+	} | ../../../scripts/make-erofs.sh $@
 
 VM_S6_RC_FILES = \
 	image/etc/s6-rc/connman/dependencies.d/dbus \

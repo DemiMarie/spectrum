@@ -20,10 +20,10 @@ build/empty:
 	mkdir -p $@
 
 build/spectrum.efi: build/rootfs.verity.roothash $(DTBS) $(KERNEL) $(INITRAMFS)
-	( \
+	{ \
 	    printf "[UKI]\nDeviceTreeAuto=" && \
-	    find $(DTBS) -name '*.dtb' -print0 | tr '\0' ' ' \
-	) | $(UKIFY) build \
+	    find $(DTBS) -name '*.dtb' -print0 | tr '\0' ' ' ;\
+	} | $(UKIFY) build \
 	    --output $@ \
 	    --config /dev/stdin \
 	    --linux $(KERNEL) \
