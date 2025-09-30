@@ -61,7 +61,9 @@ while read -r arg1; do
 	)
 
 	# shellcheck disable=SC2031 # shadowed in subshell on purpose
-	mkdir -p -- "$root/$parent"
+	if ! [ -e "$root/$parent" ]; then
+		mkdir -p -- "$root/$parent"
+	fi
 
 	cp -RT -- "$arg1" "$root/$arg2"
 done
