@@ -26,6 +26,8 @@ import ../../lib/call-package.nix ({ callSpectrumPackage }:
 
   shellcheck = callSpectrumPackage ./shellcheck.nix {};
 
+  shfmt = callSpectrumPackage ./shfmt.nix {};
+
   uncrustify = callSpectrumPackage ./uncrustify.nix {};
 
   wayland = callSpectrumPackage ./wayland {};
