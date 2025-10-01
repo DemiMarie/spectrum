@@ -4,7 +4,7 @@
 # SPDX-FileCopyrightText: 2022 Unikie
 # SPDX-License-Identifier: EUPL-1.2+
 
-substr () {
+substr() {
 	str=$1
 	beg=$2
 	end=$3

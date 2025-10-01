@@ -35,8 +35,8 @@ while read -r arg1; do
 	# a subset of all paths, but this subset includes all of
 	# the ones passed in practice other than /.
 	case $arg2 in
-	(*/*) parent=${arg2%/*};;
-	(*) parent=.;;
+	*/*) parent=${arg2%/*} ;;
+	*) parent=. ;;
 	esac
 
 	# Ensure any existing directories we want to write into are writable.
@@ -50,8 +50,8 @@ while read -r arg1; do
 
 			# shellcheck disable=SC2030 # shadowed on purpose
 			case "$parent" in
-				*/*) parent="${parent%/*}" ;;
-				*) break ;;
+			*/*) parent="${parent%/*}" ;;
+			*) break ;;
 			esac
 		done
 
@@ -74,10 +74,10 @@ done
 # the user's umask.  Paths in the image should not be writable by
 # anyone, but should be world-readable.
 find "$root" \
-  -path "$root/nix/store" -prune -o \
-  -type l -o \
-  -type d -a -perm 0555 -o \
-  -type f -a -perm 0444 -o \
-  -exec chmod a-w,a+rX -- '{}' +
+	-path "$root/nix/store" -prune -o \
+	-type l -o \
+	-type d -a -perm 0555 -o \
+	-type f -a -perm 0444 -o \
+	-exec chmod a-w,a+rX -- '{}' +
 
 mkfs.erofs -x-1 -b4096 --all-root "$@" "$root"

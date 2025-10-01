@@ -16,6 +16,6 @@ trap 'rm -rf -- "$dir"' EXIT
 mkdir -p -- "$dir/$name/LICENSES"
 cp -- LICENSES/Apache-2.0.txt LICENSES/LicenseRef-BSD-3-Clause-Google.txt \
 	"$dir/$name/LICENSES"
-cat pkgs/cloud-hypervisor/*.patch > "$dir/$name/cloud-hypervisor.patch"
-cat pkgs/cloud-hypervisor/vhost/*.patch > "$dir/$name/vhost.patch"
+cat pkgs/cloud-hypervisor/*.patch >"$dir/$name/cloud-hypervisor.patch"
+cat pkgs/cloud-hypervisor/vhost/*.patch >"$dir/$name/vhost.patch"
 tar -C "$dir" -czf "$name.tar.gz" -- "$name"
