@@ -62,6 +62,9 @@ build/fifo:
 build/empty:
 	mkdir -p $@
 
+build/etc:
+	mkdir -p $@
+
 # s6-rc-compile's input is a directory, but that doesn't play nice
 # with Make, because it won't know to update if some file in the
 # directory is changed, or a file is created or removed in a
@@ -69,8 +72,7 @@ build/empty:
 # including files that aren't intended to be part of the input, like
 # temporary editor files or .license files.  So for all these reasons,
 # only explicitly listed files are made available to s6-rc-compile.
-build/etc/s6-rc: $(S6_RC_FILES) file-list.mk
-	mkdir -p $$(dirname $@)
+build/etc/s6-rc: $(S6_RC_FILES) file-list.mk build/etc
 	rm -rf $@
 	set -uo pipefail && dir=$$(mktemp -d) && \
 	    { tar -c $(S6_RC_FILES) | tar -C $$dir -x --strip-components 3; } && \
