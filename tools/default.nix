@@ -78,6 +78,7 @@ stdenv.mkDerivation (finalAttrs: {
       ./start-vmm
       ./subprojects
       ./sd-notify-adapter
+      ./updates-dir-check
     ] ++ lib.optionals driverSupport [
       ./xdp-forwarder
     ]));
