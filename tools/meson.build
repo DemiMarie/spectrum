@@ -29,6 +29,10 @@ if get_option('host')
     c_args : '-D_GNU_SOURCE',
     install: true)
 
+  executable('updates-dir-check', 'updates-dir-check.c',
+    c_args : '-D_GNU_SOURCE',
+    install: true)
+
   subdir('lsvm')
   subdir('start-vmm')
 endif
