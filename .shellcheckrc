@@ -1,0 +1,4 @@
+# SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
+# SPDX-License-Identifier: CC0-1.0
+
+disable=SC3003,SC3040 # features that are now POSIX
