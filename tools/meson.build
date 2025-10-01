@@ -27,6 +27,7 @@ if get_option('host')
 
   subdir('lsvm')
   subdir('start-vmm')
+  subdir('updates-dir-check')
 endif
 
 if get_option('app')

@@ -77,6 +77,7 @@ stdenv.mkDerivation (finalAttrs: {
       ./lsvm
       ./start-vmm
       ./subprojects
+      ./updates-dir-check
     ] ++ lib.optionals driverSupport [
       ./xdp-forwarder
     ]));
