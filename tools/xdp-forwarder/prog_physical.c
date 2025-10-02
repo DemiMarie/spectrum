@@ -1,12 +1,8 @@
 // SPDX-License-Identifier: EUPL-1.2+
 // SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
+// SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
-#define VLAN_MAX_DEPTH 1
-
-#include <linux/bpf.h>
-#include <bpf/bpf_endian.h>
-#include "parsing_helpers.h"
-#include "rewrite_helpers.h"
+#include "helpers.h"
 
 struct {
 	__uint(type, BPF_MAP_TYPE_DEVMAP);
@@ -16,24 +12,37 @@ struct {
 	__uint(pinning, LIBBPF_PIN_BY_NAME);
 } router_iface SEC(".maps");
 
+static __always_inline bool push_vlan_tag(struct xdp_md *ctx, __u16 tag)
+{
+	// Add extra space at the front of the packet.
+	// This avoids reloading pointers or extra bounds checks later.
+	if (bpf_xdp_adjust_head(ctx, -VLAN_HDR_SIZE))
+		return false;
+
+	struct tagged_ethhdr *hdr = (void *)(long)ctx->data;
+	if (hdr + 1 > (void *)(long)ctx->data_end)
+		return false;
+
+	// Move the MAC addresses.
+	__builtin_memmove(hdr, (char *)hdr + VLAN_HDR_SIZE, MAC_ADDRESS_COMBINED_SIZE);
+
+	// Set the VLAN ID and the Ethertype of the frame.
+	hdr->h_vlan_TCI = bpf_htons((__u16)tag);
+	hdr->h_proto = VLAN_ETHTYPE;
+	return true;
+}
+
 SEC("xdp")
 int physical(struct xdp_md *ctx)
 {
-	void *data_end = (void *)(long)ctx->data_end;
-	void *data = (void *)(long)ctx->data;
+	__u32 ingress_ifindex = ctx->ingress_ifindex;
 
-	struct hdr_cursor nh;
-	nh.pos = data;
-
-	struct ethhdr *eth;
-	if (parse_ethhdr(&nh, data_end, &eth) < 0)
+	if (!vlan_tag_is_valid(ingress_ifindex))
 		return XDP_DROP;
 
-	if (ctx->ingress_ifindex < 1 || ctx->ingress_ifindex > VLAN_VID_MASK)
+	if (!push_vlan_tag(ctx, (__u16)ingress_ifindex))
 		return XDP_DROP;
 
-	if (vlan_tag_push(ctx, eth, ctx->ingress_ifindex) < 0)
-		return XDP_DROP;
-
+	// Redirect to the router interface.
 	return bpf_redirect_map(&router_iface, 0, 0);
 }

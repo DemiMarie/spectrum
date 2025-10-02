@@ -9,10 +9,13 @@ executable('set-router-iface', 'set_router_iface.c',
   dependencies : libbpf,
   install : true)
 
-clang = find_program('clang', native : true)
+clang_path = get_option('clang')
+if clang_path == ''
+  error('clang must be provided to build XDP forwarder')
+endif
 
 bpf_o_cmd = [
-  clang.full_path(),
+  clang_path,
   '-fno-stack-protector',
   '-fno-strict-aliasing',
   '-fwrapv', '-fwrapv-pointer',
@@ -22,9 +25,9 @@ bpf_o_cmd = [
   '-Wno-sign-compare',
   '-O2',
   '-target', 'bpf',
-  '-I', meson.current_source_dir() + '/include',
   '-g',
   '-c',
+  '-std=gnu23',
   '-o', '@OUTPUT@',
   '-MD',
   '-MQ', '@OUTPUT',

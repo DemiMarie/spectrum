@@ -1,12 +1,8 @@
 // SPDX-License-Identifier: EUPL-1.2+
 // SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
+// SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
-#define VLAN_MAX_DEPTH 1
-
-#include <linux/bpf.h>
-#include <bpf/bpf_endian.h>
-#include "parsing_helpers.h"
-#include "rewrite_helpers.h"
+#include "helpers.h"
 
 // The map is actually not used by this program, but just included
 // to keep the reference-counted pin alive before any physical interfaces
@@ -19,23 +15,39 @@ struct {
 	__uint(pinning, LIBBPF_PIN_BY_NAME);
 } router_iface SEC(".maps");
 
+static bool pop_vlan_tag(struct xdp_md *ctx, __u16 *tag)
+{
+	struct tagged_ethhdr *hdr = (void *)(long)ctx->data;
+	if (hdr + 1 > (void *)(long)ctx->data_end)
+		return false;
+
+	// 0x8A88 is also valid but the router does not
+	// use it.  It's meant for service provider VLANs.
+	if (hdr->h_proto != VLAN_ETHTYPE)
+		return false;
+
+	*tag = bpf_ntohs(hdr->h_vlan_TCI);
+
+	// Move the MAC addresses.
+	__builtin_memmove((char *)hdr + VLAN_HDR_SIZE, hdr, MAC_ADDRESS_COMBINED_SIZE);
+
+	// Move the head pointer to the new Ethernet header.
+	// Doing this last avoids needing to reload pointers
+	// or to add extra bounds checks earlier.
+	return !bpf_xdp_adjust_head(ctx, VLAN_HDR_SIZE);
+}
 
 SEC("xdp")
 int router(struct xdp_md *ctx)
 {
-	void *data_end = (void *)(long)ctx->data_end;
-	void *data = (void *)(long)ctx->data;
+	__u16 vlid;
 
-	struct hdr_cursor nh;
-	nh.pos = data;
+	if (!pop_vlan_tag(ctx, &vlid))
+		return false;
 
-	struct ethhdr *eth;
-	if (parse_ethhdr(&nh, data_end, &eth) < 0)
+	if (!vlan_tag_is_valid(vlid))
 		return XDP_DROP;
 
-	int vlid = vlan_tag_pop(ctx, eth);
-	if (vlid < 0)
-		return XDP_DROP;
-
+	// Redirect to the correct physical interface.
 	return bpf_redirect(vlid, 0);
 }
