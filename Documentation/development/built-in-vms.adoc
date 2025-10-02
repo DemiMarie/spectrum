@@ -3,6 +3,7 @@
 :page-nav_order: 3
 
 // SPDX-FileCopyrightText: 2023-2025 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
 
 Spectrum comes with some built-in application VMs, to demonstrate
@@ -43,6 +44,12 @@ the template.
 NOTE: As a special convenience, it's not necessary to run `make clean`
 if the only change to the Nix files is modifying the packages
 installed in the VM.
+
+The list of files used for images is stored in a separate file,
+file-list.mk.  To update it, run scripts/genfiles.sh, which will
+regenerate it from the output of `git ls-files`.  This script uses
+Git's index to generate the list, so only staged changes will be
+reflected in its output.
 
 By default, `make run` runs the VM in Cloud Hypervisor, to match the
 Spectrum environment.  You can also add `VMM=crosvm` or `VMM=qemu` to
