@@ -7,6 +7,7 @@ if { mount -m --rbind -o nofail /run/vm/by-id/${1}/config/fs /run/vm/by-id/${1}/
 if { mkdir -p /run/vm/by-id/${1}/doc-run/doc /run/vm/by-id/${1}/fs/doc }
 if { mount --rbind /run/vm/by-id/${1}/doc-run/doc /run/vm/by-id/${1}/fs/doc }
 
-forx -pE service { dbus vhost-user-fs vhost-user-gpu xdg-desktop-portal-spectrum-host }
-if { s6-instance-create /run/service/${service} $1 }
-s6-svwait -U /run/service/${service}/instance/${1}
+if { s6-instance-create /run/service/vm-services $1 }
+elglob services /run/service/vm-services/instance/${1}/services/*
+forx -pE service { $services }
+s6-svwait -U $service

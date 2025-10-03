@@ -1,6 +1,6 @@
 #!/bin/execlineb -S1
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021-2025 Alyssa Ross <hi@alyssa.is>
 
 s6-ipcserver-socketbinder -a 0700 -B env/virtiofsd.sock
 
@@ -13,6 +13,7 @@ export TMPDIR /run
 # The VM should not be able to write directly into a tmpfs, but there
 # can be writable block-based bind mounted subdirectories.
 unshare -m --propagation slave
-if { mount --rbind -o ro /run/vm/by-id/${1}/fs /run/vm/by-id/${1}/fs }
+importas -i VM VM
+if { mount --rbind -o ro ${VM}/fs ${VM}/fs }
 
-virtiofsd --fd 3 --shared-dir /run/vm/by-id/${1}/fs
+virtiofsd --fd 3 --shared-dir ${VM}/fs

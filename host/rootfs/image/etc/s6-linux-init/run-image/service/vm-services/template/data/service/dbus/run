@@ -1,0 +1,10 @@
+#!/bin/execlineb -P
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
+
+importas -i VM VM
+
+dbus-daemon
+  --config-file /usr/share/dbus-1/session.conf
+  --print-address 3
+  --address unix:path=${VM}/portal-bus

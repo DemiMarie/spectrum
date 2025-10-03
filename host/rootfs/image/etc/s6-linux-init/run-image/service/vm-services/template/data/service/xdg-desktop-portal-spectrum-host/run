@@ -1,0 +1,15 @@
+#!/bin/execlineb -S1
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
+
+importas -i VM VM
+
+export DBUS_SESSION_BUS_ADDRESS unix:path=${VM}/portal-bus
+
+s6-ipcserver-socketbinder -a 0700 ${VM}/vsock_219
+
+# Notify readiness.
+if { fdmove 1 3 echo }
+fdclose 3
+
+xdg-desktop-portal-spectrum-host

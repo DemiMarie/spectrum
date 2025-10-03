@@ -13,27 +13,21 @@ DIRS = \
 	etc/s6-linux-init/env \
 	etc/s6-linux-init/run-image/configs \
 	etc/s6-linux-init/run-image/sd-notify-wrapper \
-	etc/s6-linux-init/run-image/service/dbus/instance \
-	etc/s6-linux-init/run-image/service/dbus/instances \
-	etc/s6-linux-init/run-image/service/dbus/template/data \
-	etc/s6-linux-init/run-image/service/dbus/template/env \
 	etc/s6-linux-init/run-image/service/serial-getty/instance \
 	etc/s6-linux-init/run-image/service/serial-getty/instances \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/instance \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/instances \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/template/data \
-	etc/s6-linux-init/run-image/service/vhost-user-fs/template/env \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/instance \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/instances \
-	etc/s6-linux-init/run-image/service/vhost-user-gpu/template/env \
+	etc/s6-linux-init/run-image/service/vm-services/instance \
+	etc/s6-linux-init/run-image/service/vm-services/instances \
+	etc/s6-linux-init/run-image/service/vm-services/template/data/service/dbus/data \
+	etc/s6-linux-init/run-image/service/vm-services/template/data/service/dbus/env \
+	etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-fs/data \
+	etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-fs/env \
+	etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-gpu/env \
+	etc/s6-linux-init/run-image/service/vm-services/template/data/service/xdg-desktop-portal-spectrum-host/data \
+	etc/s6-linux-init/run-image/service/vm-services/template/data/service/xdg-desktop-portal-spectrum-host/env \
 	etc/s6-linux-init/run-image/service/vmm/instance \
 	etc/s6-linux-init/run-image/service/vmm/instances \
 	etc/s6-linux-init/run-image/service/vmm/template/data \
 	etc/s6-linux-init/run-image/service/vmm/template/env \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/instance \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/instances \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/data \
-	etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/env \
 	etc/s6-linux-init/run-image/user \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \

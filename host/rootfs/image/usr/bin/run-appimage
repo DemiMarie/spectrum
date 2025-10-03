@@ -32,15 +32,7 @@ fdclose 4
 foreground { run-vmm $id }
 fdclose 3
 
-if {
-  forx -pE service {
-    dbus
-    vhost-user-fs
-    vhost-user-gpu
-    xdg-desktop-portal-spectrum-host
-  }
-  s6-instance-delete /run/service/${service} $id
-}
+if { s6-instance-delete /run/service/vm-services $id }
 
 if {
   forx -E mount {

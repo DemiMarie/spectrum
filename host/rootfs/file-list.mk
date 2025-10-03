@@ -11,10 +11,6 @@ FILES = \
 	image/etc/passwd \
 	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
 	image/etc/s6-linux-init/env/XDG_RUNTIME_DIR \
-	image/etc/s6-linux-init/run-image/service/dbus/notification-fd \
-	image/etc/s6-linux-init/run-image/service/dbus/run \
-	image/etc/s6-linux-init/run-image/service/dbus/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/dbus/template/run \
 	image/etc/s6-linux-init/run-image/service/getty-tty1/run \
 	image/etc/s6-linux-init/run-image/service/getty-tty2/run \
 	image/etc/s6-linux-init/run-image/service/getty-tty3/run \
@@ -25,22 +21,22 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/serial-getty/notification-fd \
 	image/etc/s6-linux-init/run-image/service/serial-getty/run \
 	image/etc/s6-linux-init/run-image/service/serial-getty/template/run \
-	image/etc/s6-linux-init/run-image/service/vhost-user-fs/notification-fd \
-	image/etc/s6-linux-init/run-image/service/vhost-user-fs/run \
-	image/etc/s6-linux-init/run-image/service/vhost-user-fs/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/vhost-user-fs/template/run \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/notification-fd \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/run \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/template/data/check \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/vhost-user-gpu/template/run \
+	image/etc/s6-linux-init/run-image/service/vm-services/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vm-services/run \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/dbus/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/dbus/run \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-fs/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-fs/run \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-gpu/data/check \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-gpu/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-gpu/run \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/xdg-desktop-portal-spectrum-host/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/xdg-desktop-portal-spectrum-host/run \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/notification-fd \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/run \
 	image/etc/s6-linux-init/run-image/service/vmm/notification-fd \
 	image/etc/s6-linux-init/run-image/service/vmm/run \
 	image/etc/s6-linux-init/run-image/service/vmm/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/notification-fd \
-	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/run \
-	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/notification-fd \
-	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/run \
 	image/etc/s6-linux-init/scripts/rc.init \
 	image/etc/udev/rules.d/99-spectrum.rules \
 	image/etc/xdg/weston/autolaunch \
