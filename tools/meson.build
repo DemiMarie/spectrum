@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
 project('spectrum-tools', 'c',
+  meson_version : '>=1.2',
   default_options : {
     'c_std': 'c23',
     'rust_std': '2018',
@@ -21,7 +22,7 @@ if get_option('build')
 endif
 
 if get_option('host')
-  add_languages('rust')
+  add_languages('rust', native: false)
 
   miniserde_dep = dependency('miniserde-rs')
 
