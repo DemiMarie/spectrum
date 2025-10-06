@@ -11,6 +11,7 @@ use std::env::args_os;
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io::{self, ErrorKind};
+use std::os::fd::{OwnedFd, RawFd};
 use std::path::Path;
 
 use ch::{
@@ -18,6 +19,16 @@ use ch::{
     VsockConfig,
 };
 use net::net_setup;
+
+unsafe extern "C" {
+    /// # Safety
+    ///
+    /// Must be called before anything else could be using the FD.
+    /// Typically, this is at the start of main().
+    /// Takes ownership of the file descriptor, so can only be called
+    /// once.
+    pub fn get_open_fd(fd: RawFd) -> Option<OwnedFd>;
+}
 
 pub fn prog_name() -> String {
     args_os()

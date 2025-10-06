@@ -36,7 +36,7 @@ impl Serialize for MacAddress {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     /// # Safety
     ///
     /// The rest of the result is only valid if the returned fd is not -1.

@@ -4,3 +4,4 @@
 #include <net/if.h>
 
 int tap_open(char name[static IFNAMSIZ], int flags);
+int get_open_fd(int fd);

@@ -9,11 +9,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <fcntl.h>
 #include <unistd.h>
 
 #include <arpa/inet.h>
 
 #include <linux/if_tun.h>
+
+int get_open_fd(int fd)
+{
+	return fcntl(fd, F_GETFD) != -1 ? fd : -1;
+}
 
 static int get_tap_name(char tap_name[static IFNAMSIZ],
                         const char tap_prefix[static 1],
