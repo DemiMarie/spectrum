@@ -47,9 +47,10 @@ table="label: gpt"
 # Keep 1MiB free at the start, and 1MiB free at the end.
 gptBytes=$((ONE_MiB * 2))
 for partition; do
-	sizeMiB="$(sizeMiB "$(partitionPath "$partition")")"
-	table="$table${nl}size=${sizeMiB}MiB,$(awk -f "$scriptsDir/sfdisk-field.awk" -v partition="$partition")"
-	gptBytes="$((gptBytes + sizeMiB * ONE_MiB))"
+	partitionPath=$(partitionPath "$partition")
+	sizeMiB=$(sizeMiB "$partitionPath")
+	table=$table$nl$(awk -f "$scriptsDir/sfdisk-field.awk" -v partition="$partition" -v "size=${sizeMiB}MiB")
+	gptBytes=$((gptBytes + sizeMiB * ONE_MiB))
 done
 
 rm -f "$out"
@@ -60,6 +61,7 @@ EOF
 
 n=0
 for partition; do
-	fillPartition "$out" "$n" "$(partitionPath "$partition")"
-	n="$((n + 1))"
+	partition_path=$(partitionPath "$partition")
+	fillPartition "$out" "$n" "$partitionPath"
+	n=$((n + 1))
 done

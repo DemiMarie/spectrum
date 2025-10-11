@@ -100,9 +100,14 @@ build/rootfs.verity.superblock: build/rootfs.verity
 	tail -n +2 build/rootfs.verity > $@
 
 build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/rootfs.verity.superblock build/rootfs.verity.roothash $(dest)
+	set -eufo pipefail; IFS=$$'\n';
+	root_hashes=$$(awk -f ../../scripts/format-uuid.awk < build/rootfs.verity.roothash); \
+	set -- $$root_hashes;
 	../../scripts/make-gpt.sh $@.tmp \
-	    build/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(dest):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)")
+		"build/rootfs.verity.superblock:verity:$$1:spectrumOS_0.0.0.verity:1GiB" \
+	    "$(dest):root:$$2:spectrumOS_0.0.0:10GiB" \
+	    "/dev/null:verity:$$3:_empty:1GiB" \
+	    "/dev/null:root:$$4:_empty:10GiB"; \
 	mv $@.tmp $@
 
 debug:

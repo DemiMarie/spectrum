@@ -14,7 +14,7 @@ BEGIN {
 	# first field.
 	skip=1
 
-	split("type uuid name", keys)
+	split("type uuid name size", keys)
 	split(partition, fields, ":")
 
 	arch = ENVIRON["ARCH"]
@@ -24,6 +24,7 @@ BEGIN {
 			arch = _arch
 	}
 
+	comma = ""
 	for (n in fields) {
 		if (n <= skip)
 			continue
@@ -33,6 +34,14 @@ BEGIN {
 				fields[n] = uuid
 		}
 
-		printf "%s=%s,", keys[n - skip], fields[n]
+		if (keys[n - skip] == "size") {
+			size = fields[n];
+			continue;
+		}
+
+		printf "%s%s=%s", comma, keys[n - skip], fields[n]
+		comma = ","
 	}
+
+	printf "%ssize=%s", comma, size
 }
