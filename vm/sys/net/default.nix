@@ -131,6 +131,7 @@ stdenvNoCC.mkDerivation {
   __structuredAttrs = true;
 
   unsafeDiscardReferences = { out = true; };
+  dontFixup = true;
 
   passthru = { inherit firmware kernel packagesSysroot; };
 
