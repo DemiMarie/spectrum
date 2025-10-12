@@ -2,8 +2,8 @@
 # SPDX-FileCopyrightText: 2021-2023 Alyssa Ross <hi@alyssa.is>
 
 import ../../../lib/call-package.nix (
-{ spectrum-build-tools, src, terminfo, pkgsStatic }:
-pkgsStatic.callPackage (
+{ spectrum-build-tools, src, terminfo, pkgsMusl }:
+pkgsMusl.callPackage (
 
 { lib, stdenvNoCC, nixos, runCommand, writeClosure
 , erofs-utils, jq, s6-rc, util-linux, xorg
