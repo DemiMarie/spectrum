@@ -60,9 +60,7 @@ stdenv.mkDerivation {
     DTBS = "${rootfs.kernel}/dtbs";
   };
 
-  buildFlags = [ "dest=$(out)" ];
-
-  dontInstall = true;
+  buildFlags = [ "DESTDIR=$(out)" ];
 
   enableParallelBuilding = true;
 

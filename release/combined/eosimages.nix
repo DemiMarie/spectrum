@@ -7,7 +7,7 @@ import ../../lib/call-package.nix (
 runCommand "eosimages.img" {
   nativeBuildInputs = [ e2fsprogs tar2ext4 ];
   imageName = "Spectrum-0.0-x86_64-generic.0.Live.img";
-  image = callSpectrumPackage ../live {};
+  image = "${callSpectrumPackage ../live {}}/live.img";
   __structuredAttrs = true;
   unsafeDiscardReferences = { out = true; };
   dontFixup = true;

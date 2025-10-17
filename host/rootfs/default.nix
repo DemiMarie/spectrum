@@ -8,8 +8,8 @@ import ../../lib/call-package.nix (
 }:
 pkgsStatic.callPackage (
 
-{ busybox, cloud-hypervisor, cryptsetup, dbus, erofs-utils, execline
-, inkscape, inotify-tools, iproute2, jq, lib, mdevd, nixos
+{ btrfs-progs, busybox, cloud-hypervisor, cryptsetup, dbus, erofs-utils
+, execline, inkscape, inotify-tools, iproute2, jq, lib, mdevd, nixos
 , runCommand, s6, s6-linux-init, s6-rc, socat, spectrum-host-tools
 , stdenvNoCC, util-linux, virtiofsd, writeClosure
 , xdg-desktop-portal-spectrum-host, xorg
@@ -82,7 +82,7 @@ let
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
   usrPackages = [
-    appvm kernel.modules firmware kmod kmod.lib
+    appvm btrfs-progs firmware kernel.modules kmod kmod.lib
     netvm mesa dejavu_fonts systemd util-linux westonLite
   ];
 
