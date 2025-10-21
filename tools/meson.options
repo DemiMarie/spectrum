@@ -13,6 +13,10 @@ option('driver', type : 'boolean', value : false,
 option('hostfsrootdir', type : 'string', value : '/run/host',
   description : 'Path where the virtio-fs provided by the host will be mounted')
 
+option('linux-headers',
+  type : 'string',
+  description : 'Path to Linux kernel package')
+
 option('tests',
   type : 'boolean',
   description : 'Build tests')

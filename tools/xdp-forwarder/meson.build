@@ -11,8 +11,13 @@ executable('set-router-iface', 'set_router_iface.c',
 
 clang = find_program('clang', native : true)
 
+linux_headers_path = get_option('linux-headers')
+if linux_headers_path == ''
+  error('Linux header path must be provided to build XDP forwarder')
+endif
+
 bpf_o_cmd = [
-  clang.full_path(),
+  clang,
   '-fno-stack-protector',
   '-fno-strict-aliasing',
   '-fwrapv', '-fwrapv-pointer',
@@ -22,10 +27,12 @@ bpf_o_cmd = [
   '-Wno-sign-compare',
   '-O2',
   '-target', 'bpf',
-  '-I', meson.current_source_dir() + '/include',
   '-g',
   '-c',
+  '-std=gnu23',
   '-o', '@OUTPUT@',
+  '-I', libbpf.get_variable('includedir'),
+  '-I', linux_headers_path + '/include',
   '-MD',
   '-MQ', '@OUTPUT',
   '-MF', '@DEPFILE@',

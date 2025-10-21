@@ -6,7 +6,7 @@ import ../lib/call-package.nix (
 { src, lib, stdenv, fetchCrate, fetchurl, runCommand, buildPackages
 , meson, ninja, pkg-config, rustc
 , clang-tools, clippy, jq
-, dbus
+, dbus, linuxHeaders
 # clang 19 (current nixpkgs default) is too old to support -fwrapv-pointer
 , clang_21, libbpf
 , buildSupport ? false
@@ -87,8 +87,9 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [ meson ninja ]
     ++ lib.optionals (appSupport || driverSupport) [ pkg-config ]
     ++ lib.optionals hostSupport [ rustc ]
-    ++ lib.optionals driverSupport [ clang_21 ];
-  buildInputs = lib.optionals appSupport [ dbus ] ++ lib.optionals driverSupport [ libbpf ];
+    ++ lib.optionals driverSupport [ clang_21.cc ];
+  buildInputs = lib.optionals appSupport [ dbus ]
+    ++ lib.optionals driverSupport [ libbpf linuxHeaders ];
 
   postPatch = lib.optionals hostSupport (lib.concatMapStringsSep "\n" (crate: ''
     mkdir -p subprojects/packagecache
@@ -104,10 +105,9 @@ stdenv.mkDerivation (finalAttrs: {
     "-Dtests=false"
     "-Dunwind=false"
     "-Dwerror=true"
+  ] ++ lib.optionals driverSupport [
+    "-Dlinux-headers=${linuxHeaders}"
   ];
-
-  # Not supported for target bpf
-  hardeningDisable = lib.optionals driverSupport [ "zerocallusedregs" ];
 
   passthru.tests = {
     clang-tidy = finalAttrs.finalPackage.overrideAttrs (
