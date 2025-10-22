@@ -68,4 +68,16 @@ while read -r arg1; do
 	cp -RT -- "$arg1" "$root/$arg2"
 done
 
+# Ensure that the permissions in the image are independent of those in
+# the git repository or Nix store, except for the executable bit.  In
+# particular, the mode of those outside the Nix store might depend on
+# the user's umask.  Paths in the image should not be writable by
+# anyone, but should be world-readable.
+find "$root" \
+  -path "$root/nix/store" -prune -o \
+  -type l -o \
+  -type d -a -perm 0555 -o \
+  -type f -a -perm 0444 -o \
+  -exec chmod a-w,a+rX -- '{}' +
+
 mkfs.erofs -x-1 -b4096 --all-root "$@" "$root"
