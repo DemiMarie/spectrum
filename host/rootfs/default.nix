@@ -43,7 +43,8 @@ let
     })
 
   # Take kmod from pkgsGui since we use pkgsGui.kmod.lib below anyway.
-  ] ++ (with pkgsGui; [ cosmic-files crosvm foot fuse3 kmod systemd ]);
+  ] ++ (with pkgsGui; [ cosmic-files crosvm foot fuse3 kmod ]);
+
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
@@ -64,7 +65,16 @@ let
   # https://inbox.vuxu.org/musl/20251017-dlopen-use-rpath-of-caller-dso-v1-1-46c69eda1473@iscas.ac.cn/
   usrPackages = [
     appvm kernel.modules firmware netvm
-  ] ++ (with pkgsGui; [ dejavu_fonts kmod.lib mesa westonLite ]);
+  ] ++ (with pkgsGui; [
+    dejavu_fonts kmod.lib mesa westonLite
+    # Work around NixOS/nixpkgs#459020: without "withImportd = true"
+    # systemd-pull doesn't get built, so systemd-sysupdate doesn't work.
+    # TODO: remove this when NixOS/nixpkgs#461277 is merged.
+    (systemd.override {
+      withImportd = true;
+      withSysupdate = true;
+    })
+  ]);
 
   appvms = {
     appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};
@@ -83,6 +93,16 @@ let
     # so that ln catches any duplicates.
     for pkg in ${escapeShellArgs usrPackages}; do
         lndir -ignorelinks -silent "$pkg" "$out/usr"
+    done
+
+    # If systemd-pull is missing systemd-sysupdate will fail with a
+    # very confusing error message.  If systemd-sysupdate doesn't work,
+    # users will not be able to receive an update that fixes the problem.
+    for i in sysupdate pull; do
+        if ! cat -- "$out/usr/lib/systemd/systemd-$i" > /dev/null; then
+            echo "link to systemd-$i didn't get installed" >&2
+            exit 1
+        fi
     done
 
     # Weston doesn't support SVG icons.
