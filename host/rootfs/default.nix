@@ -4,7 +4,7 @@
 
 import ../../lib/call-package.nix (
 { callSpectrumPackage, spectrum-build-tools, src
-, pkgsMusl, pkgsStatic, linux_latest
+, pkgsMusl, pkgsStatic, linux_latest, systemd
 }:
 pkgsStatic.callPackage (
 
@@ -16,8 +16,8 @@ pkgsStatic.callPackage (
 }:
 let
   inherit (lib)
-    concatMapStringsSep concatStrings escapeShellArgs fileset
-    mapAttrsToList systems trivial;
+    concatMapStringsSep concatStrings escapeShellArg
+    escapeShellArgs fileset mapAttrsToList systems trivial;
   pkgsGui = pkgsMusl.extend (
     _final: super:
     (lib.optionalAttrs (systems.equals pkgsMusl.stdenv.hostPlatform super.stdenv.hostPlatform) {
@@ -32,7 +32,7 @@ in
 # systemd, so might as well use it.
 pkgsGui.callPackage (
 { cosmic-files, crosvm, dejavu_fonts, foot, kmod, mesa
-, systemd, westonLite, xdg-desktop-portal, xdg-desktop-portal-gtk
+, westonLite, xdg-desktop-portal, xdg-desktop-portal-gtk
 }:
 
 let
@@ -83,7 +83,7 @@ let
   # (not just their bin/* files).
   usrPackages = [
     appvm kernel.modules firmware kmod kmod.lib
-    netvm mesa dejavu_fonts westonLite
+    netvm mesa dejavu_fonts systemd util-linuxMinimal westonLite
   ];
 
   appvms = {
@@ -99,12 +99,16 @@ let
     mkdir -p $out/usr/bin $out/usr/share/dbus-1/services \
       $out/usr/share/icons/hicolor/20x20/apps
 
+    for pkg in ${escapeShellArgs usrPackages}; do
+        lndir -ignorelinks -silent "$pkg" "$out/usr"
+    done
+
     # Weston doesn't support SVG icons.
     inkscape -w 20 -h 20 \
         -o $out/usr/share/icons/hicolor/20x20/apps/com.system76.CosmicFiles.png \
         ${cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
 
-    ln -st $out/usr/bin \
+    ln -sft "$out/usr/bin" \
         ${concatMapStringsSep " " (p: "${p}/bin/*") packages} \
         ${xdg-desktop-portal}/libexec/xdg-document-portal \
         ${xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
@@ -112,23 +116,12 @@ let
         ${dbus}/share/dbus-1/session.conf
     ln -st $out/usr/share/dbus-1/services \
         ${xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
-
-    for pkg in ${escapeShellArgs usrPackages}; do
-        lndir -ignorelinks -silent "$pkg" "$out/usr"
-    done
+    # clobber any conflicting files from busybox
+    ln -sft "$out/usr/bin" ${util-linuxMinimal}/bin/*
 
     ${concatStrings (mapAttrsToList (name: path: ''
       ln -s ${path} $out/usr/lib/spectrum/vm/${name}
     '') appvms)}
-
-    # TODO: this is a hack and we should just build the util-linux
-    # programs we want.
-    # https://lore.kernel.org/util-linux/87zgrl6ufb.fsf@alyssa.is/
-    ln -s ${util-linuxMinimal}/bin/{findfs,uuidgen,lsblk,mount} $out/usr/bin
-
-    # TODO: this is another hack and it should be possible
-    # to build systemd without this.
-    ln -s -- ${lib.escapeShellArg systemd}/bin/udevadm "$out/usr/bin"
   '';
 in
 
