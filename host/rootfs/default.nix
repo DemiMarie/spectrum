@@ -38,29 +38,21 @@ let
     virtiofsd xdg-desktop-portal-spectrum-host
 
     (busybox.override {
-      extraConfig = ''
-        CONFIG_CHATTR n
-        CONFIG_DEPMOD n
-        CONFIG_FINDFS n
-        CONFIG_HALT n
-        CONFIG_INIT n
-        CONFIG_INSMOD n
-        CONFIG_IP n
-        CONFIG_LSATTR n
-        CONFIG_LSMOD n
-        CONFIG_MKE2FS n
-        CONFIG_MKFS_EXT2 n
-        CONFIG_MODINFO n
-        CONFIG_MODPROBE n
-        CONFIG_MOUNT n
-        CONFIG_POWEROFF n
-        CONFIG_REBOOT n
-        CONFIG_RMMOD n
-      '';
+      # Use a separate file as it is a bit too big.
+      extraConfig = builtins.readFile ./busybox-config;
     })
 
   # Take kmod from pkgsGui since we use pkgsGui.kmod.lib below anyway.
-  ] ++ (with pkgsGui; [ cosmic-files crosvm foot fuse3 kmod systemd ]);
+  ] ++ (with pkgsGui; [
+    cosmic-files crosvm foot fuse3 kmod
+    # Work around NixOS/nixpkgs#459020: without "withImportd = true"
+    # systemd-pull doesn't get built, so systemd-sysupdate doesn't work.
+    (systemd.override {
+      withImportd = true;
+      withSysupdate = true;
+    })
+  ]);
+
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
@@ -96,12 +88,27 @@ let
     mkdir -p $out/usr/bin $out/usr/share/dbus-1/services \
       $out/usr/share/icons/hicolor/20x20/apps
 
+    # lndir silently ignores existing links, so run it before ln
+    # so that ln catches any duplicates.
+    for pkg in ${escapeShellArgs usrPackages}; do
+        lndir -ignorelinks -silent "$pkg" "$out/usr"
+    done
+
+    # If systemd-pull is missing systemd-sysupdate will fail with a
+    # very confusing error message.
+    for i in sysupdate pull; do
+        if ! cat -- "$out/usr/lib/systemd/systemd-$i" > /dev/null; then
+            echo "link to systemd-$i didn't get installed" >&2
+            exit 1
+        fi
+    done
+
     # Weston doesn't support SVG icons.
     inkscape -w 20 -h 20 \
         -o $out/usr/share/icons/hicolor/20x20/apps/com.system76.CosmicFiles.png \
         ${pkgsGui.cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
 
-    ln -st $out/usr/bin \
+    ln -st "$out/usr/bin" \
         ${concatMapStringsSep " " (p: "${p}/bin/*") packages} \
         ${pkgsGui.xdg-desktop-portal}/libexec/xdg-document-portal \
         ${pkgsGui.xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
@@ -110,18 +117,11 @@ let
     ln -st $out/usr/share/dbus-1/services \
         ${pkgsGui.xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
 
-    for pkg in ${escapeShellArgs usrPackages}; do
-        lndir -ignorelinks -silent "$pkg" "$out/usr"
-    done
+    ln -st "$out/usr/bin" ${util-linuxMinimal}/bin/*
 
     ${concatStrings (mapAttrsToList (name: path: ''
       ln -s ${path} $out/usr/lib/spectrum/vm/${name}
     '') appvms)}
-
-    # TODO: this is a hack and we should just build the util-linux
-    # programs we want.
-    # https://lore.kernel.org/util-linux/87zgrl6ufb.fsf@alyssa.is/
-    ln -s ${util-linuxMinimal}/bin/{findfs,uuidgen,lsblk,mount} $out/usr/bin
   '';
 in
 
