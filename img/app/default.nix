@@ -2,13 +2,10 @@
 # SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
 
 import ../../lib/call-package.nix (
-{ spectrum-build-tools, src, terminfo, pkgsStatic, buildFHSEnv, appimageTools }:
-
-pkgsStatic.callPackage (
-{ lib, stdenvNoCC, runCommand, writeClosure
+{ spectrum-app-tools, spectrum-build-tools, src, terminfo
+, lib, appimageTools, buildFHSEnv, runCommand, stdenvNoCC, writeClosure
 , erofs-utils, jq, s6-rc, util-linux
-, busybox, cacert, dejavu_fonts, execline, kmod, linux_latest, mdevd, s6
-, s6-linux-init, spectrum-app-tools
+, cacert, linux_latest
 }:
 
 let
@@ -53,7 +50,7 @@ let
     targetPkgs = pkgs: appimageTools.defaultFhsEnvArgs.targetPkgs pkgs ++ [
       pkgs.fuse
 
-      (busybox.override {
+      (pkgs.busybox.override {
         enableMinimal = true;
         extraConfig = ''
           CONFIG_CLEAR y
@@ -65,28 +62,23 @@ let
         '';
       })
 
-      cacert
-      dejavu_fonts
-      execline
-      kmod
-      mdevd
-      s6
-      s6-linux-init
-      s6-rc
-      spectrum-app-tools
-      terminfo
-
-      # Some packages can't (currently?) be built statically.
-
-      # https://github.com/nix-ocaml/nix-overlays/issues/698
+      pkgs.cacert
+      pkgs.dejavu_fonts
+      pkgs.execline
+      pkgs.kmod
+      pkgs.mdevd
+      pkgs.pipewire
+      pkgs.s6
+      pkgs.s6-linux-init
+      pkgs.s6-rc
       pkgs.wayland-proxy-virtwl
-      # Depends on xcvt, which can't be built statically.
-      pkgs.xwayland
+      pkgs.wireplumber
       pkgs.xdg-desktop-portal
       pkgs.xdg-desktop-portal-gtk
-      # Depends on pulseaudio libs
-      pkgs.pipewire
-      pkgs.wireplumber
+      pkgs.xwayland
+
+      spectrum-app-tools
+      terminfo
     ];
   })).fhsenv;
 
@@ -139,4 +131,4 @@ stdenvNoCC.mkDerivation {
     platforms = platforms.linux;
   };
 }
-) {}) ({ foot }: { inherit (foot) terminfo; })
+) ({ foot }: { inherit (foot) terminfo; })
