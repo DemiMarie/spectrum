@@ -10,6 +10,7 @@ runCommand "eosimages.img" {
   image = callSpectrumPackage ../live {};
   __structuredAttrs = true;
   unsafeDiscardReferences = { out = true; };
+  dontFixup = true;
 } ''
   mkdir dir
   cd dir

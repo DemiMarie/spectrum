@@ -131,8 +131,8 @@ stdenvNoCC.mkDerivation {
   passthru = { inherit appimageFhsenv kernel packagesSysroot; };
 
   __structuredAttrs = true;
-
   unsafeDiscardReferences = { out = true; };
+  dontFixup = true;
 
   meta = with lib; {
     license = licenses.eupl12;

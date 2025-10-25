@@ -29,8 +29,8 @@ runCommand "spectrum-vm" {
     (mapAttrsToList (kind: map (vm: "${kind}/${vm}")) providers);
 
   __structuredAttrs = true;
-
   unsafeDiscardReferences = { out = true; };
+  dontFixup = true;
 } ''
   mkdir -p $out/{blk,fs,providers}
   pushd "$out"

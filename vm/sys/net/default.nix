@@ -129,8 +129,8 @@ stdenvNoCC.mkDerivation {
   enableParallelBuilding = true;
 
   __structuredAttrs = true;
-
   unsafeDiscardReferences = { out = true; };
+  dontFixup = true;
 
   passthru = { inherit firmware kernel packagesSysroot; };
 

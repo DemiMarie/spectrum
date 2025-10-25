@@ -60,8 +60,8 @@ stdenv.mkDerivation {
   enableParallelBuilding = true;
 
   __structuredAttrs = true;
-
   unsafeDiscardReferences = { out = true; };
+  dontFixup = true;
 
   passthru = { inherit initramfs rootfs; };
 }

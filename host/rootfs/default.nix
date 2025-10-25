@@ -193,8 +193,8 @@ stdenvNoCC.mkDerivation {
   enableParallelBuilding = true;
 
   __structuredAttrs = true;
-
   unsafeDiscardReferences = { out = true; };
+  dontFixup = true;
 
   passthru = {
     inherit appvm firmware kernel nixosAllHardware packagesSysroot pkgsGui;

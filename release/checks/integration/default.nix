@@ -39,6 +39,7 @@ let
     nativeBuildInputs = [ e2fsprogs tar2ext4 ];
     __structuredAttrs = true;
     unsafeDiscardReferences = { out = true; };
+    dontFixup = true;
   } ''
     tar -Pcvf root.tar \
         --transform=s,^${appimage},test.appimage, ${appimage} \

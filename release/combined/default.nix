@@ -31,6 +31,7 @@ let
     nativeBuildInputs = [ squashfs-tools-ng ];
     __structuredAttrs = true;
     unsafeDiscardReferences = { out = true; };
+    dontFixup = true;
   } ''
     sed 's,^${storeDir}/,,' ${writeClosure [ installer.store ]} |
         tar -C ${storeDir} -c --verbatim-files-from -T - \
@@ -62,8 +63,8 @@ let
     };
 
     __structuredAttrs = true;
-
     unsafeDiscardReferences = { out = true; };
+    dontFixup = true;
 
     passthru = { inherit grubCfg; };
   } ''
@@ -91,6 +92,7 @@ runCommand "spectrum-installer" {
   nativeBuildInputs = [ grub jq util-linux systemdMinimal ];
   __structuredAttrs = true;
   unsafeDiscardReferences = { out = true; };
+  dontFixup = true;
   passthru = { inherit eosimages esp installer rootfs; };
 } ''
   blockSize() {

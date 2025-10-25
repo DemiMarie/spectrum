@@ -63,6 +63,7 @@ let
     nativeBuildInputs = [ cpio ];
     __structuredAttrs = true;
     unsafeDiscardReferences = { out = true; };
+    dontFixup = true;
   } ''
     cpio -id < ${microcodeAmd}/amd-ucode.img
     cpio -id < ${microcodeIntel}/intel-ucode.img
@@ -82,6 +83,7 @@ let
 
     __structuredAttrs = true;
     unsafeDiscardReferences = { out = true; };
+    dontFixup = true;
   } ''
     cd ${packagesSysroot}
     (printf "%s\n" "''${storePrefixes[@]}" && find . $(< $storePaths)) |
@@ -116,8 +118,8 @@ stdenvNoCC.mkDerivation {
   enableParallelBuilding = true;
 
   __structuredAttrs = true;
-
   unsafeDiscardReferences = { out = true; };
+  dontFixup = true;
 
   passthru = { inherit packagesSysroot; };
 }
