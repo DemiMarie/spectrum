@@ -49,6 +49,8 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  19 files changed, 968 insertions(+), 29 deletions(-)
  create mode 100644 virtio-devices/src/vhost_user/gpu.rs
 
+REUSE-IgnoreStart
+
 diff --git a/src/bin/ch-remote.rs b/src/bin/ch-remote.rs
 index 803ffc7ee..5df19b9af 100644
 --- a/src/bin/ch-remote.rs
