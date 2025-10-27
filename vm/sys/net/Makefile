@@ -23,7 +23,7 @@ $(vmdir)/netvm/vmlinux: $(KERNEL)
 	mkdir -p $$(dirname $@)
 	cp $(KERNEL) $@
 
-$(vmdir)/netvm/blk/root.img: ../../../scripts/make-gpt.sh ../../../scripts/sfdisk-field.awk build/rootfs.erofs
+$(vmdir)/netvm/blk/root.img: ../../../scripts/make-gpt.sh ../../../scripts/make-gpt.bash ../../../scripts/sfdisk-field.awk build/rootfs.erofs
 	mkdir -p $$(dirname $@)
 	../../../scripts/make-gpt.sh $@.tmp \
 	    build/rootfs.erofs:root:ea21da27-0391-48da-9235-9d2ab2ca7844:root

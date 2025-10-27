@@ -4,6 +4,7 @@
 .POSIX:
 
 include ../../lib/common.mk
+include ../../lib/kcmdline-utils.mk
 
 dest = build/initramfs
 
@@ -51,16 +52,13 @@ build/rootfs.verity.roothash: build/rootfs.verity
 build/rootfs.verity.superblock: build/rootfs.verity
 	tail -n +2 build/rootfs.verity > $@
 
-build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/rootfs.verity.superblock build/rootfs.verity.roothash $(ROOT_FS)
-	../../scripts/make-gpt.sh $@.tmp \
-	    build/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(ROOT_FS):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)")
-	mv $@.tmp $@
+build/live.img: $(LIVE_IMAGE_DEPS) $(ROOT_FS)
+	../../scripts/make-live-image.sh live $@ $(ROOT_FS)
 
 build/loop.tar: build/live.img
 	$(TAR) -cf $@ build/live.img
 
-build/loop.img: ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/loop.ext4
+build/loop.img: ../../scripts/make-gpt.sh ../../scripts/make-gpt.bash ../../scripts/sfdisk-field.awk build/loop.ext4
 	../../scripts/make-gpt.sh $@.tmp \
 	    build/loop.ext4:56a3bbc3-aefa-43d9-a64d-7b3fd59bbc4e
 	mv $@.tmp $@
@@ -69,12 +67,13 @@ clean:
 	rm -rf build
 .PHONY: clean
 
-run: $(dest) build/rootfs.verity.roothash $(RUN_IMAGE)
-	@../../scripts/run-qemu.sh -m 4G \
+run: $(dest) build/rootfs.verity.roothash $(RUN_IMAGE) ../../lib/kcmdline-utils.mk
+	$(READ_ROOTHASH); \
+	../../scripts/run-qemu.sh -m 4G \
 	    -machine virtualization=on \
 	    -kernel $(KERNEL) \
 	    -initrd $(dest) \
-	    -append "ro earlycon console=hvc0 intel_iommu=on roothash=$$(< build/rootfs.verity.roothash) nokaslr" \
+	    -append "ro earlycon console=hvc0 intel_iommu=on nokaslr x-spectrum-roothash=$$roothash x-spectrum-version=$$VERSION" \
 	    -cpu max \
 	    -gdb unix:build/gdb.sock,server,nowait \
 	    -parallel none \

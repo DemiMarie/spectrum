@@ -18,5 +18,6 @@ initramfs.overrideAttrs ({ nativeBuildInputs ? [], env ? {}, ... }: {
   env = env // {
     KERNEL = "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     ROOT_FS = rootfs;
+    VERSION = import ../../lib/version.nix;
   };
 })) (_: {})

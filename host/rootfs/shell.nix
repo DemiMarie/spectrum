@@ -20,5 +20,6 @@ rootfs.overrideAttrs (
     KERNEL = "${passthru.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     LINUX_SRC = srcOnly passthru.kernel.configfile;
     VMLINUX = "${passthru.kernel.dev}/vmlinux";
+    VERSION = import ../../lib/version.nix;
   };
 })) (_: {})

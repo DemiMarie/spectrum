@@ -4,22 +4,21 @@
 .POSIX:
 
 include ../../lib/common.mk
+include ../../lib/kcmdline-utils.mk
 
 DTBS ?= build/empty
 
 dest = build/live.img
 
-$(dest): ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat build/rootfs.verity.superblock build/rootfs.verity.roothash $(ROOT_FS)
-	../../scripts/make-gpt.sh $@.tmp \
-	    build/boot.fat:c12a7328-f81f-11d2-ba4b-00a0c93ec93b \
-	    build/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(ROOT_FS):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)")
-	mv $@.tmp $@
+$(dest): $(LIVE_IMAGE_DEPS) build/boot.fat
+	../../scripts/make-live-image.sh release $(dest) $(ROOT_FS)
 
 build/empty:
 	mkdir -p $@
 
-build/spectrum.efi: build/rootfs.verity.roothash $(DTBS) $(KERNEL) $(INITRAMFS)
+build/spectrum.efi: build/rootfs.verity.roothash $(DTBS) $(KERNEL) $(INITRAMFS) ../../lib/kcmdline-utils.mk
+	set -euo pipefail; \
+	$(READ_ROOTHASH) && \
 	{ \
 	    printf "[UKI]\nDeviceTreeAuto=" && \
 	    find $(DTBS) -name '*.dtb' -print0 | tr '\0' ' ' ;\
@@ -29,7 +28,7 @@ build/spectrum.efi: build/rootfs.verity.roothash $(DTBS) $(KERNEL) $(INITRAMFS)
 	    --linux $(KERNEL) \
 	    --initrd $(INITRAMFS) \
 	    --os-release $$'NAME="Spectrum"\n' \
-	    --cmdline "ro intel_iommu=on roothash=$$(cat build/rootfs.verity.roothash)"
+	    --cmdline "ro intel_iommu=on x-spectrum-roothash=$$roothash x-spectrum-version=$$VERSION"
 
 build/boot.fat: $(SYSTEMD_BOOT_EFI) build/spectrum.efi
 	$(TRUNCATE) -s 440401920 $@

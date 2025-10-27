@@ -8,7 +8,7 @@ pkgsMusl.callPackage (
 { lib, stdenvNoCC, nixos, runCommand, writeClosure
 , erofs-utils, jq, s6-rc, util-linux, xorg
 , busybox, connmanMinimal, dbus, execline, kmod, linux_latest, mdevd, nftables
-, s6, s6-linux-init
+, s6, s6-linux-init, bash
 }:
 
 let
@@ -106,13 +106,14 @@ stdenvNoCC.mkDerivation {
       ./.
       ../../../lib/common.mk
       ../../../scripts/make-erofs.sh
+      ../../../scripts/make-gpt.bash
       ../../../scripts/make-gpt.sh
       ../../../scripts/sfdisk-field.awk
     ]);
   };
   sourceRoot = "source/vm/sys/net";
 
-  nativeBuildInputs = [ erofs-utils jq spectrum-build-tools s6-rc util-linux ];
+  nativeBuildInputs = [ erofs-utils jq spectrum-build-tools s6-rc util-linux bash ];
 
   env = {
     KERNEL = "${kernel}/${baseNameOf kernelTarget}";
