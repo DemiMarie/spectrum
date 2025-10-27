@@ -34,6 +34,7 @@ stdenv.mkDerivation {
       ./.
       ../../lib/common.mk
       ../../lib/kcmdline-utils.mk
+      ../../lib/verity.mk
       ../../scripts/format-uuid.awk
       ../../scripts/format-uuid.sh
       ../../scripts/make-gpt.bash

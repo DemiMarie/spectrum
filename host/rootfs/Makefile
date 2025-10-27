@@ -87,20 +87,7 @@ clean:
 	rm -rf build
 .PHONY: clean
 
-# veritysetup format produces two files, but Make only (portably)
-# supports one output per rule, so we combine the two outputs then
-# define two more rules to separate them again.
-build/rootfs.verity: $(dest)
-	set -euo pipefail; $(VERITYSETUP) format $(dest) build/rootfs.verity.superblock.tmp \
-	    | awk -F ':[[:blank:]]*' '$$1 == "Root hash" {print $$2; exit}' \
-	    > build/rootfs.verity.roothash.tmp
-	cat build/rootfs.verity.roothash.tmp build/rootfs.verity.superblock.tmp \
-	    > $@
-	rm build/rootfs.verity.roothash.tmp build/rootfs.verity.superblock.tmp
-build/rootfs.verity.roothash: build/rootfs.verity
-	head -n 1 build/rootfs.verity > $@
-build/rootfs.verity.superblock: build/rootfs.verity
-	{ read -r && cat; } < build/rootfs.verity > $@
+include ../../lib/verity.mk
 
 build/live.img: $(LIVE_IMAGE_DEPS) $(dest)
 	../../scripts/make-live-image.sh live $@ $(dest)
