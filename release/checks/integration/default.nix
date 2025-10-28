@@ -37,6 +37,8 @@ let
 
   userData = runCommand "user-data.img" {
     nativeBuildInputs = [ e2fsprogs tar2ext4 ];
+    __structuredAttrs = true;
+    unsafeDiscardReferences = { out = true; };
   } ''
     tar -Pcvf root.tar \
         --transform=s,^${appimage},test.appimage, ${appimage} \
