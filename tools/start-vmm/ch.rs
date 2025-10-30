@@ -128,8 +128,14 @@ pub fn create_vm(vm_dir: &Path, ready_fd: File, mut config: VmConfig) -> Result<
 }
 
 pub fn add_net(vm_dir: &Path, net: &NetConfig) -> Result<(), NonZeroI32> {
+    // TODO: re-enable offloading once
+    // https://lore.kernel.org/regressions/87y0ota32b.fsf@alyssa.is/
+    // is fixed.
     let mut ch_remote = command(vm_dir, "add-net")
-        .arg(format!("fd={},id={},mac={}", net.fd, net.id, net.mac))
+        .arg(format!(
+            "fd={},id={},mac={},offload_tso=false,offload_ufo=false,offload_csum=false",
+            net.fd, net.id, net.mac
+        ))
         .stdout(Stdio::piped())
         .spawn()
         .or(Err(EPERM))?;
