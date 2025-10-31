@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
 
 import ../../../lib/call-package.nix (
-{ callSpectrumPackage, rootfs, nixosTest }:
+{ callSpectrumPackage, rootfs, testers }:
 
 let
   inherit (rootfs) appvm;
@@ -10,7 +10,7 @@ let
   surface-notify = callSpectrumPackage ./surface-notify {};
 in
 
-nixosTest ({ lib, pkgs, ... }: {
+testers.nixosTest ({ lib, pkgs, ... }: {
   name = "spectrum-wayland";
 
   nodes.machine = { ... }: {

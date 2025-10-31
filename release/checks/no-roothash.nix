@@ -2,9 +2,9 @@
 # SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
 
 import ../../lib/call-package.nix (
-{ callSpectrumPackage, rootfs, lib, nixosTest, path }:
+{ callSpectrumPackage, rootfs, lib, testers, path }:
 
-lib.fix (self: nixosTest ({ pkgs, stdenv, ... }:
+lib.fix (self: testers.nixosTest ({ pkgs, stdenv, ... }:
 
 let
   initramfs = callSpectrumPackage ../../host/initramfs {};
