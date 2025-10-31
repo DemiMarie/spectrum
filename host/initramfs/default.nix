@@ -4,7 +4,7 @@
 import ../../lib/call-package.nix (
 { src, spectrum-build-tools, rootfs
 , lib, stdenvNoCC, makeModulesClosure, runCommand, writeClosure, pkgsStatic
-, busybox, cpio, microcodeAmd, microcodeIntel
+, busybox, cpio, microcode-amd, microcode-intel
 }:
 
 pkgsStatic.callPackage ({ execline, kmod, mdevd, cryptsetup, util-linuxMinimal }:
@@ -65,8 +65,8 @@ let
     unsafeDiscardReferences = { out = true; };
     dontFixup = true;
   } ''
-    cpio -id < ${microcodeAmd}/amd-ucode.img
-    cpio -id < ${microcodeIntel}/intel-ucode.img
+    cpio -id < ${microcode-amd}/amd-ucode.img
+    cpio -id < ${microcode-intel}/intel-ucode.img
     find kernel | cpio -oH newc -R +0:+0 --reproducible > $out
   '';
 
