@@ -5,6 +5,7 @@
 import ../../lib/call-package.nix (
 { callSpectrumPackage, rootfs, pkgsStatic, srcOnly, stdenv
 , btrfs-progs, cryptsetup, jq, netcat, qemu_kvm, reuse, util-linux
+, verity
 }:
 
 rootfs.overrideAttrs (
@@ -20,5 +21,7 @@ rootfs.overrideAttrs (
     KERNEL = "${passthru.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     LINUX_SRC = srcOnly passthru.kernel;
     VMLINUX = "${passthru.kernel.dev}/vmlinux";
+    ROOT_FS_VERITY = "${verity}/rootfs.verity.superblock";
+    ROOT_FS_VERITY_ROOTHASH = "${verity}/rootfs.verity.roothash";
   };
 })) (_: {})

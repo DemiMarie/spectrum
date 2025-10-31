@@ -6,7 +6,7 @@ import ../../lib/call-package.nix (
 { callSpectrumPackage, spectrum-build-tools, rootfs, src
 , lib, pkgsStatic, stdenvNoCC
 , cryptsetup, dosfstools, jq, mtools, util-linux
-, systemdUkify
+, systemdUkify, verity
 }:
 
 let
@@ -47,6 +47,8 @@ stdenv.mkDerivation {
     INITRAMFS = initramfs;
     KERNEL = "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     ROOT_FS = rootfs;
+    ROOT_FS_VERITY = "${verity}/rootfs.verity.superblock";
+    ROOT_FS_VERITY_ROOTHASH = "${verity}/rootfs.verity.roothash";
     SYSTEMD_BOOT_EFI = "${systemd}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
     EFINAME = "BOOT${toUpper efiArch}.EFI";
   } // lib.optionalAttrs stdenv.hostPlatform.linux-kernel.DTB or false {

@@ -82,25 +82,11 @@ clean:
 	rm -rf build
 .PHONY: clean
 
-# veritysetup format produces two files, but Make only (portably)
-# supports one output per rule, so we combine the two outputs then
-# define two more rules to separate them again.
-build/rootfs.verity: $(dest)
-	$(VERITYSETUP) format $(dest) build/rootfs.verity.superblock.tmp \
-	    | awk -F ':[[:blank:]]*' '$$1 == "Root hash" {print $$2; exit}' \
-	    > build/rootfs.verity.roothash.tmp
-	cat build/rootfs.verity.roothash.tmp build/rootfs.verity.superblock.tmp \
-	    > $@
-	rm build/rootfs.verity.roothash.tmp build/rootfs.verity.superblock.tmp
-build/rootfs.verity.roothash: build/rootfs.verity
-	head -n 1 build/rootfs.verity > $@
-build/rootfs.verity.superblock: build/rootfs.verity
-	tail -n +2 build/rootfs.verity > $@
 
-build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/rootfs.verity.superblock build/rootfs.verity.roothash $(dest)
+build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(ROOT_FS_VERITY) $(ROOT_FS_VERITY_ROOTHASH) $(dest)
 	../../scripts/make-gpt.sh $@.tmp \
-	    build/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(dest):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)")
+	"$$ROOT_FS_VERITY:verity:$$(../../scripts/format-uuid.sh "$$(dd "if=$$ROOT_FS_VERITY_ROOTHASH" bs=32 skip=1 count=1 status=none)")" \
+	    $(dest):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 "$$ROOT_FS_VERITY_ROOTHASH")")
 	mv $@.tmp $@
 
 debug:
@@ -110,7 +96,7 @@ debug:
 	    $(VMLINUX)
 .PHONY: debug
 
-run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
+run: build/live.img $(EXT_FS) $(ROOT_FS_VERITY_ROOTHASH)
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$ext" && \
@@ -131,7 +117,7 @@ run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
 	    -device virtconsole,chardev=virtiocon0 \
 	    -drive file=build/live.img,if=virtio,format=raw,readonly=on \
 	    -drive file=/proc/self/fd/3,if=virtio,format=raw \
-	    -append "earlycon console=hvc0 roothash=$$(< build/rootfs.verity.roothash) intel_iommu=on nokaslr" \
+	    -append "earlycon console=hvc0 roothash=$$(< "$$ROOT_FS_VERITY_ROOTHASH") intel_iommu=on nokaslr" \
 	    -device virtio-keyboard \
 	    -device virtio-mouse \
 	    -device virtio-gpu \
