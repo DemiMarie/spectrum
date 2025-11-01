@@ -8,5 +8,7 @@ import lib/call-package.nix ({ callSpectrumPackage }: {
 
   checks = callSpectrumPackage release/checks {};
 
+  updates = callSpectrumPackage release/update.nix {};
+
   combined = callSpectrumPackage release/combined/run-vm.nix {};
 }) (_: {})
