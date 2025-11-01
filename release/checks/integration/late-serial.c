@@ -14,6 +14,6 @@ void test(struct config c)
 	};
 
 	vm = start_qemu(c);
-	start_console_thread(vm);
+	start_console_thread(vm, "~ # ");
 	wait_for_prompt(vm);
 }

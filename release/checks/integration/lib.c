@@ -95,6 +95,7 @@ static int setup_unix(const char *path)
 }
 
 struct console_thread_args {
+	const char *needle;
 	FILE *console;
 	int prompt_event;
 };
@@ -103,15 +104,14 @@ static void *console_thread(void *arg)
 {
 	struct console_thread_args *args = (struct console_thread_args *)arg;
 
-	char *needle = "~ # ";
 	size_t i = 0;
 	int c;
 
 	while ((c = getc_unlocked(args->console)) != EOF) {
 		fputc(c, stderr);
-		i = c == needle[i] ? i + 1 : 0;
+		i = c == args->needle[i] ? i + 1 : 0;
 
-		if (!needle[i]) {
+		if (!args->needle[i]) {
 			i = 0;
 			if (write(args->prompt_event, "\n", 1) == -1 && errno != EAGAIN) {
 				perror("write");
@@ -124,7 +124,7 @@ static void *console_thread(void *arg)
 	exit(EXIT_FAILURE);
 }
 
-void start_console_thread(struct vm *vm)
+void start_console_thread(struct vm *vm, const char *needle)
 {
 	int e;
 	struct console_thread_args *args = malloc(sizeof(*args));
@@ -135,6 +135,7 @@ void start_console_thread(struct vm *vm)
 	}
 
 	args->console = vm->console[0];
+	args->needle = needle;
 	args->prompt_event = vm->prompt_event[1];
 
 	if ((e = pthread_create(&vm->console_thread, nullptr, console_thread, args))) {
