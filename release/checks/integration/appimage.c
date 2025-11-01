@@ -8,6 +8,8 @@
 void test(struct config c)
 {
 	struct vm *vm = start_qemu(c);
+	start_console_thread(vm);
+	wait_for_prompt(vm);
 
 	if (fputs("set -euxo pipefail && "
 	          "s6-svc -O /run/service/serial-getty/instance/* && "

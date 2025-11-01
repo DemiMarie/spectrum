@@ -21,5 +21,6 @@ extern void test(struct config);
 struct vm;
 
 struct vm *start_qemu(struct config config);
+void start_console_thread(struct vm *vm);
 void wait_for_prompt(struct vm *vm);
 FILE *vm_console_writer(struct vm *vm);

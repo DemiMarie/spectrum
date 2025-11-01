@@ -113,6 +113,8 @@ void test(struct config c)
 	int server = setup_server();
 
 	struct vm *vm = start_qemu(c);
+	start_console_thread(vm);
+	wait_for_prompt(vm);
 
 	if (fputs("set -euxo pipefail && "
 	          "mkdir /run/mnt && "

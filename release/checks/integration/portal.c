@@ -8,6 +8,8 @@
 void test(struct config c)
 {
 	struct vm *vm = start_qemu(c);
+	start_console_thread(vm);
+	wait_for_prompt(vm);
 
 	if (fputs("set -euxo pipefail && "
 	          "(tail -Fc +0 /run/log/current &) && "

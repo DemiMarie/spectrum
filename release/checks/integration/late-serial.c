@@ -5,11 +5,15 @@
 
 void test(struct config c)
 {
+	struct vm *vm;
+
 	c.serial = (typeof(c.serial)) {
 		.optname = "-device",
 		.optval = "usb-serial,chardev=socket",
 		.console = "ttyUSB0",
 	};
 
-	start_qemu(c);
+	vm = start_qemu(c);
+	start_console_thread(vm);
+	wait_for_prompt(vm);
 }

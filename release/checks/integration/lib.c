@@ -124,7 +124,7 @@ static void *console_thread(void *arg)
 	exit(EXIT_FAILURE);
 }
 
-static void start_console_thread(struct vm *vm)
+void start_console_thread(struct vm *vm)
 {
 	int e;
 	struct console_thread_args *args = malloc(sizeof(*args));
@@ -271,8 +271,6 @@ struct vm *start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
-	start_console_thread(r);
-	wait_for_prompt(r);
 	return r;
 }
 
