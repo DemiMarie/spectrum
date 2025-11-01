@@ -50,7 +50,7 @@ stdenv.mkDerivation {
     SYSTEMD_BOOT_EFI = "${systemd}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
     EFI_IMAGE = efi;
     EFINAME = "BOOT${toUpper efiArch}.EFI";
-    VERSION = version;
+    VERSION = config.version;
   };
 
   buildFlags = [ "dest=$(out)" ];

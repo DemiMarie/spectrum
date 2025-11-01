@@ -9,6 +9,7 @@ include file-list.mk
 ROOT_FS_DIR = build
 
 DIRS = \
+	boot \
 	dev \
 	etc/s6-linux-init/env \
 	etc/s6-linux-init/run-image/configs \
@@ -45,28 +46,40 @@ DIRS = \
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
 BUILD_FILES = build/etc/s6-rc
+BUILD_NON_TARGET_FILES = build/etc/os-release build/etc/updatevm
 
-build/timestamp: $(ROOT_FS)
+build/verity-timestamp: $(ROOT_FS)
 	$(VERITYSETUP) format \
 		--root-hash-file $(ROOT_FS_VERITY_ROOTHASH) \
 		-- $(ROOT_FS) $(ROOT_FS_VERITY)
 	# Add trailing newline
 	echo >> $(ROOT_FS_VERITY_ROOTHASH)
-	touch -- $(ROOT_FS_DIR)/timestamp
+	touch -- $(ROOT_FS_DIR)/verity-timestamp
 
 # This rule produces three files but Make only (portably)
 # supports one output per rule.  Instead of resorting to temporary
 # files, a timestamp file is created as the last step.  The actual
 # outputs are produced as side-effects.
-$(ROOT_FS): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
+$(ROOT_FS): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk build/update-vm-timestamp
 	mkdir -p $(ROOT_FS_DIR) && \
 	{ \
 	    cat $(PACKAGES_FILE) ;\
+	    printf '%s\n%s\n' "$$UPDATE_SIGNING_KEY" /etc/systemd/import-pubring.gpg; \
 	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
-	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
+	    for file in $(BUILD_FILES) $(BUILD_NON_TARGET_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(DIRS) ;\
 	    printf 'build/fifo\n%s\n' $(FIFOS) ;\
 	} | ../../scripts/make-erofs.sh $(ROOT_FS)
+
+build/update-vm-timestamp:
+	mkdir -p build/etc/updatevm/sysupdate.d
+	sed 's/@UPDATE_URL@/$(UPDATE_URL)/g' < updatevm-url-env > build/etc/updatevm/url-env
+	set -eu; for i in vm-sysupdate.d/*.transfer; do \
+		sed 's/@UPDATE_URL@/$(UPDATE_URL)/g' < "$$i" > \
+		"build/etc/updatevm/sysupdate.d/$${i#vm-sysupdate.d/}"; \
+	done
+	sed 's/@VERSION@/$(VERSION)/g' < os-release.in > build/etc/os-release
+	touch $@
 
 build/fifo:
 	mkdir -p build
