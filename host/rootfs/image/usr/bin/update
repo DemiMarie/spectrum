@@ -1,0 +1,89 @@
+#!/bin/execlineb -WS1
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# Steps:
+#
+# 1. Take a global, system-wide lock.
+# 2. Create a BTRFS subvolume for the sys.updates VM to write the updates.
+# 3. Bind-mount this subvolume into the VM's shared directory.
+# 4. Start sys.updates to get the updates.
+# 5. Wait for the VM to shut down.
+# 6. Take a BTRFS snapshot of the subvolume.
+# 7. Call syncfs() to flush all of the data on the subvolume.
+# 8. Inspect the contents of the subvolume.
+#    Check that everything is a regular file and that the names are reasonable.
+#    Check that SHA256SUMS and SHA256SUMS.gpg are present.
+# 9. Call systemd-sysupdate to run the actual update.
+
+if { mkdir -p -m 0700 /run/updater }
+s6-setlock /run/update-lock
+foreground { redirfd -w 2 /dev/null rmdir -- $1 }
+if { umask 0077 mkdir -p -- $1 }
+cd $1
+foreground {
+  # If this exists already that is okay.
+  foreground { redirfd -w 2 /dev/null btrfs subvolume create -- shared }
+
+  # Snapshot directory may have files or directories with untrusted names.
+  # Redirect its output to /dev/null to avoid printing them to the console.
+  ifelse -n { redirfd -w 2 /dev/null rm -rf -- snapshot } {
+    foreground { redirfd -w 2 echo "Cannot remove snapshot directory" }
+    exit 1
+  }
+
+  backtick -E update_vm_id_ {
+    backtick -E id_path { readlink /run/vm/by-name/sys.appvm-updates }
+    basename -- $id_path
+  }
+
+  multisubstitute {
+    define fsdir /run/vm/by-id/${update_vm_id_}/fs
+    define update_vm_id ${update_vm_id_}
+    define svcdir /run/service/vmm/instance/${update_vm_id_}
+  }
+
+  # $fsdir is read-only to the guest, but read-write to the host.
+  # Directories bind-mounted into it are read-write to the guest.
+  # See etc/s6-linux-init/run-image/service/vhost-user-fs/template/run
+  # for details.
+
+  # Set up /etc with what the VM needs.  The VM will overlay this
+  # on its own /etc.
+  if { rm -rf -- ${fsdir}/etc }
+  if { umask 022 mkdir -p -- ${fsdir}/updates ${fsdir}/etc/systemd }
+  if { cp -R -- /etc/updatevm/sysupdate.d /etc/updatevm/url-env ${fsdir}/etc }
+  if { cp -- /etc/systemd/import-pubring.gpg ${fsdir}/etc/systemd }
+
+  # If the directory is already mounted, unmount it.  This prevents a
+  # confusing error from mount.
+  foreground { redirfd -w 2 /dev/null umount -- ${fsdir}/updates }
+
+  # Share the update directory with the VM.
+  if { mount --bind -- shared ${fsdir}/updates }
+
+  # Start the update VM.
+  if { vm-start $update_vm_id }
+
+  # Wait for the VM to exit.
+  if { s6-svwait -D ${svcdir} }
+
+  # Remove the bind mount.
+  if { umount -- ${fsdir}/updates }
+
+  # Ensure that the VM cannot change the directory
+  # while systemd-sysupdate is using it.
+  if { btrfs subvolume snapshot -- shared snapshot }
+
+  # Perform the update in a separate mount namespace.
+  unshare --mount
+  if { mount --bind -o ro -- snapshot /run/updater }
+
+  # Validate the update directory.
+  if { updates-dir-check /run/updater }
+  /usr/lib/systemd/systemd-sysupdate update
+}
+importas -i sysupdate_exit_status ?
+# Clean up.
+foreground { btrfs subvolume delete -- snapshot }
+exit $sysupdate_exit_status
