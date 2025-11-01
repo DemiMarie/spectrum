@@ -6,7 +6,7 @@ import ../../lib/call-package.nix (
 { callSpectrumPackage, spectrum-build-tools, rootfs, src
 , lib, pkgsStatic, stdenvNoCC
 , cryptsetup, dosfstools, jq, mtools, util-linux
-, systemdUkify
+, systemdUkify, efi
 }:
 
 let
@@ -14,13 +14,6 @@ let
 
   stdenv = stdenvNoCC;
 
-  systemd = systemdUkify.overrideAttrs ({ mesonFlags ? [], ... }: {
-    # The default limit is too low to build a generic aarch64 distro image:
-    # https://github.com/systemd/systemd/pull/37417
-    mesonFlags = mesonFlags ++ [ "-Defi-stub-extra-sections=3000" ];
-  });
-
-  initramfs = callSpectrumPackage ../../host/initramfs {};
   efiArch = stdenv.hostPlatform.efiArch;
 in
 
@@ -40,19 +33,17 @@ stdenv.mkDerivation {
   sourceRoot = "source/release/live";
 
   nativeBuildInputs = [
-    cryptsetup dosfstools jq spectrum-build-tools mtools systemd util-linux
+    cryptsetup dosfstools jq spectrum-build-tools mtools util-linux
   ];
 
   env = {
-    INITRAMFS = initramfs;
     KERNEL = "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     ROOT_FS = "${rootfs}/rootfs";
     ROOT_FS_VERITY = "${rootfs}/rootfs.verity.superblock";
     ROOT_FS_VERITY_ROOTHASH = "${rootfs}/rootfs.verity.roothash";
-    SYSTEMD_BOOT_EFI = "${systemd}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
+    SYSTEMD_BOOT_EFI = "${efi.systemd}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
+    EFI_IMAGE = efi;
     EFINAME = "BOOT${toUpper efiArch}.EFI";
-  } // lib.optionalAttrs stdenv.hostPlatform.linux-kernel.DTB or false {
-    DTBS = "${rootfs.kernel}/dtbs";
   };
 
   buildFlags = [ "dest=$(out)" ];
@@ -65,6 +56,6 @@ stdenv.mkDerivation {
   unsafeDiscardReferences = { out = true; };
   dontFixup = true;
 
-  passthru = { inherit initramfs rootfs; };
+  passthru = { inherit rootfs; };
 }
 ) (_: {})
