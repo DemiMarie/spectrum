@@ -1,0 +1,26 @@
+#!/usr/bin/env -S execlineb -WS4
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+# $1: awk script name
+# $2: transfer directory
+# $3: target directory
+# $4: update URL
+export LC_ALL C
+export LANGUAGE C
+backtick -N sed_rhs {
+  # Use awk to both validate the URL and to escape sed metacharacters.
+  awk -f $1 -- $4
+}
+export tmpdir $3
+elglob -w -0 transfer_file_ ${2}/*.transfer
+forx -E transfer_file { $transfer_file_ }
+backtick target_basename {
+  basename -- $transfer_file
+}
+multisubstitute {
+  importas -iuS sed_rhs
+  importas -iuS target_basename
+  importas -iuS tmpdir
+  define source $transfer_file
+}
+redirfd -w 1 ${tmpdir}/${target_basename} sed -E -- "s#@UPDATE_URL@#${sed_rhs}#g" $source

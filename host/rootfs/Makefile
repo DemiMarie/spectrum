@@ -9,6 +9,7 @@ include file-list.mk
 ROOT_FS_DIR = build
 
 DIRS = \
+	boot \
 	dev \
 	etc/s6-linux-init/env \
 	etc/s6-linux-init/run-image/configs \
@@ -32,13 +33,15 @@ DIRS = \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \
 	ext \
+	home \
 	proc \
 	run \
-	sys
+	sys \
+	tmp
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
-BUILD_FILES = build/etc/s6-rc
+BUILD_FILES = build/etc/s6-rc build/etc/os-release build/etc/update-url
 
 # This rule produces three files but Make only (portably)
 # supports one output per rule.  Instead of resorting to temporary
@@ -56,11 +59,21 @@ $(ROOT_FS): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES)
 	mkdir -p $(ROOT_FS_DIR) && \
 	{ \
 	    cat $(PACKAGES_FILE) ;\
+	    printf '%s\n%s\n' "$$UPDATE_SIGNING_KEY" /etc/systemd/import-pubring.gpg; \
 	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
-	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
+	    for file in $(BUILD_FILES) $(BUILD_NON_TARGET_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(DIRS) ;\
 	    printf 'build/fifo\n%s\n' $(FIFOS) ;\
 	} | ../../scripts/make-erofs.sh $(ROOT_FS)
+
+build/etc/update-url:
+	mkdir -p build/etc
+	# might have metacharacters, so avoid interpolation
+	printf %s\\n "$${UPDATE_URL:?'update URL empty or missing'}" > build/etc/update-url
+
+build/etc/os-release:
+	mkdir -p build/etc
+	sed 's/@VERSION@/$(VERSION)/g' < os-release.in > build/etc/os-release
 
 build/fifo:
 	mkdir -p build

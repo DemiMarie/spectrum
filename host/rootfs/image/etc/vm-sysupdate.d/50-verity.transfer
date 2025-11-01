@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# Uses example code from systemd man pages which is under MIT-0
+# (no attribution required).
+[Transfer]
+Verify=yes
+
+[Source]
+Type=url-file
+Path=@UPDATE_URL@
+MatchPattern=Spectrum_@v_@u.verity
+
+[Target]
+Type=regular-file
+Path=/run/virtiofs/virtiofs0/updates
+MatchPattern=Spectrum_@v_@u.verity
+Mode=0644

@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+# Uses example code from systemd man pages which is under MIT-0
+# (no attribution required).
+[Transfer]
+ProtectVersion=%A
+
+[Source]
+Type=url-file
+Path=file:///run/updater
+MatchPattern=Spectrum_@v_@u.root
+
+[Target]
+Type=partition
+Path=auto
+MatchPattern=Spectrum_@v
+MatchPartitionType=root
+PartitionFlags=0
+ReadOnly=1
