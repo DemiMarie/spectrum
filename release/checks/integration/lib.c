@@ -275,7 +275,7 @@ struct vm *start_qemu(struct config c)
 	return r;
 }
 
-static char *getenv_or_die(const char *name)
+char *getenv_or_die(const char *name)
 {
 	char *r = getenv(name);
 	if (!r) {

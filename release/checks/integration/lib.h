@@ -24,3 +24,5 @@ struct vm *start_qemu(struct config config);
 void start_console_thread(struct vm *vm, const char *needle);
 void wait_for_prompt(struct vm *vm);
 FILE *vm_console_writer(struct vm *vm);
+
+char *getenv_or_die(const char *name);
