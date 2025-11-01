@@ -46,6 +46,10 @@ FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
 BUILD_FILES = build/etc/s6-rc
 
+# This rule produces three files but Make only (portably)
+# supports one output per rule.  Instead of resorting to temporary
+# files, a timestamp file is created as the last step.  The actual
+# outputs are produced as side-effects.
 build/timestamp: $(ROOT_FS)
 	$(VERITYSETUP) format \
 		--root-hash-file $(ROOT_FS_VERITY_ROOTHASH) \
@@ -54,10 +58,6 @@ build/timestamp: $(ROOT_FS)
 	echo >> $(ROOT_FS_VERITY_ROOTHASH)
 	touch -- $(ROOT_FS_DIR)/timestamp
 
-# This rule produces three files but Make only (portably)
-# supports one output per rule.  Instead of resorting to temporary
-# files, a timestamp file is created as the last step.  The actual
-# outputs are produced as side-effects.
 $(ROOT_FS): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
 	mkdir -p $(ROOT_FS_DIR) && \
 	{ \
