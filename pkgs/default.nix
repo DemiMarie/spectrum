@@ -37,6 +37,7 @@ let
 
     rootfs = self.callSpectrumPackage ../host/rootfs {};
     verity = self.callSpectrumPackage ../host/verity.nix {};
+    efi = self.callSpectrumPackage ../host/efi.nix {};
     spectrum-build-tools = self.callSpectrumPackage ../tools {
       appSupport = false;
       buildSupport = true;
