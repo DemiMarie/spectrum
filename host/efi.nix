@@ -36,6 +36,6 @@ runCommand "spectrum-verity" {
       --linux ${kernel} \
       --initrd ${initramfs} \
       --os-release $'NAME="Spectrum"\n' \
-      --cmdline "ro intel_iommu=on roothash=$$(< ${verity}/rootfs.verity.roothash)"
+      --cmdline "ro intel_iommu=on x-spectrum-roothash=$$(< ${verity}/rootfs.verity.roothash) x-spectrum-version=${version}"
   ''
 ) (_: {})

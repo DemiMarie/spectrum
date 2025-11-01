@@ -21,6 +21,8 @@ rootfs.overrideAttrs (
     KERNEL = "${passthru.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     LINUX_SRC = srcOnly passthru.kernel;
     VMLINUX = "${passthru.kernel.dev}/vmlinux";
+    VERSION = import ../../lib/version.nix;
+    ROOT_FS = callSpectrumPackage ./. {};
     ROOT_FS_VERITY = "${verity}/rootfs.verity.superblock";
     ROOT_FS_VERITY_ROOTHASH = "${verity}/rootfs.verity.roothash";
   };

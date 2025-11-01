@@ -21,5 +21,6 @@ initramfs.overrideAttrs ({ nativeBuildInputs ? [], env ? {}, ... }: {
     ROOT_FS = rootfs;
     ROOT_FS_VERITY = "${verity}/rootfs.verity.superblock";
     ROOT_FS_VERITY_ROOTHASH = "${verity}/rootfs.verity.roothash";
+    VERSION = import ../../lib/version.nix;
   };
 })) (_: {})

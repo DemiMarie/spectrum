@@ -99,12 +99,14 @@ stdenvNoCC.mkDerivation {
     fileset = lib.fileset.intersection src (lib.fileset.unions [
       ./.
       ../../lib/common.mk
+      ../../lib/kcmdline-utils.mk
     ]);
   };
   sourceRoot = "source/host/initramfs";
 
   env = {
     PACKAGES_CPIO = packagesCpio;
+    VERSION = import ../../lib/version.nix;
   } // lib.optionalAttrs stdenvNoCC.hostPlatform.isx86_64 {
     MICROCODE = microcode;
   };

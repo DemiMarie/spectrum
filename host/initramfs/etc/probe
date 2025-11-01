@@ -14,9 +14,13 @@ if -n {
     forx -pE module { ext4 loop }
     modprobe $module
   }
-  backtick -E uuid { lsblk -lnpo PARTUUID $mdev }
+  backtick uuid { lsblk -lnpo PARTUUID $mdev }
+  multisubstiute {
+    define mdev_ $mdev
+    importas -Si uuid
+  }
   if { mkdir -p /mnt/${uuid} }
-  if { mount $mdev /mnt/${uuid} }
+  if { mount $mdev_ /mnt/${uuid} }
   find /mnt/${uuid} -name *.img -exec
   losetup -Pf {}
   ;
@@ -24,11 +28,13 @@ if -n {
 
 # Check whether we now have all the partitions we need to boot.
 
-importas -i rootfs_uuid ROOTFS_UUID
-importas -i verity_uuid VERITY_UUID
-
-backtick -E rootfs_dev { findfs PARTUUID=${rootfs_uuid} }
-backtick -E verity_dev { findfs PARTUUID=${verity_uuid} }
+importas -i version x-spectrum-version
+backtick rootfs_dev { findfs PARTLABEL=Spectrum_${version} }
+backtick verity_dev { findfs PARTLABEL=Spectrum_${version}.verity }
+multisubstitute {
+  importas -iS rootfs_dev
+  importas -iS verity_dev
+}
 
 if { ln -s $rootfs_dev /dev/rootfs }
 if { ln -s $verity_dev /dev/verity }

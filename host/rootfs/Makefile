@@ -4,6 +4,7 @@
 .POSIX:
 
 include ../../lib/common.mk
+include ../../lib/kcmdline-utils.mk
 include file-list.mk
 
 dest = build/rootfs.erofs
@@ -38,9 +39,11 @@ DIRS = \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \
 	ext \
+	home \
 	proc \
 	run \
-	sys
+	sys \
+	tmp
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
@@ -84,12 +87,8 @@ clean:
 	rm -rf build
 .PHONY: clean
 
-
-build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(ROOT_FS_VERITY) $(ROOT_FS_VERITY_ROOTHASH) $(dest)
-	../../scripts/make-gpt.sh $@.tmp \
-	"$$ROOT_FS_VERITY:verity:$$(../../scripts/format-uuid.sh "$$(dd "if=$$ROOT_FS_VERITY_ROOTHASH" bs=32 skip=1 count=1 status=none)")" \
-	    $(dest):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 "$$ROOT_FS_VERITY_ROOTHASH")")
-	mv $@.tmp $@
+build/live.img: $(LIVE_IMAGE_DEPS) $(ROOT_FS) $(ROOT_FS_VERITY) $(ROOT_FS_VERITY_ROOTHASH)
+	../../scripts/make-live-image.sh live $@
 
 debug:
 	$(GDB) -q \
@@ -98,11 +97,14 @@ debug:
 	    $(VMLINUX)
 .PHONY: debug
 
-run: build/live.img $(EXT_FS) $(ROOT_FS_VERITY_ROOTHASH)
+run: build/live.img $(EXT_FS) $(ROOT_FS_VERITY_ROOTHASH) ../../lib/kcmdline-utils.mk
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$ext" && \
-	mkfs.btrfs "$$ext" && \
+	dir=$$(mktemp -d) && \
+	mkdir -- "$$dir/tmp" "$$dir/home" && \
+	mkfs.btrfs --rootdir "$$dir" --subvol tmp --subvol home -- "$$ext" && \
+	rm -rf -- "$$dir" && \
 	exec 3<>"$$ext" && \
 	rm -f "$$ext" && \
 	set +x && \
@@ -119,7 +121,7 @@ run: build/live.img $(EXT_FS) $(ROOT_FS_VERITY_ROOTHASH)
 	    -device virtconsole,chardev=virtiocon0 \
 	    -drive file=build/live.img,if=virtio,format=raw,readonly=on \
 	    -drive file=/proc/self/fd/3,if=virtio,format=raw \
-	    -append "earlycon console=hvc0 roothash=$$(< "$$ROOT_FS_VERITY_ROOTHASH") intel_iommu=on nokaslr" \
+	    -append "earlycon console=hvc0 x-spectrum-roothash=$$(< "$$ROOT_FS_VERITY_ROOTHASH") intel_iommu=on nokaslr x-spectrum-version=$$VERSION" \
 	    -device virtio-keyboard \
 	    -device virtio-mouse \
 	    -device virtio-gpu \

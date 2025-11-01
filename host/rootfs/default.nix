@@ -133,7 +133,9 @@ stdenvNoCC.mkDerivation {
     fileset = fileset.intersection src (fileset.unions [
       ./.
       ../../lib/common.mk
+      ../../lib/kcmdline-utils.mk
       ../../scripts/make-erofs.sh
+      ../../version
     ]);
   };
   sourceRoot = "source/host/rootfs";
@@ -145,6 +147,7 @@ stdenvNoCC.mkDerivation {
       printf "%s\n/\n" ${packagesSysroot} >$out
       sed p ${writeClosure [ packagesSysroot] } >>$out
     '';
+    VERSION = import ../../lib/version.nix;
   };
 
   makeFlags = [ "dest=$(out)" ];
