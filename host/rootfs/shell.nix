@@ -18,7 +18,7 @@ rootfs.overrideAttrs (
   env = env // {
     INITRAMFS = callSpectrumPackage ../initramfs {};
     KERNEL = "${passthru.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
-    LINUX_SRC = srcOnly passthru.kernel;
+    LINUX_SRC = srcOnly passthru.kernel.configfile;
     VMLINUX = "${passthru.kernel.dev}/vmlinux";
   };
 })) (_: {})

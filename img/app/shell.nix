@@ -21,7 +21,7 @@ import ../../lib/call-package.nix (
   env = env // {
     CONFIG = callSpectrumPackage run {};
 
-    LINUX_SRC = srcOnly passthru.kernel;
+    LINUX_SRC = srcOnly passthru.kernel.configfile;
     VMLINUX = "${passthru.kernel.dev}/vmlinux";
   };
 })) (_: {}) (removeAttrs args [ "run" ])

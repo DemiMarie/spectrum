@@ -16,7 +16,7 @@ import ../../../lib/call-package.nix (
   ];
 
   env = env // {
-    LINUX_SRC = srcOnly passthru.kernel;
+    LINUX_SRC = srcOnly passthru.kernel.configfile;
     VMLINUX = "${passthru.kernel.dev}/vmlinux";
   };
 })) (_: {})
