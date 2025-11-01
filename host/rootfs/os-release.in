@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+NAME="Spectrum OS"
+ID=spectrum
+PRETTY_NAME="Spectrum @VERSION@"
+VERSION=@VERSION@
+VERSION_ID=@VERSION@
+IMAGE_ID=spectrum-root
+IMAGE_VERSION=@VERSION@
+RELEASE_TYPE=development
+HOME_URL="https://spectrum-os.org"
+BUG_REPORT_URL="mailto:discuss@spectrum-os.org"
+ANSI_COLOR="1;34"
+VENDOR_NAME=Spectrum
+VENDOR_URL="https://spectrum-os.org"

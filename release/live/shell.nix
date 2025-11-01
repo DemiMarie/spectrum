@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
 
 import ../../lib/call-package.nix (
-{ callSpectrumPackage, stdenv, qemu_kvm }:
+{ callSpectrumPackage, config, stdenv, qemu_kvm }:
 
 let
   efi = callSpectrumPackage ../../host/efi.nix {};
@@ -17,6 +17,7 @@ in
       OVMF_CODE = "${qemu_kvm}/share/qemu/edk2-${stdenv.hostPlatform.qemuArch}-code.fd";
       ROOT_FS_DIR = efi.rootfs;
       EFI_IMAGE = efi;
+      VERSION = config.version;
     };
   }
 )) (_: {})

@@ -5,6 +5,7 @@
 import ../../lib/call-package.nix (
 { callSpectrumPackage, spectrum-build-tools, src
 , pkgsMusl, pkgsStatic, linux_latest
+, config
 }:
 pkgsStatic.callPackage (
 
@@ -13,6 +14,7 @@ pkgsStatic.callPackage (
 , busybox, cloud-hypervisor, cryptsetup, dbus, execline, inkscape
 , iproute2, inotify-tools, jq, mdevd, s6, s6-linux-init, socat
 , util-linuxMinimal, virtiofsd, xorg, xdg-desktop-portal-spectrum-host
+, btrfs-progs
 }:
 
 let
@@ -33,8 +35,8 @@ let
   foot = pkgsGui.foot.override { allowPgo = false; };
 
   packages = [
-    cloud-hypervisor cryptsetup dbus execline inotify-tools iproute2
-    jq mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools
+    btrfs-progs cloud-hypervisor cryptsetup dbus execline inotify-tools
+    iproute2 jq mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools
     virtiofsd xdg-desktop-portal-spectrum-host
 
     (busybox.override {
@@ -80,11 +82,13 @@ let
     appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};
     appvm-foot = callSpectrumPackage ../../vm/app/foot.nix {};
     appvm-gnome-text-editor = callSpectrumPackage ../../vm/app/gnome-text-editor.nix {};
+    appvm-systemd-sysupdate = callSpectrumPackage ../../vm/app/systemd-sysupdate {};
   };
 
   packagesSysroot = runCommand "packages-sysroot" {
     depsBuildBuild = [ inkscape ];
     nativeBuildInputs = [ xorg.lndir ];
+    src = builtins.path { name = "os-release"; path = ./os-release.in; };
   } ''
     mkdir -p $out/usr/bin $out/usr/share/dbus-1/services \
       $out/usr/share/icons/hicolor/20x20/apps
@@ -96,8 +100,7 @@ let
     done
 
     # If systemd-pull is missing systemd-sysupdate will fail with a
-    # very confusing error message.  If systemd-sysupdate doesn't work,
-    # users will not be able to receive an update that fixes the problem.
+    # very confusing error message.
     for i in sysupdate pull; do
         if ! cat -- "$out/usr/lib/systemd/systemd-$i" > /dev/null; then
             echo "link to systemd-$i didn't get installed" >&2
@@ -147,6 +150,9 @@ stdenvNoCC.mkDerivation {
       printf "%s\n/\n" ${packagesSysroot} >$out
       sed p ${writeClosure [ packagesSysroot] } >>$out
     '';
+    UPDATE_SIGNING_KEY = config.update-signing-key;
+    UPDATE_URL = config.update-url;
+    VERSION = config.version;
   };
 
   # The Makefile uses $(ROOT_FS_DIR), not $(dest), so it can share code

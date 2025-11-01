@@ -42,13 +42,20 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/notification-fd \
 	image/etc/s6-linux-init/run-image/service/xdg-desktop-portal-spectrum-host/template/run \
 	image/etc/s6-linux-init/scripts/rc.init \
+	image/etc/sysupdate.d/50-verity.transfer \
+	image/etc/sysupdate.d/60-root.transfer \
+	image/etc/sysupdate.d/70-kernel.transfer \
 	image/etc/udev/rules.d/99-spectrum.rules \
+	image/etc/vm-sysupdate.d/50-verity.transfer \
+	image/etc/vm-sysupdate.d/60-root.transfer \
+	image/etc/vm-sysupdate.d/70-kernel.transfer \
 	image/etc/xdg/weston/autolaunch \
 	image/etc/xdg/weston/weston.ini \
 	image/usr/bin/assign-devices \
 	image/usr/bin/create-vm-dependencies \
 	image/usr/bin/run-appimage \
 	image/usr/bin/run-vmm \
+	image/usr/bin/spectrum-update \
 	image/usr/bin/vm-console \
 	image/usr/bin/vm-import \
 	image/usr/bin/vm-start \

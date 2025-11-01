@@ -1,0 +1,49 @@
+#!/usr/bin/execlineb -P
+export LC_ALL C
+export LANGUAGE C
+if { mount -toverlay -olowerdir=/run/virtiofs/virtiofs0/etc:/etc -- overlay /etc }
+backtick -E update_url { cat /etc/update-url }
+backtick -N sed_rhs {
+  # Use awk to both validate the URL and to escape sed metacharacters.
+  # Reject URLs with control characters, query parameters, or fragments.
+  # They *cannot* work and so are rejected to produce better error messages.
+  # curl rejects control characters with "Malformed input to a URL function".
+  # Fragment specifiers ("#") and query parameters ("?") break concatenating /SHA256SUMS
+  # and /SHA256SUMS.sha256.asc onto the update URL.
+  # Yes, all 8 backslashes are really needed: \\\\\\\\& becomes
+  # \\\\& after execlineb, which becomes \\& after awk's parser,
+  # which gsub turns into \ followed by the string that was matched.
+  awk -- "BEGIN {
+update_url = ARGV[1];
+if (update_url ~ /^[^\\001-\\040?#\\x7F]+$/) {
+  # Escape anything special to the sed RHS.
+  gsub(/[&#\\\\\\n]/, \"\\\\\\\\&\", update_url);
+  printf \"%s\", update_url;
+  exit 0;
+} else {
+  print \"Bad update URL from host: control characters, query parameters, and fragment specifiers not allowed\" > \"/dev/stderr\";
+  exit 100;
+}}" $update_url }
+backtick tmpdir { mktemp -d /run/XXXXXX.transfer }
+if {
+  elglob -w -0 transfer_file_ /etc/vm-sysupdate.d/*.transfer
+  forx -E transfer_file { $transfer_file_ }
+  backtick target_basename {
+    basename -- $transfer_file
+  }
+  multisubstitute {
+    importas -iuS sed_rhs
+    importas -iuS target_basename
+    importas -iuS tmpdir
+    define source $transfer_file
+  }
+  redirfd -w 1 ${tmpdir}/${target_basename} sed -E -- "s#@UPDATE_URL@#${sed_rhs}#g" $source
+}
+if { ${systemd}/lib/systemd/systemd-sysupdate --definitions=${tmpdir} update }
+# [ and ] are allowed in update URLs so that IPv6 addresses work, but
+# they cause globbing in the curl command-line tool by default.  Use --globoff
+# to disable this feature.  Only allow HTTP and HTTPS protocols on redirection.
+if { ${curl}/bin/curl -L --proto-redir =http,https --globoff
+     -o /run/virtiofs/virtiofs0/updates/SHA256SUMS -- ${update_url}/SHA256SUMS }
+if { ${curl}/bin/curl -L --proto-redir =http,https --globoff
+     -o /run/virtiofs/virtiofs0/updates/SHA256SUMS.sha256.asc -- ${update_url}/SHA256SUMS.sha256.asc }
