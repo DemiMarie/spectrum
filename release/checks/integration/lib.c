@@ -124,7 +124,7 @@ static void *console_thread(void *arg)
 	exit(EXIT_FAILURE);
 }
 
-static void start_console_thread(struct vm *vm, pthread_t *thread)
+static void start_console_thread(struct vm *vm)
 {
 	int e;
 	struct console_thread_args *args = malloc(sizeof(*args));
@@ -137,7 +137,7 @@ static void start_console_thread(struct vm *vm, pthread_t *thread)
 	args->console = vm->console[0];
 	args->prompt_event = vm->prompt_event[1];
 
-	if ((e = pthread_create(thread, nullptr, console_thread, args))) {
+	if ((e = pthread_create(&vm->console_thread, nullptr, console_thread, args))) {
 		fprintf(stderr, "pthread_create: %s\n", strerror(e));
 		exit(EXIT_FAILURE);
 	}
@@ -271,7 +271,7 @@ struct vm *start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
-	start_console_thread(r, &r->console_thread);
+	start_console_thread(r);
 	wait_for_prompt(r);
 	return r;
 }
