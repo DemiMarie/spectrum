@@ -4,6 +4,7 @@
 .POSIX:
 
 include ../../lib/common.mk
+include ../../lib/kcmdline-utils.mk
 
 dest = build/initramfs
 
@@ -55,7 +56,7 @@ run: $(dest) $(RUN_IMAGE) $(ROOT_FS_VERITY_ROOTHASH)
 	    -machine virtualization=on \
 	    -kernel $(KERNEL) \
 	    -initrd $(dest) \
-	    -append "ro earlycon console=hvc0 intel_iommu=on roothash=$$(< "$$ROOT_FS_VERITY_ROOTHASH") nokaslr" \
+	    -append "ro earlycon console=hvc0 intel_iommu=on roothash=$$(< "$$ROOT_FS_VERITY_ROOTHASH") x-spectrum-version=$$VERSION nokaslr" \
 	    -cpu max \
 	    -gdb unix:build/gdb.sock,server,nowait \
 	    -parallel none \

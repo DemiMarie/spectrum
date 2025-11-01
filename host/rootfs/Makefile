@@ -39,9 +39,11 @@ DIRS = \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \
 	ext \
+	home \
 	proc \
 	run \
-	sys
+	sys \
+	tmp
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
@@ -130,7 +132,7 @@ run: build/live.img
 	    -device virtconsole,chardev=virtiocon0 \
 	    -drive file=build/live.img,if=virtio,format=raw,readonly=on \
 	    -drive file=/proc/self/fd/3,if=virtio,format=raw \
-	    -append "earlycon console=hvc0 roothash=$$(< $(dest)/rootfs.verity.roothash) intel_iommu=on nokaslr" \
+	    -append "earlycon console=hvc0 roothash=$$(< $(dest)/rootfs.verity.roothash) intel_iommu=on nokaslr x-spectrum-version=$$VERSION" \
 	    -device virtio-keyboard \
 	    -device virtio-mouse \
 	    -device virtio-gpu \

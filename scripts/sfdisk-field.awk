@@ -33,6 +33,6 @@ BEGIN {
 				fields[n] = uuid
 		}
 
-		printf "%s=%s,", keys[n - skip], fields[n]
+		printf ",%s=%s", keys[n - skip], fields[n]
 	}
 }

@@ -5,6 +5,7 @@
 import ../../lib/call-package.nix (
 { callSpectrumPackage, rootfs, pkgsStatic, srcOnly, stdenv
 , btrfs-progs, cryptsetup, jq, netcat, qemu_kvm, reuse, util-linux
+, config
 }:
 
 rootfs.overrideAttrs (
@@ -20,5 +21,6 @@ rootfs.overrideAttrs (
     KERNEL = "${passthru.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     LINUX_SRC = srcOnly passthru.kernel.configfile;
     VMLINUX = "${passthru.kernel.dev}/vmlinux";
+    VERSION = config.version;
   };
 })) (_: {})

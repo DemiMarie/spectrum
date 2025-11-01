@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2021-2023, 2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2022 Unikie
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
 import ../../lib/call-package.nix (
 { callSpectrumPackage, spectrum-build-tools, rootfs, src
 , lib, pkgsStatic, stdenvNoCC
 , cryptsetup, dosfstools, jq, mtools, util-linux
-, systemdUkify, efi
+, systemdUkify, version, efi
 }:
 
 let
@@ -48,6 +49,7 @@ stdenv.mkDerivation {
     SYSTEMD_BOOT_EFI = "${efi.systemd}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
     EFI_IMAGE = efi;
     EFINAME = "BOOT${toUpper efiArch}.EFI";
+    VERSION = version;
   };
 
   buildFlags = [ "dest=$(out)" ];
