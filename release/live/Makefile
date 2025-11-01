@@ -19,23 +19,11 @@ $(dest): ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sf
 build/empty:
 	mkdir -p $@
 
-build/spectrum.efi: $(DTBS) $(KERNEL) $(INITRAMFS) $(ROOT_FS_VERITY_ROOTHASH)
-	{ \
-	    printf "[UKI]\nDeviceTreeAuto=" && \
-	    find $(DTBS) -name '*.dtb' -print0 | tr '\0' ' ' ;\
-	} | $(UKIFY) build \
-	    --output $@ \
-	    --config /dev/stdin \
-	    --linux $(KERNEL) \
-	    --initrd $(INITRAMFS) \
-	    --os-release $$'NAME="Spectrum"\n' \
-	    --cmdline "ro intel_iommu=on roothash=$$(cat $(ROOT_FS_VERITY_ROOTHASH))"
-
-build/boot.fat: $(SYSTEMD_BOOT_EFI) build/spectrum.efi
+build/boot.fat: $(SYSTEMD_BOOT_EFI) $(EFI_IMAGE) build/empty
 	$(TRUNCATE) -s 440401920 $@
 	$(MKFS_FAT) $@
 	$(MMD) -i $@ ::/EFI ::/EFI/BOOT ::/EFI/Linux
-	$(MCOPY) -i $@ build/spectrum.efi ::/EFI/Linux
+	$(MCOPY) -i $@ $(EFI_IMAGE) ::/EFI/Linux/spectrum.efi
 	$(MCOPY) -i $@ $(SYSTEMD_BOOT_EFI) ::/EFI/BOOT/$(EFINAME)
 
 clean:
