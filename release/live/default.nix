@@ -7,7 +7,7 @@ import ../../lib/call-package.nix (
 { callSpectrumPackage, spectrum-build-tools, rootfs, src
 , lib, pkgsStatic, stdenvNoCC
 , cryptsetup, dosfstools, jq, mtools, util-linux
-, systemdUkify, version, efi
+, systemdUkify, config, efi
 }:
 
 let
@@ -49,7 +49,7 @@ stdenv.mkDerivation {
     SYSTEMD_BOOT_EFI = "${efi.systemd}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
     EFI_IMAGE = efi;
     EFINAME = "BOOT${toUpper efiArch}.EFI";
-    VERSION = version;
+    VERSION = config.version;
   };
 
   buildFlags = [ "dest=$(out)" ];

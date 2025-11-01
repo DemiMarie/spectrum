@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
 
-import ../../lib/call-package.nix ({ callSpectrumPackage, stdenv, qemu_kvm, rootfs }:
+import ../../lib/call-package.nix ({ callSpectrumPackage, stdenv, qemu_kvm, rootfs, config }:
 
 (callSpectrumPackage ./. {}).overrideAttrs (
   { nativeBuildInputs ? [], env ? {}, ... }:
@@ -11,6 +11,7 @@ import ../../lib/call-package.nix ({ callSpectrumPackage, stdenv, qemu_kvm, root
     env = env // {
       ROOT_FS = rootfs;
       OVMF_CODE = "${qemu_kvm}/share/qemu/edk2-${stdenv.hostPlatform.qemuArch}-code.fd";
+      VERSION = config.version;
     };
   }
 )) (_: {})

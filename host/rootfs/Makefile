@@ -10,6 +10,7 @@ include file-list.mk
 dest = build
 
 DIRS = \
+	boot \
 	dev \
 	etc/s6-linux-init/env \
 	etc/s6-linux-init/run-image/configs \
@@ -56,6 +57,7 @@ BUILD_FILES = build/etc/s6-rc
 $(dest)/timestamp: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk $(dest)
 	{ \
 	    cat $(PACKAGES_FILE) ;\
+	    printf '%s\n%s\n' "$$UPDATE_SIGNING_KEY" /etc/systemd/import-pubring.gpg; \
 	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
 	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(DIRS) ;\
