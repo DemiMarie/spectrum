@@ -24,6 +24,7 @@ BEGIN {
 			arch = _arch
 	}
 
+	comma = ""
 	for (n in fields) {
 		if (n <= skip)
 			continue
@@ -33,6 +34,6 @@ BEGIN {
 				fields[n] = uuid
 		}
 
-		printf "%s=%s,", keys[n - skip], fields[n]
+		printf ",%s%s=%s", comma, keys[n - skip], fields[n]
 	}
 }

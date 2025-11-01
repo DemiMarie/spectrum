@@ -40,3 +40,14 @@ for supported configuration attributes and their default values.
   };
 }
 ----
+
+.config.nix to adjust the version of the OS
+[example]
+[source,nix]
+----
+{ default, ... }:
+
+{
+  version = "0.0.1";
+}
+----

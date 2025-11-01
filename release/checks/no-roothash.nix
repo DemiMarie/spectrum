@@ -28,6 +28,6 @@ in {
     machine = create_machine(flags)
 
     machine.start()
-    machine.wait_for_console_text("roothash invalid or missing")
+    machine.wait_for_console_text("roothash not set")
   '';
 }))) (_: {})

@@ -4,6 +4,7 @@
 import ../../lib/call-package.nix (
 { callSpectrumPackage, rootfs, pkgsStatic, stdenv
 , cryptsetup, jq, qemu_kvm, tar2ext4, util-linux
+, config
 }:
 
 let
@@ -20,5 +21,6 @@ initramfs.overrideAttrs ({ nativeBuildInputs ? [], env ? {}, ... }: {
     ROOT_FS = "${rootfs}/rootfs";
     ROOT_FS_VERITY = "${rootfs}/rootfs.verity.superblock";
     ROOT_FS_VERITY_ROOTHASH = "${rootfs}/rootfs.verity.roothash";
+    VERSION = config.version;
   };
 })) (_: {})

@@ -4,6 +4,7 @@
 .POSIX:
 
 include ../../lib/common.mk
+include ../../lib/kcmdline-utils.mk
 
 dest = build/initramfs
 
@@ -35,16 +36,13 @@ build/mountpoints:
 	cd build/mountpoints && mkdir -p $(MOUNTPOINTS)
 	find build/mountpoints -mindepth 1 -exec touch -d @0 {} ';'
 
-build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(ROOT_FS_VERITY) $(ROOT_FS_VERITY_ROOTHASH) $(ROOT_FS)
-	../../scripts/make-gpt.sh $@.tmp \
-	"$$ROOT_FS_VERITY:verity:$$(../../scripts/format-uuid.sh "$$(dd "if=$$ROOT_FS_VERITY_ROOTHASH" bs=32 skip=1 count=1 status=none)")" \
-	    $(dest):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 "$$ROOT_FS_VERITY_ROOTHASH")")
-	mv $@.tmp $@
+build/live.img: $(LIVE_IMAGE_DEPS) $(ROOT_FS) $(ROOT_FS_VERITY) $(ROOT_FS_VERITY_ROOTHASH)
+	../../scripts/make-live-image.sh live $@
 
 build/loop.tar: build/live.img
 	$(TAR) -cf $@ build/live.img
 
-build/loop.img: ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/loop.ext4
+build/loop.img: ../../scripts/make-gpt.sh ../../scripts/make-gpt.bash ../../scripts/sfdisk-field.awk build/loop.ext4
 	../../scripts/make-gpt.sh $@.tmp \
 	    build/loop.ext4:56a3bbc3-aefa-43d9-a64d-7b3fd59bbc4e
 	mv $@.tmp $@
@@ -58,7 +56,7 @@ run: $(dest) $(RUN_IMAGE) $(ROOT_FS_VERITY_ROOTHASH)
 	    -machine virtualization=on \
 	    -kernel $(KERNEL) \
 	    -initrd $(dest) \
-	    -append "ro earlycon console=hvc0 intel_iommu=on roothash=$$(< "$$ROOT_FS_VERITY_ROOTHASH") nokaslr" \
+	    -append "ro earlycon console=hvc0 intel_iommu=on roothash=$$(< "$$ROOT_FS_VERITY_ROOTHASH") x-spectrum-version=$$VERSION nokaslr" \
 	    -cpu max \
 	    -gdb unix:build/gdb.sock,server,nowait \
 	    -parallel none \

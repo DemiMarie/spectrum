@@ -18,5 +18,4 @@ let
     inherit default;
   } else config;
 in
-
-default // callConfig config
+  default // callConfig config;

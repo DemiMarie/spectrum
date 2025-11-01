@@ -4,7 +4,7 @@
 
 import ../lib/call-package.nix (
 { bash, callSpectrumPackage, cryptsetup, runCommand
-, stdenv, systemdUkify, rootfs
+, stdenv, systemdUkify, rootfs, config
 }:
 let
   initramfs = callSpectrumPackage ./initramfs {};
@@ -27,6 +27,7 @@ runCommand "spectrum-efi" {
     KERNEL = kernel;
     INITRAMFS = initramfs;
     ROOTFS = rootfs;
+    VERSION = config.version;
   };
 } ''
   read -r roothash < "$ROOTFS/rootfs.verity.roothash"
@@ -41,6 +42,6 @@ runCommand "spectrum-efi" {
       --linux "$KERNEL" \
       --initrd "$INITRAMFS" \
       --os-release $'NAME="Spectrum"\n' \
-      --cmdline "ro intel_iommu=on roothash=$roothash"
+      --cmdline "ro intel_iommu=on roothash=$roothash x-spectrum-version=$VERSION"
   ''
 ) (_: {})

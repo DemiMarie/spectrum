@@ -4,6 +4,7 @@
 .POSIX:
 
 include ../../lib/common.mk
+include ../../lib/kcmdline-utils.mk
 include file-list.mk
 
 dest = build
@@ -38,9 +39,11 @@ DIRS = \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \
 	ext \
+	home \
 	proc \
 	run \
-	sys
+	sys \
+	tmp
 
 FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
@@ -95,11 +98,10 @@ clean:
 	rm -rf build
 .PHONY: clean
 
-build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(dest)/timestamp
-	../../scripts/make-gpt.sh $@.tmp \
-	    $(dest)/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(dest)/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(dest)/rootfs:root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(dest)/rootfs.verity.roothash)")
-	mv $@.tmp $@
+build/live.img: $(LIVE_IMAGE_DEPS) $(dest)/timestamp
+	ROOT_FS=$(dest)/rootfs ROOT_FS_VERITY=$(dest)/rootfs.verity.superblock \
+		ROOT_FS_VERITY_ROOTHASH=$(dest)/rootfs.verity.roothash \
+		../../scripts/make-live-image.sh live $@
 
 debug:
 	$(GDB) -q \
@@ -112,7 +114,10 @@ run: build/live.img
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$ext" && \
-	mkfs.btrfs "$$ext" && \
+	dir=$$(mktemp -d) && \
+	mkdir -- "$$dir/tmp" "$$dir/home" && \
+	mkfs.btrfs --rootdir "$$dir" --subvol tmp --subvol home -- "$$ext" && \
+	rm -rf -- "$$dir" && \
 	exec 3<>"$$ext" && \
 	rm -f "$$ext" && \
 	set +x && \
@@ -129,7 +134,7 @@ run: build/live.img
 	    -device virtconsole,chardev=virtiocon0 \
 	    -drive file=build/live.img,if=virtio,format=raw,readonly=on \
 	    -drive file=/proc/self/fd/3,if=virtio,format=raw \
-	    -append "earlycon console=hvc0 roothash=$$(< $(dest)/rootfs.verity.roothash) intel_iommu=on nokaslr" \
+	    -append "earlycon console=hvc0 roothash=$$(< $(dest)/rootfs.verity.roothash) intel_iommu=on nokaslr x-spectrum-version=$$VERSION" \
 	    -device virtio-keyboard \
 	    -device virtio-mouse \
 	    -device virtio-gpu \
