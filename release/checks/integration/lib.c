@@ -20,7 +20,7 @@
 
 struct vm {
 	pthread_t console_thread;
-	FILE *console;
+	FILE *console[2];
 	int prompt_event;
 };
 
@@ -124,7 +124,7 @@ static void *console_thread(void *arg)
 	exit(EXIT_FAILURE);
 }
 
-static int start_console_thread(FILE *console, pthread_t *thread)
+static int start_console_thread(struct vm *vm, pthread_t *thread)
 {
 	int e, prompt_event[2];
 	struct console_thread_args *args = malloc(sizeof(*args));
@@ -139,7 +139,7 @@ static int start_console_thread(FILE *console, pthread_t *thread)
 		exit(EXIT_FAILURE);
 	}
 
-	args->console = console;
+	args->console = vm->console[0];
 	args->prompt_event = prompt_event[1];
 
 	if ((e = pthread_create(thread, nullptr, console_thread, args))) {
@@ -171,13 +171,12 @@ void wait_for_prompt(struct vm *vm)
 
 FILE *vm_console_writer(struct vm *vm)
 {
-	return vm->console;
+	return vm->console[1];
 }
 
 struct vm *start_qemu(struct config c)
 {
 	struct utsname u;
-	FILE *console_reader;
 	int console_listener, console_conn;
 	char *arch, *args[] = {
 		(char *)c.run_qemu,
@@ -250,7 +249,7 @@ struct vm *start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
-	if (!(console_reader = fdopen(console_conn, "r"))) {
+	if (!(r->console[0] = fdopen(console_conn, "r"))) {
 		perror("fdopen");
 		exit(EXIT_FAILURE);
 	}
@@ -260,13 +259,13 @@ struct vm *start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
-	if (!(r->console = fdopen(console_conn, "a"))) {
+	if (!(r->console[1] = fdopen(console_conn, "a"))) {
 		perror("fdopen");
 		exit(EXIT_FAILURE);
 	}
 
 	errno = 0;
-	if (setvbuf(r->console, nullptr, _IOLBF, 0)) {
+	if (setvbuf(r->console[1], nullptr, _IOLBF, 0)) {
 		if (errno)
 			perror("setvbuf");
 		else
@@ -274,7 +273,7 @@ struct vm *start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
-	r->prompt_event = start_console_thread(console_reader, &r->console_thread);
+	r->prompt_event = start_console_thread(r, &r->console_thread);
 	wait_for_prompt(r);
 	return r;
 }
