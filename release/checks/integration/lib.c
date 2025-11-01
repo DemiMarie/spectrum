@@ -21,7 +21,7 @@
 struct vm {
 	pthread_t console_thread;
 	FILE *console[2];
-	int prompt_event;
+	int prompt_event[2];
 };
 
 static void chld_handler(int)
@@ -124,9 +124,9 @@ static void *console_thread(void *arg)
 	exit(EXIT_FAILURE);
 }
 
-static int start_console_thread(struct vm *vm, pthread_t *thread)
+static void start_console_thread(struct vm *vm, pthread_t *thread)
 {
-	int e, prompt_event[2];
+	int e;
 	struct console_thread_args *args = malloc(sizeof(*args));
 
 	if (!args) {
@@ -134,26 +134,19 @@ static int start_console_thread(struct vm *vm, pthread_t *thread)
 		exit(EXIT_FAILURE);
 	}
 
-	if (pipe2(prompt_event, O_CLOEXEC|O_NONBLOCK) == -1) {
-		perror("pipe");
-		exit(EXIT_FAILURE);
-	}
-
 	args->console = vm->console[0];
-	args->prompt_event = prompt_event[1];
+	args->prompt_event = vm->prompt_event[1];
 
 	if ((e = pthread_create(thread, nullptr, console_thread, args))) {
 		fprintf(stderr, "pthread_create: %s\n", strerror(e));
 		exit(EXIT_FAILURE);
 	}
-
-	return prompt_event[0];
 }
 
 void wait_for_prompt(struct vm *vm)
 {
 	char c;
-	struct pollfd pollfd = { .fd = vm->prompt_event, .events = POLLIN };
+	struct pollfd pollfd = { .fd = vm->prompt_event[0], .events = POLLIN };
 	if (poll(&pollfd, 1, -1) == -1) {
 		perror("poll");
 		exit(EXIT_FAILURE);
@@ -162,7 +155,7 @@ void wait_for_prompt(struct vm *vm)
 		fprintf(stderr, "unexpected poll events from prompt event: %hx\n", pollfd.revents);
 		exit(EXIT_FAILURE);
 	}
-	while (read(vm->prompt_event, &c, 1) != -1);
+	while (read(vm->prompt_event[0], &c, 1) != -1);
 	if (errno != EAGAIN && errno != EINTR) {
 		perror("read prompt event");
 		exit(EXIT_FAILURE);
@@ -273,7 +266,12 @@ struct vm *start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
-	r->prompt_event = start_console_thread(r, &r->console_thread);
+	if (pipe2(r->prompt_event, O_CLOEXEC|O_NONBLOCK) == -1) {
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
+
+	start_console_thread(r, &r->console_thread);
 	wait_for_prompt(r);
 	return r;
 }
