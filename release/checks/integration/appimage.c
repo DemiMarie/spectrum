@@ -14,10 +14,10 @@ void test(struct config c)
 	          "mkdir /run/mnt && "
 	          "mount \"$(findfs UUID=a7834806-2f82-4faf-8ac4-4f8fd8a474ca)\" /run/mnt && "
 	          "run-appimage /run/mnt/test.appimage\n",
-	          vm->console) == EOF) {
+	          vm_console_writer(vm)) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 
-	wait_for_prompt(vm->prompt_event);
+	wait_for_prompt(vm);
 }

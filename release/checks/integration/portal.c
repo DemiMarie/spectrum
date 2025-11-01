@@ -19,10 +19,10 @@ void test(struct config c)
 	          "s6-svc -O /run/vm/by-name/user.portal/service && "
 	          "vm-start \"$(basename \"$(readlink /run/vm/by-name/user.portal)\")\" && "
 	          "s6-svwait -d /run/vm/by-name/user.portal/service\n",
-	          vm->console) == EOF) {
+	          vm_console_writer(vm)) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 
-	wait_for_prompt(vm->prompt_event);
+	wait_for_prompt(vm);
 }

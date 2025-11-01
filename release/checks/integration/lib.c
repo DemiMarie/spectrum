@@ -18,6 +18,12 @@
 #include <sys/un.h>
 #include <sys/utsname.h>
 
+struct vm {
+	pthread_t console_thread;
+	FILE *console;
+	int prompt_event;
+};
+
 static void chld_handler(int)
 {
 	exit(EXIT_FAILURE);
@@ -144,10 +150,10 @@ static int start_console_thread(FILE *console, pthread_t *thread)
 	return prompt_event[0];
 }
 
-void wait_for_prompt(int prompt_event)
+void wait_for_prompt(struct vm *vm)
 {
 	char c;
-	struct pollfd pollfd = { .fd = prompt_event, .events = POLLIN };
+	struct pollfd pollfd = { .fd = vm->prompt_event, .events = POLLIN };
 	if (poll(&pollfd, 1, -1) == -1) {
 		perror("poll");
 		exit(EXIT_FAILURE);
@@ -156,11 +162,16 @@ void wait_for_prompt(int prompt_event)
 		fprintf(stderr, "unexpected poll events from prompt event: %hx\n", pollfd.revents);
 		exit(EXIT_FAILURE);
 	}
-	while (read(prompt_event, &c, 1) != -1);
+	while (read(vm->prompt_event, &c, 1) != -1);
 	if (errno != EAGAIN && errno != EINTR) {
 		perror("read prompt event");
 		exit(EXIT_FAILURE);
 	}
+}
+
+FILE *vm_console_writer(struct vm *vm)
+{
+	return vm->console;
 }
 
 struct vm *start_qemu(struct config c)
@@ -264,7 +275,7 @@ struct vm *start_qemu(struct config c)
 	}
 
 	r->prompt_event = start_console_thread(console_reader, &r->console_thread);
-	wait_for_prompt(r->prompt_event);
+	wait_for_prompt(r);
 	return r;
 }
 

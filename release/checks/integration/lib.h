@@ -18,11 +18,8 @@ struct config {
 
 extern void test(struct config);
 
-struct vm {
-	pthread_t console_thread;
-	FILE *console;
-	int prompt_event;
-};
+struct vm;
 
 struct vm *start_qemu(struct config config);
-void wait_for_prompt(int prompt_event);
+void wait_for_prompt(struct vm *vm);
+FILE *vm_console_writer(struct vm *vm);
