@@ -163,9 +163,8 @@ void wait_for_prompt(int prompt_event)
 	}
 }
 
-struct vm start_qemu(struct config c)
+struct vm *start_qemu(struct config c)
 {
-	struct vm r;
 	struct utsname u;
 	FILE *console_reader;
 	int console_listener, console_conn;
@@ -194,6 +193,12 @@ struct vm start_qemu(struct config c)
 	};
 	char **efi_arg = &args[2], **img_arg = &args[4],
 	     **user_data_arg = &args[6], **console_arg = &args[8];
+	struct vm *r = malloc(sizeof *r);
+
+	if (!r) {
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
 
 	if (!(arch = getenv("ARCH"))) {
 		uname(&u);
@@ -244,13 +249,13 @@ struct vm start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
-	if (!(r.console = fdopen(console_conn, "a"))) {
+	if (!(r->console = fdopen(console_conn, "a"))) {
 		perror("fdopen");
 		exit(EXIT_FAILURE);
 	}
 
 	errno = 0;
-	if (setvbuf(r.console, nullptr, _IOLBF, 0)) {
+	if (setvbuf(r->console, nullptr, _IOLBF, 0)) {
 		if (errno)
 			perror("setvbuf");
 		else
@@ -258,8 +263,8 @@ struct vm start_qemu(struct config c)
 		exit(EXIT_FAILURE);
 	}
 
-	r.prompt_event = start_console_thread(console_reader, &r.console_thread);
-	wait_for_prompt(r.prompt_event);
+	r->prompt_event = start_console_thread(console_reader, &r->console_thread);
+	wait_for_prompt(r->prompt_event);
 	return r;
 }
 

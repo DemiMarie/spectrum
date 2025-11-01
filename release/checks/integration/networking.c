@@ -112,7 +112,7 @@ void test(struct config c)
 {
 	int server = setup_server();
 
-	struct vm vm = start_qemu(c);
+	struct vm *vm = start_qemu(c);
 
 	if (fputs("set -euxo pipefail && "
 	          "mkdir /run/mnt && "
@@ -121,27 +121,27 @@ void test(struct config c)
 	          "vm-import user /run/mnt/vms && "
 	          "vm-start \"$(basename \"$(readlink /run/vm/by-name/user.nc)\")\" && "
 	          "tail -Fc +0 /run/log/current /run/*.log &\n",
-	          vm.console) == EOF) {
+	          vm->console) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 
 	expect_connection(server);
 
-	wait_for_prompt(vm.prompt_event);
+	wait_for_prompt(vm->prompt_event);
 
 	if (fputs("s6-svc -wR -r /run/vm/by-name/sys.netvm/service\n",
-	          vm.console) == EOF) {
+	          vm->console) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 
-	wait_for_prompt(vm.prompt_event);
+	wait_for_prompt(vm->prompt_event);
 
 	drain_connections(server);
 
 	if (fputs("vm-start \"$(basename \"$(readlink /run/vm/by-name/sys.netvm)\")\"\n",
-	          vm.console) == EOF) {
+	          vm->console) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);
 	}
