@@ -5,4 +5,9 @@
 elglob -0 devices /sys/bus/pci/drivers/vfio-pci/????:??:??.?
 forx -pE device { $devices }
 
+# This script is designed to be re-entrant and called multiple times.
+# This means we expect to sometimes get an error due to the device
+# already having been added.  If there's a different error,
+# cloud-hypervisor will probably log it itself anyway.
+redirfd -w 2 /dev/null
 ch-remote --api-socket /run/vm/by-name/sys.netvm/vmm add-device path=${device}
