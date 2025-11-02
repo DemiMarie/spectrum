@@ -1,6 +1,6 @@
 #!/bin/execlineb -P
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021, 2025 Alyssa Ross <hi@alyssa.is>
 
 # Assign the whole IOMMU group containing this device to the network
 # VM.
@@ -12,6 +12,13 @@ importas -i devpath DEVPATH
 foreground {
   pipeline { ls -1 /sys${devpath}/iommu_group/devices }
   forstdin -pE device
+  if -t {
+    backtick -E driver_name {
+      backtick -E driver_path { readlink /sys/bus/pci/devices/${device}/driver }
+      basename -- $driver_path
+    }
+    test $driver_name != vfio-pci
+  }
   foreground {
     redirfd -w 2 /dev/null
     redirfd -w 1 /sys/bus/pci/devices/${device}/driver/unbind
