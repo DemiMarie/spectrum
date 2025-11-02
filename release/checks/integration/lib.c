@@ -18,6 +18,11 @@
 #include <sys/un.h>
 #include <sys/utsname.h>
 
+// https://inbox.sourceware.org/libc-alpha/20251101193213.684326-2-hi@alyssa.is/
+#if defined(__GLIBC__) && !defined(PTHREAD_NULL)
+#define PTHREAD_NULL ((pthread_t)0)
+#endif
+
 struct vm {
 	pthread_t console_thread;
 	FILE *console[2];
@@ -137,6 +142,18 @@ void start_console_thread(struct vm *vm, const char *needle)
 	args->console = vm->console[0];
 	args->needle = needle;
 	args->prompt_event = vm->prompt_event[1];
+
+	if (!pthread_equal(vm->console_thread, PTHREAD_NULL)) {
+		if ((e = pthread_cancel(vm->console_thread))) {
+			fprintf(stderr, "pthread_cancel: %s\n", strerror(e));
+			exit(EXIT_FAILURE);
+		}
+
+		if ((e = pthread_join(vm->console_thread, NULL))) {
+			fprintf(stderr, "pthread_join: %s\n", strerror(e));
+			exit(EXIT_FAILURE);
+		}
+	}
 
 	if ((e = pthread_create(&vm->console_thread, nullptr, console_thread, args))) {
 		fprintf(stderr, "pthread_create: %s\n", strerror(e));
@@ -271,6 +288,8 @@ struct vm *start_qemu(struct config c)
 		perror("pipe");
 		exit(EXIT_FAILURE);
 	}
+
+	r->console_thread = PTHREAD_NULL;
 
 	return r;
 }
