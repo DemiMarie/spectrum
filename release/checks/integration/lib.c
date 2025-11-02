@@ -317,7 +317,7 @@ int main(int argc, char *argv[])
 		.run_qemu = argv[1],
 		.drives = {
 			.efi = getenv_or_die("EFI_PATH"),
-			.img = getenv_or_die("IMG_PATH"),
+			.img = getenv_or_die("LIVE_PATH"),
 			.user_data = getenv_or_die("USER_DATA_PATH"),
 		},
 	};
