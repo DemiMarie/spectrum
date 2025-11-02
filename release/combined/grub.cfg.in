@@ -13,6 +13,7 @@ loadfont /grub/fonts/unicode.pf2
 insmod gfxterm
 set gfxpayload=keep
 terminal_output gfxterm
+terminal_output console
 
 menuentry "Try Spectrum" {
   loopback live (hd0,gpt3)/Spectrum-0.0-x86_64-generic.0.Live.img
