@@ -7,8 +7,7 @@ import ../lib/call-package.nix (
 , meson, ninja, pkg-config, rustc
 , clang-tools, clippy, jq
 , dbus, linuxHeaders
-# clang 19 (current nixpkgs default) is too old to support -fwrapv-pointer
-, clang_21, libbpf
+, clang, libbpf
 , buildSupport ? false
 , appSupport ? true
 , hostSupport ? false
@@ -87,7 +86,7 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [ meson ninja ]
     ++ lib.optionals (appSupport || driverSupport) [ pkg-config ]
     ++ lib.optionals hostSupport [ rustc ]
-    ++ lib.optionals driverSupport [ clang_21.cc ];
+    ++ lib.optionals driverSupport [ clang.cc ];
   buildInputs = lib.optionals appSupport [ dbus ]
     ++ lib.optionals driverSupport [ libbpf linuxHeaders ];
 
