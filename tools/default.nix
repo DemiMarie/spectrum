@@ -5,9 +5,9 @@
 import ../lib/call-package.nix (
 { src, lib, stdenv, fetchCrate, fetchurl, runCommand, buildPackages
 , meson, ninja, pkg-config, rustc
-, clang-tools, clippy, jq
+, llvmPackages, clippy, jq
 , dbus, linuxHeaders
-, clang, libbpf
+, libbpf
 , buildSupport ? false
 , appSupport ? true
 , hostSupport ? false
@@ -87,7 +87,7 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [ meson ninja ]
     ++ lib.optionals (appSupport || driverSupport) [ pkg-config ]
     ++ lib.optionals hostSupport [ rustc ]
-    ++ lib.optionals driverSupport [ clang.cc ];
+    ++ lib.optionals driverSupport [ llvmPackages.clang-unwrapped ];
   buildInputs = lib.optionals appSupport [ dbus ]
     ++ lib.optionals driverSupport [ libbpf linuxHeaders ];
 
@@ -122,7 +122,7 @@ stdenv.mkDerivation (finalAttrs: {
 
         # clang-tools needs to be before clang, otherwise it will not use
         # the Nix include path correctly and fail to find headers
-        nativeBuildInputs = [ clang-tools jq ] ++ nativeBuildInputs;
+        nativeBuildInputs = [ llvmPackages.clang-tools jq ] ++ nativeBuildInputs;
 
         buildPhase = ''
           jq -r '.[].file | select(endswith(".c"))' compile_commands.json |
