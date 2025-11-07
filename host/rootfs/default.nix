@@ -138,7 +138,7 @@ stdenvNoCC.mkDerivation {
   };
   sourceRoot = "source/host/rootfs";
 
-  nativeBuildInputs = [ erofs-utils spectrum-build-tools s6-rc ];
+  nativeBuildInputs = [ cryptsetup erofs-utils spectrum-build-tools s6-rc ];
 
   env = {
     PACKAGES = runCommand "packages" {} ''

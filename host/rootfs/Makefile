@@ -6,7 +6,7 @@
 include ../../lib/common.mk
 include file-list.mk
 
-dest = build/rootfs.erofs
+dest = build
 
 DIRS = \
 	dev \
@@ -46,15 +46,27 @@ FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 
 BUILD_FILES = build/etc/s6-rc
 
-$(dest): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
-	set -euo pipefail; \
+# This rule produces three files but Make only (portably)
+# supports one output per rule.  Instead of resorting to temporary
+# files, a timestamp file is created as the last step.  The actual
+# outputs are produced as side-effects.
+$(dest)/timestamp: ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk $(dest)
 	{ \
 	    cat $(PACKAGES_FILE) ;\
 	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
 	    for file in $(BUILD_FILES); do printf '%s\n%s\n' $$file $${file#build/}; done ;\
 	    printf 'build/empty\n%s\n' $(DIRS) ;\
 	    printf 'build/fifo\n%s\n' $(FIFOS) ;\
-	} | ../../scripts/make-erofs.sh $@
+	} | ../../scripts/make-erofs.sh $(dest)/rootfs
+	$(VERITYSETUP) format \
+		--root-hash-file $(dest)/rootfs.verity.roothash \
+		-- $(dest)/rootfs $(dest)/rootfs.verity.superblock
+	# Add trailing newline
+	echo >> $(dest)/rootfs.verity.roothash
+	touch -- $(dest)/timestamp
+
+$(dest):
+	mkdir -p $(dest)
 
 build/fifo:
 	mkdir -p build
@@ -83,25 +95,10 @@ clean:
 	rm -rf build
 .PHONY: clean
 
-# veritysetup format produces two files, but Make only (portably)
-# supports one output per rule, so we combine the two outputs then
-# define two more rules to separate them again.
-build/rootfs.verity: $(dest)
-	$(VERITYSETUP) format $(dest) build/rootfs.verity.superblock.tmp \
-	    | awk -F ':[[:blank:]]*' '$$1 == "Root hash" {print $$2; exit}' \
-	    > build/rootfs.verity.roothash.tmp
-	cat build/rootfs.verity.roothash.tmp build/rootfs.verity.superblock.tmp \
-	    > $@
-	rm build/rootfs.verity.roothash.tmp build/rootfs.verity.superblock.tmp
-build/rootfs.verity.roothash: build/rootfs.verity
-	head -n 1 build/rootfs.verity > $@
-build/rootfs.verity.superblock: build/rootfs.verity
-	tail -n +2 build/rootfs.verity > $@
-
-build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/rootfs.verity.superblock build/rootfs.verity.roothash $(dest)
+build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(dest)/timestamp
 	../../scripts/make-gpt.sh $@.tmp \
-	    build/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(dest):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)")
+	    $(dest)/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(dest)/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
+	    $(dest)/rootfs:root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(dest)/rootfs.verity.roothash)")
 	mv $@.tmp $@
 
 debug:
@@ -111,7 +108,7 @@ debug:
 	    $(VMLINUX)
 .PHONY: debug
 
-run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
+run: build/live.img
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$ext" && \
@@ -132,7 +129,7 @@ run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
 	    -device virtconsole,chardev=virtiocon0 \
 	    -drive file=build/live.img,if=virtio,format=raw,readonly=on \
 	    -drive file=/proc/self/fd/3,if=virtio,format=raw \
-	    -append "earlycon console=hvc0 roothash=$$(< build/rootfs.verity.roothash) intel_iommu=on nokaslr" \
+	    -append "earlycon console=hvc0 roothash=$$(< $(dest)/rootfs.verity.roothash) intel_iommu=on nokaslr" \
 	    -device virtio-keyboard \
 	    -device virtio-mouse \
 	    -device virtio-gpu \

@@ -17,6 +17,8 @@ initramfs.overrideAttrs ({ nativeBuildInputs ? [], env ? {}, ... }: {
 
   env = env // {
     KERNEL = "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
-    ROOT_FS = rootfs;
+    ROOT_FS = "${rootfs}/rootfs";
+    ROOT_FS_VERITY = "${rootfs}/rootfs.verity.superblock";
+    ROOT_FS_VERITY_ROOTHASH = "${rootfs}/rootfs.verity.roothash";
   };
 })) (_: {})
