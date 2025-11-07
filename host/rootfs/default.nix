@@ -138,7 +138,7 @@ stdenvNoCC.mkDerivation {
   };
   sourceRoot = "source/host/rootfs";
 
-  nativeBuildInputs = [ erofs-utils spectrum-build-tools s6-rc ];
+  nativeBuildInputs = [ cryptsetup erofs-utils spectrum-build-tools s6-rc ];
 
   env = {
     PACKAGES = runCommand "packages" {} ''
@@ -147,7 +147,9 @@ stdenvNoCC.mkDerivation {
     '';
   };
 
-  makeFlags = [ "dest=$(out)" ];
+  # The Makefile uses $(ROOT_FS_DIR), not $(dest), so it can share code
+  # with other Makefiles that also use this variable.
+  makeFlags = [ "ROOT_FS_DIR=$(out)" ];
 
   dontInstall = true;
 

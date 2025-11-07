@@ -12,7 +12,7 @@ rootfs.overrideAttrs (
 
 {
   nativeBuildInputs = nativeBuildInputs ++ [
-    btrfs-progs cryptsetup jq netcat qemu_kvm reuse util-linux
+    btrfs-progs jq netcat qemu_kvm reuse util-linux
   ];
 
   env = env // {
