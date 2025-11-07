@@ -1,0 +1,13 @@
+#!/bin/execlineb -P
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+s6-setlock /run/sd-notify-wrapper/systemd-udevd.lock
+s6-ipcserver-socketbinder -b0 -m -a 0600 /run/sd-notify-wrapper/systemd-udevd.sock
+background {
+   fdmove 1 3
+   sd-notify-adapter
+}
+fdclose 3
+redirfd -r 0 /dev/null
+export NOTIFY_SOCKET /run/sd-notify-wrapper/systemd-udevd.sock
+systemd-udevd

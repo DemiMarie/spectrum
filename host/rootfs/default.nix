@@ -11,7 +11,7 @@ pkgsStatic.callPackage (
 { spectrum-host-tools
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
 , busybox, cloud-hypervisor, cryptsetup, dbus, execline, inkscape
-, iproute2, inotify-tools, jq, kmod, mdevd, s6, s6-linux-init, socat
+, iproute2, inotify-tools, jq, mdevd, s6, s6-linux-init, socat
 , util-linuxMinimal, virtiofsd, xorg, xdg-desktop-portal-spectrum-host
 }:
 
@@ -22,59 +22,11 @@ let
     mapAttrsToList systems trivial;
 
   pkgsGui = pkgsMusl.extend (
-    final: super:
+    _: super:
     (optionalAttrs (systems.equals pkgsMusl.stdenv.hostPlatform super.stdenv.hostPlatform) {
       flatpak = super.flatpak.override {
         withMalcontent = false;
       };
-
-      libgudev = super.libgudev.overrideAttrs ({ ... }: {
-        # Tests use umockdev, which is not compatible with libudev-zero.
-        doCheck = false;
-      });
-
-      qt6 = super.qt6.overrideScope (_: prev: {
-        qttranslations = prev.qttranslations.override {
-          qttools = prev.qttools.override {
-            qtbase = prev.qtbase.override {
-              qttranslations = null;
-              systemdSupport = false;
-            };
-            qtdeclarative = null;
-          };
-        };
-
-        qtbase = prev.qtbase.override {
-          systemdSupport = false;
-        };
-      });
-
-      systemd = super.systemd.overrideAttrs ({ meta ? { }, ... }: {
-        meta = meta // {
-          platforms = [ ];
-        };
-      });
-
-      upower = super.upower.override {
-        # Not ideal, but it's the best way to get rid of an installed
-        # test that needs umockdev.
-        withIntrospection = false;
-      };
-
-      udev = final.libudev-zero;
-
-      weston = super.weston.overrideAttrs ({ mesonFlags ? [], ... }: {
-        mesonFlags = mesonFlags ++ [
-          "-Dsystemd=false"
-        ];
-      });
-
-      xdg-desktop-portal = (super.xdg-desktop-portal.override {
-        enableSystemd = false;
-      }).overrideAttrs ({ ... }: {
-        # Tests use umockdev.
-        doCheck = false;
-      });
     })
   );
 
@@ -82,7 +34,7 @@ let
 
   packages = [
     cloud-hypervisor cryptsetup dbus execline inotify-tools iproute2
-    jq kmod mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools
+    jq mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools
     virtiofsd xdg-desktop-portal-spectrum-host
 
     (busybox.override {
@@ -90,6 +42,7 @@ let
         CONFIG_CHATTR n
         CONFIG_DEPMOD n
         CONFIG_FINDFS n
+        CONFIG_HALT n
         CONFIG_INIT n
         CONFIG_INSMOD n
         CONFIG_IP n
@@ -100,10 +53,14 @@ let
         CONFIG_MODINFO n
         CONFIG_MODPROBE n
         CONFIG_MOUNT n
+        CONFIG_POWEROFF n
+        CONFIG_REBOOT n
         CONFIG_RMMOD n
       '';
     })
-  ] ++ (with pkgsGui; [ cosmic-files crosvm foot ]);
+
+  # Take kmod from pkgsGui since we use pkgsGui.kmod.lib below anyway.
+  ] ++ (with pkgsGui; [ cosmic-files crosvm foot kmod systemd ]);
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
@@ -118,9 +75,13 @@ let
 
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
+  #
+  # kmod.lib is dlopen()ed by systemd-udevd via libsystemd-shared.so.
+  # It doesn't get picked up from libsystemd-shared.so's RUNPATH due to
+  # https://inbox.vuxu.org/musl/20251017-dlopen-use-rpath-of-caller-dso-v1-1-46c69eda1473@iscas.ac.cn/
   usrPackages = [
     appvm kernel.modules firmware netvm
-  ] ++ (with pkgsGui; [ mesa dejavu_fonts westonLite ]);
+  ] ++ (with pkgsGui; [ dejavu_fonts kmod.lib mesa westonLite ]);
 
   appvms = {
     appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};

@@ -12,6 +12,7 @@ DIRS = \
 	dev \
 	etc/s6-linux-init/env \
 	etc/s6-linux-init/run-image/configs \
+	etc/s6-linux-init/run-image/sd-notify-wrapper \
 	etc/s6-linux-init/run-image/service/dbus/instance \
 	etc/s6-linux-init/run-image/service/dbus/instances \
 	etc/s6-linux-init/run-image/service/dbus/template/data \
@@ -36,7 +37,6 @@ DIRS = \
 	etc/s6-linux-init/run-image/user \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \
-	etc/s6-linux-init/run-image/wait \
 	ext \
 	proc \
 	run \
