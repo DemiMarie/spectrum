@@ -46,7 +46,9 @@ stdenv.mkDerivation {
   env = {
     INITRAMFS = initramfs;
     KERNEL = "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
-    ROOT_FS = rootfs;
+    ROOT_FS = "${rootfs}/rootfs";
+    ROOT_FS_VERITY = "${rootfs}/rootfs.verity.superblock";
+    ROOT_FS_VERITY_ROOTHASH = "${rootfs}/rootfs.verity.roothash";
     SYSTEMD_BOOT_EFI = "${systemd}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
     EFINAME = "BOOT${toUpper efiArch}.EFI";
   } // lib.optionalAttrs stdenv.hostPlatform.linux-kernel.DTB or false {
