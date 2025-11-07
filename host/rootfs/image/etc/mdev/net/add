@@ -12,12 +12,14 @@ importas -i devpath DEVPATH
 foreground {
   pipeline { ls -1 /sys${devpath}/iommu_group/devices }
   forstdin -pE device
-  if -t {
+  if -nt {
+    # We treat no driver file the same as a non-vfio-pci driver.
+    redirfd -w 2 /dev/null
     backtick -E driver_name {
       backtick -E driver_path { readlink /sys/bus/pci/devices/${device}/driver }
       basename -- $driver_path
     }
-    test $driver_name != vfio-pci
+    test $driver_name == vfio-pci
   }
   foreground {
     redirfd -w 2 /dev/null
