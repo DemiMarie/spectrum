@@ -11,3 +11,5 @@ Ready to get started with Spectrum? Here is what you can do next:
 
 * xref:running-vms.adoc[Start some applications].
 * xref:creating-custom-vms.adoc[Create your own VM] to use other applications.
+* xref:updates.adoc[Enable updates] so you can use newer versions of Spectrum
+  without reinstalling the OS.

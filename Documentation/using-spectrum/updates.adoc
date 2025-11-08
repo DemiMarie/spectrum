@@ -1,0 +1,20 @@
+= Updating the OS
+:page-parent: Using Spectrum
+
+// SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+// SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
+
+Spectrum supports updates via the `update` command.  This
+takes the path to a staging directory as argument.  `update`
+will create the directory, use it for the update, and then
+delete it.  The parent directory must exist and be on a BTRFS
+filesystem.
+
+Updates are atomic and take effect after the system reboots.
+If the system is rebooted, crashes, or loses power during an
+update, the update will automatically be rolled back.  Updates
+are digitally signed and Spectrum will refuse to install an
+update that does not have a trusted signature.
+
+See xref:../documentation/build-configuration.adoc[build configuration]
+for what is needed for updates to work.
