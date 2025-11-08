@@ -18,6 +18,7 @@ development.
 
 == Uninstalling and Updating
 
-Currently, there is no implementation for a software update.
+See xref:../using-spectrum/updates.adoc[Updating the OS] for how to enable
+updates.
 
 You can replace Spectrum by installing another OS.
