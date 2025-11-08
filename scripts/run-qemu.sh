@@ -5,12 +5,13 @@
 # This script wraps around QEMU to paper over platform differences,
 # which can't be handled portably in Make language.
 
+unset iommu append
 case "${ARCH:="$(uname -m)"}" in
 aarch64)
 	machine=virt,accel=kvm:tcg,gic-version=3,iommu=smmuv3
 	;;
 x86_64)
-	append="console=ttyS0${append:+ $append}"
+	append="console=ttyS0"
 	iommu=intel-iommu,intremap=on
 	machine=q35,accel=kvm:tcg,kernel-irqchip=split
 	;;
@@ -73,10 +74,11 @@ while [ $i -lt $# ]; do
 	i=$((i + 1))
 done
 
+unset kernel
 for arg; do
 	case "$arg" in
 	-append)
-		append=
+		unset append
 		;;
 	-kernel)
 		kernel=1
