@@ -64,7 +64,7 @@ while [ "$i" -lt "$#" ]; do
 				;;
 			esac
 
-			arg="$arg${arg:+,}$opt"
+			arg="$arg,$opt"
 		done
 		unset IFS
 
