@@ -18,6 +18,8 @@ development.
 
 == Uninstalling and Updating
 
-Currently, there is no implementation for a software update.
+Software updates are a work in progress.  If you built Spectrum yourself,
+xref:../development/build-configuration.adoc[Build configuration] for how
+to enable updates for it.
 
 You can replace Spectrum by installing another OS.

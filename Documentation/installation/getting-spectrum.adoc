@@ -62,18 +62,34 @@ installer image.  Write that image to a USB drive, for example using
 `dd` (command line) or
 https://gitlab.com/bztsrc/usbimager[`usbimager`] (graphical, available
 in Nixpkgs).  Boot your system from the USB drive, and you should see
-a menu allowing you to choose between "Try Spectrum" and "Install
-Spectrum".
+a menu allowing you to "Install Spectrum".
+
+In the past, there was a "Try Spectrum" option.  This has been removed,
+as it is incompatible with the current design of the updater.
+Specifically, it is not possible for the current tooling to build a
+sufficiently small installer without compressing the installation image.
+The compression breaks the current design of the live image.
 
 NOTE: While it's possible to install Spectrum to your internal
 storage, at this point in Spectrum's development there is not much
-reason to, as OS updates are not yet implemented, and persistent
-storage is not yet exposed to VMs.  Using the "Try Spectrum" option to
-boot Spectrum will let you try out everything in Spectrum, without
-having to go through the additional step of reinstalling Spectrum
-every time you want to use a newer version.
+reason to, as persistent storage is not yet exposed to VMs.
+
+Currently, Spectrum does not provide an update server, so
+you must provide your own.  You can do this via
+xref:../development/build-configuration.adoc[build configuration].
+The default sets the signing key to `/dev/null` and the server
+URL to an invalid value, so updates won't work.  To enable updates,
+set `update-url` to the URL of your server and `update-signing-key`
+to a binary GnuPG keyring to verify the updates with.  Not all possible
+URLs will work, but most invalid URLs will cause an error during the
+build rather than runtime misbehavior.
+
+In the running system, the signing key is located at
+`/etc/systemd/import-pubring.gpg`.  The update URL is in various files
+under `/etc/updates`.  These files are read-only, but one can mount
+an overlayfs on top of `/etc/systemd` and `/etc/updates` if one wants
+to make changes.
 
 CAUTION: Do not use Spectrum for anything important or sensitive as it is not
 yet suitable for real-world use.  Many important security properties are
-currently missing, and there is no procedure for updating to
-new versions—you have to reinstall the OS.
+currently missing.
