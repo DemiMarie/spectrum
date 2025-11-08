@@ -9,12 +9,15 @@ if [ -n ${ARCH+test} ]; then
 	ARCH=$(uname -m)
 fi
 
+unset kernel
+
 case $ARCH in
 aarch64)
 	machine=virt,accel=kvm:tcg,gic-version=3,iommu=smmuv3
+	unset iommu append
 	;;
 x86_64)
-	append="console=ttyS0${append:+ $append}"
+	append=console=ttyS0
 	iommu=intel-iommu,intremap=on
 	machine=q35,accel=kvm:tcg,kernel-irqchip=split
 	;;
@@ -79,7 +82,7 @@ done
 for arg; do
 	case "$arg" in
 	-append)
-		append=
+		unset append
 		;;
 	-kernel)
 		kernel=1
