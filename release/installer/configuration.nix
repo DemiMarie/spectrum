@@ -45,7 +45,7 @@ in
   # Force eos-installer to stop artificially constraining its size.
   systemd.services.cage-tty1.environment.GIS_SMALL_SCREEN = "1";
 
-  users.users.demo = { group = "demo"; isSystemUser = true; };
+  users.users.demo = { group = "demo"; isNormalUser = true; };
   users.groups.demo = {};
   security.polkit.extraConfig = readFile ./seat.rules;
 
