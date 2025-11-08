@@ -1,0 +1,29 @@
+= Updating the OS
+:page-parent: Using Spectrum
+
+// SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+// SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
+
+Spectrum supports updates via the `update` command.  This
+takes the path to a staging directory as argument.  `update`
+will create the directory, use it for the update, and then
+delete it.  The parent directory must exist.
+
+Updates are atomic and take effect after the system reboots.
+If the system is rebooted, crashes, or loses power during an
+update, the update will automatically be rolled back.  Updates
+are digitally signed and Spectrum will refuse to install an
+update that does not have a trusted signature.
+
+Currently, Spectrum does not provide an update server, so
+you must provide your own.  You can do this via
+xref:../development/build-configuration.adoc[build configuration].
+The default sets the signing key to `/dev/null` and the server
+URL to an invalid value, so updates won't work.  To enable updates,
+set `update-url` to the URL of your server and `update-signing-key`
+to a binary GnuPG keyring to verify the updates with.  Not all possible
+URLs will work, but most invalid URLs will cause an error during the
+build rather than runtime misbehavior.
+
+Right now, it is not possible to change the update URL or signing key
+except via an update or by reinstalling the OS.
