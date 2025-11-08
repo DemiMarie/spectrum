@@ -47,6 +47,7 @@ FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
 BUILD_FILES = build/etc/s6-rc
 
 $(dest): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
+	set -euo pipefail; \
 	{ \
 	    cat $(PACKAGES_FILE) ;\
 	    for file in $(FILES) $(LINKS); do printf '%s\n%s\n' $$file "$${file#image/}"; done ;\
