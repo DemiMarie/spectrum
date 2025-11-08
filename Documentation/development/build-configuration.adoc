@@ -20,6 +20,19 @@ The configuration file should contain an attribute set.  See
 https://spectrum-os.org/git/spectrum/tree/lib/config.default.nix[lib/config.default.nix]
 for supported configuration attributes and their default values.
 
+To enable updates, you need to specify a version, an update URL, and an update signing key.
+By default, the update URL is set to a .invalid domain and the update signing key is
+an invalid key.  Therefore, updates will not work.  To enable updates, provide a valid key
+and update server URL.  Spectrum uses
+https://www.freedesktop.org/software/systemd/man/latest/systemd-sysupdate.html[systemd-sysupdate],
+so see the https://www.freedesktop.org/software/systemd/man/latest/sysupdate.d.html[sysupdate.d]
+documentation for what you need to put on your server.  Building
+https://spectrum-os.org/git/spectrum/tree/release/updates.nix[release/updates.nix] produces an
+directory that is compatible with systemd-sysupdate, except that the signature (`SHA256SUMS.gpg`)
+is missing.
+
+Updates are signed, so the worst a compromised update server can do is fill up your home directory.
+
 .config.nix to build Spectrum with a https://nixos.org/manual/nixpkgs/unstable/#sec-overlays-definition[Nixpkgs overlay]
 [example]
 [source,nix]
