@@ -10,7 +10,7 @@ in
 {
   imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
 
-  boot.consoleLogLevel = 2;
+  boot.consoleLogLevel = lib.mkDefault 2;
   boot.kernelParams = [ "udev.log_priority=5" ];
   boot.initrd.verbose = false;
 

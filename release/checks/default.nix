@@ -14,6 +14,8 @@ import ../../lib/call-package.nix ({ callSpectrumPackage }:
 
   doc-anchors = callSpectrumPackage ./doc-anchors.nix {};
 
+  installer = callSpectrumPackage ./installer.nix {};
+
   integration = callSpectrumPackage ./integration {};
 
   pkg-tests = callSpectrumPackage ./pkg-tests.nix {};
