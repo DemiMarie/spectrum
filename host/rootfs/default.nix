@@ -85,6 +85,30 @@ let
     appvm-systemd-sysupdate = callSpectrumPackage ../../vm/app/systemd-sysupdate {};
   };
 
+  # Only allow unreserved characters, : (for port numbers), /, and %-encoding.
+  # The rest of the code is allowed to assume that these are the only characters
+  # in the update URL.
+  # Query strings and fragment identifiers break appending
+  # /SHA256SUMS and /SHA256SUMS.gpg to a URL.
+  # [, ], {, and } would cause globbing in curl.
+  # Various other characters would be treated as metacharacters by the shell or sed.
+  update-url =
+    let update-url = config.update-url; in
+    if builtins.match "^https?://(\\[[[:xdigit:]:]+]|[0-9a-z.-]*)(/([[:alnum:]./~_-]|%[[:xdigit:]]{2})+)?$" update-url == null then
+      builtins.abort ''
+        Update URL ${builtins.toJSON update-url} has forbidden characters or
+        unsupported scheme.
+        Only http:// and https:// are supported.
+        Credentials, query strings, and fragment specifiers are not supported.
+        Characters other than ASCII alphanumerics, ".", "/", "~", "-", and "_"
+        must be %-encoded.
+        Domain names must use punycode, not Unicode.
+        ''
+    else if builtins.substring (builtins.stringLength update-url - 1)
+                               1 update-url == "/" then
+      builtins.abort "Update URL ${update-url} must not end with /.  The updater will add a suffix that starts with /."
+    else
+      config.update-url;
   packagesSysroot = runCommand "packages-sysroot" {
     depsBuildBuild = [ inkscape ];
     nativeBuildInputs = [ xorg.lndir ];
