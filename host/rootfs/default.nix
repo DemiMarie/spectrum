@@ -85,6 +85,23 @@ let
     appvm-systemd-sysupdate = callSpectrumPackage ../../vm/app/systemd-sysupdate {};
   };
 
+  update-url =
+    let update-url = config.updateUrl; in
+    # Use builtins.fromJSON because it supports \uXXXX escapes.
+    # This is the same check done by check-url.awk in the update VM.
+    # The update code is careful to escape any metacharacters, but some
+    # simply cannot be made to work.  Concatenating the URL with /SHA256SUMS
+    # must append to the path portion of the URL, and the URL must be one
+    # that libcurl will accept.  I don't know how Unicode space is handled,
+    # but it is a bad idea.
+    if builtins.match (builtins.fromJSON "\"^[^\\u0001- #?\\u007F[:space:]]+$\"" update-url) == null then
+      builtins.abort ''
+        Update URL ${builtins.toJSON update-url} has forbidden characters.
+        Query strings, and fragment specifiers are not supported.
+        ASCII control characters and whitespace must be %-encoded.
+        ''
+    else
+      update-url;
   packagesSysroot = runCommand "packages-sysroot" {
     depsBuildBuild = [ inkscape ];
     nativeBuildInputs = [ xorg.lndir ];
@@ -152,7 +169,7 @@ stdenvNoCC.mkDerivation {
       name = "signing-key";
       path = config.updateSigningKey;
     };
-    UPDATE_URL = config.updateUrl;
+    UPDATE_URL = update-url;
     VERSION = config.version;
   };
 

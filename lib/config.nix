@@ -18,6 +18,16 @@ let
   callConfig = config: if builtins.typeOf config == "lambda" then config {
     inherit default;
   } else config;
+  finalConfig = default // callConfig config;
 in
 
-default // callConfig config
+# Version is used in many files, so validate it here.
+# See https://uapi-group.org/specifications/specs/version_format_specification
+# for allowed version strings.
+if builtins.match "[[:alnum:]_.~^-]+" finalConfig.version == null then
+   builtins.abort ''
+     Version ${builtins.toJSON finalConfig.version} has forbidden characters.
+     Only ASCII alphanumerics, ".", "_", "~", "^", "+", and "-" are allowed.
+     ''
+else
+  finalConfig

@@ -93,7 +93,7 @@ you must provide your own.  You can do this via
 xref:../development/build-configuration.adoc[build configuration].
 The default sets the signing key to `/dev/null` and the server
 URL to an invalid value, so updates won't work.  To enable updates,
-set `update-url` to the URL of your server and `update-signing-key`
+set `updateUrl` to the URL of your server and `updateSigningKey`
 to a binary GnuPG keyring to verify the updates with.  Not all possible
 URLs will work, but most invalid URLs will cause an error during the
 build rather than runtime misbehavior.

@@ -4,6 +4,12 @@
 import ../../lib/call-package.nix (
 { callSpectrumPackage, runCommand, e2fsprogs, tar2ext4, config }:
 
+let
+  compressionLevel = config.compressionLevel;
+in
+if compressionLevel < 1 || compressionLevel > 9 then
+  builtins.abort "Compression level ${builtins.toString compressionLevel} is invalid (< 1 or > 9)"
+else
 runCommand "eosimages.img" {
   nativeBuildInputs = [ e2fsprogs tar2ext4 ];
   imageName = "Spectrum-0.0-x86_64-generic.0.Live.img";
@@ -16,7 +22,7 @@ runCommand "eosimages.img" {
   mkdir dir
   cd dir
   ln -s -- "$image" "$imageName"
-  gzip -${builtins.toString (0 + config.compressionLevel)} < "$image" > "$imageName.gz"
+  gzip -${builtins.toString compressionLevel} < "$image" > "$imageName.gz"
   sha256sum -- "$imageName.gz" > "$imageName.gz.sha256"
   tar -ch -- "$imageName.gz" "$imageName.gz.sha256" | tar2ext4 -o "$out"
   e2label "$out" eosimages
