@@ -60,7 +60,7 @@ let
     })
 
   # Take kmod from pkgsGui since we use pkgsGui.kmod.lib below anyway.
-  ] ++ (with pkgsGui; [ cosmic-files crosvm foot kmod systemd ]);
+  ] ++ (with pkgsGui; [ cosmic-files crosvm foot fuse3 kmod systemd ]);
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
