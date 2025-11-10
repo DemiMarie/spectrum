@@ -70,6 +70,12 @@ pub struct VsockConfig {
 }
 
 #[derive(Serialize)]
+pub struct LandlockConfig {
+    pub path: &'static str,
+    pub access: &'static str,
+}
+
+#[derive(Serialize)]
 pub struct VmConfig {
     pub console: ConsoleConfig,
     pub disks: Vec<DiskConfig>,
@@ -80,6 +86,8 @@ pub struct VmConfig {
     pub payload: PayloadConfig,
     pub serial: ConsoleConfig,
     pub vsock: VsockConfig,
+    pub landlock_enable: bool,
+    pub landlock_rules: Vec<LandlockConfig>,
 }
 
 fn command(vm_dir: &Path, s: impl AsRef<OsStr>) -> Command {

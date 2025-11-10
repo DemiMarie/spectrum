@@ -14,8 +14,8 @@ use std::io::{self, ErrorKind};
 use std::path::Path;
 
 use ch::{
-    ConsoleConfig, DiskConfig, FsConfig, GpuConfig, MemoryConfig, PayloadConfig, VmConfig,
-    VsockConfig,
+    ConsoleConfig, DiskConfig, FsConfig, GpuConfig, LandlockConfig, MemoryConfig, PayloadConfig,
+    VmConfig, VsockConfig,
 };
 use net::net_setup;
 
@@ -130,6 +130,17 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
             cid: 3,
             socket: vm_dir.join("vsock").into_os_string().into_string().unwrap(),
         },
+        landlock_enable: true,
+        landlock_rules: vec![
+            LandlockConfig {
+                path: "/sys/devices",
+                access: "rw",
+            },
+            LandlockConfig {
+                path: "/dev/vfio",
+                access: "rw",
+            },
+        ],
     })
 }
 
