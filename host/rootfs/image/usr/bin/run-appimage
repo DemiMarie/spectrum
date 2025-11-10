@@ -31,7 +31,7 @@ background {
 
   # Wait for the VMM to be up, then start the VM.
   if { redirfd -w 1 /dev/null head -1 }
-  vm-start $id
+  vm-start-by-id $id
 }
 fdclose 4
 

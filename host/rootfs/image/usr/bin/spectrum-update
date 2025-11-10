@@ -61,7 +61,7 @@ foreground {
   if { mount --bind -- shared /run/vm/by-id/${update_vm_id}/fs/updates }
 
   # Start the update VM.
-  if { vm-start $update_vm_id }
+  if { vm-start-by-id $update_vm_id }
 
   # Wait for the VM to exit.
   # TODO: This is racy.  If the update finishes before this code runs,

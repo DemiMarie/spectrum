@@ -1,0 +1,5 @@
+#!/bin/execlineb -S1
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
+
+ch-remote --api-socket /run/vm/by-id/${1}/vmm shutdown

@@ -19,7 +19,7 @@ void test(struct config c)
 	          "vm-import user /run/mnt/vms && "
 	          "(tail -Fc +0 /run/*.log &) && "
 	          "s6-svc -O /run/vm/by-name/user.portal/service && "
-	          "vm-start \"$(basename \"$(readlink /run/vm/by-name/user.portal)\")\" && "
+	          "vm-start user.portal && "
 	          "s6-svwait -d /run/vm/by-name/user.portal/service\n",
 	          vm_console_writer(vm)) == EOF) {
 		fputs("error writing to console\n", stderr);

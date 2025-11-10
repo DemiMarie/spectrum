@@ -152,7 +152,7 @@ void test(struct config c)
 	          "mount \"$(findfs UUID=a7834806-2f82-4faf-8ac4-4f8fd8a474ca)\" /run/mnt && "
 	          "s6-rc -bu change vmm-env && "
 	          "vm-import user /run/mnt/vms && "
-	          "vm-start \"$(basename \"$(readlink /run/vm/by-name/user.nc)\")\" && "
+	          "vm-start user.nc && "
 	          "tail -Fc +0 /run/log/current /run/*.log &\n",
 	          vm_console_writer(vm)) == EOF) {
 		fputs("error writing to console\n", stderr);
@@ -173,7 +173,7 @@ void test(struct config c)
 
 	drain_connections(server);
 
-	if (fputs("vm-start \"$(basename \"$(readlink /run/vm/by-name/sys.netvm)\")\"\n",
+	if (fputs("vm-start sys.netvm\n",
 	          vm_console_writer(vm)) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);
