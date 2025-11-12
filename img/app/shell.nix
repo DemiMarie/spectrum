@@ -6,7 +6,7 @@
 import ../../lib/call-package.nix (
 { callSpectrumPackage, srcOnly
 , cloud-hypervisor, crosvm, execline, jq, iproute2, passt, qemu_kvm, reuse, s6
-, virtiofsd
+, virtiofsd, xdg-desktop-portal-spectrum-host
 }:
 
 (callSpectrumPackage ./. {}).overrideAttrs (
@@ -15,7 +15,7 @@ import ../../lib/call-package.nix (
 {
   nativeBuildInputs = nativeBuildInputs ++ [
     cloud-hypervisor crosvm execline jq iproute2 passt qemu_kvm reuse s6
-    virtiofsd
+    virtiofsd xdg-desktop-portal-spectrum-host
   ];
 
   env = env // {
