@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
 
 #include <arpa/inet.h>
-#include <ctype.h>
 #include <err.h>
 #include <errno.h>
 #include <inttypes.h>
@@ -28,7 +27,7 @@ static int parse_u32(const char *s, uint32_t *v)
 	char *end;
 
 	errno = EINVAL;
-	if (!s || !isdigit(s[0]))
+	if (!s || s[0] < '0' || s[0] > '9')
 		return -1;
 
 	errno = 0;
