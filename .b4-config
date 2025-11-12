@@ -3,3 +3,5 @@
 
 [b4]
 	midmask = https://spectrum-os.org/lists/archives/spectrum-devel/%s
+	linkmask = https://spectrum-os.org/lists/archives/spectrum-devel/%s
+	linktrailermask = Link: https://spectrum-os.org/lists/archives/spectrum-devel/%s
