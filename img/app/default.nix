@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2021-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021-2025 Alyssa Ross <hi@alyssa.is>
 
 import ../../lib/call-package.nix (
 { spectrum-app-tools, spectrum-build-tools, src, terminfo
 , lib, appimageTools, buildFHSEnv, runCommand, stdenvNoCC, writeClosure
-, erofs-utils, jq, s6-rc, util-linux
+, erofs-utils, jq, s6-rc, util-linux, xorg
 , cacert, linux_latest
 }:
 
@@ -77,15 +77,18 @@ let
       pkgs.xdg-desktop-portal-gtk
       pkgs.xwayland
 
+      kernel.modules
       spectrum-app-tools
       terminfo
     ];
   })).fhsenv;
 
-  packagesSysroot = runCommand "packages-sysroot" {} ''
-    mkdir -p $out/etc/ssl/certs
-    ln -s ${appimageFhsenv}/{lib64,usr} ${kernel.modules}/lib $out
-    ln -s ${cacert}/etc/ssl/certs/* $out/etc/ssl/certs
+  packagesSysroot = runCommand "packages-sysroot" {
+    nativeBuildInputs = [ xorg.lndir ];
+  } ''
+    mkdir $out
+    lndir -ignorelinks -silent ${appimageFhsenv} $out
+    rm $out/etc/dbus-1/session.conf $out/etc/fonts/fonts.conf
   '';
 in
 
