@@ -3,7 +3,6 @@
 
 FILES = \
 	image/etc/dbus-1/session.conf \
-	image/etc/fonts/fonts.conf \
 	image/etc/fstab \
 	image/etc/init \
 	image/etc/mdev.conf \

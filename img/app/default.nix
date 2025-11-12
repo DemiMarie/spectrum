@@ -88,7 +88,7 @@ let
   } ''
     mkdir $out
     lndir -ignorelinks -silent ${appimageFhsenv} $out
-    rm $out/etc/dbus-1/session.conf $out/etc/fonts/fonts.conf
+    rm $out/etc/dbus-1/session.conf
   '';
 in
 
