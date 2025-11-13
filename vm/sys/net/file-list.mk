@@ -2,8 +2,8 @@
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
 FILES = \
-	image/etc/dbus-1/system.conf \
 	image/etc/fstab \
+	image/etc/group \
 	image/etc/init \
 	image/etc/mdev.conf \
 	image/etc/mdev/iface \
