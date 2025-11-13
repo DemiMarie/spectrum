@@ -71,6 +71,8 @@ let
       pkgs.s6
       pkgs.s6-linux-init
       pkgs.s6-rc
+      pkgs.socat
+      pkgs.systemd
       pkgs.wayland-proxy-virtwl
       pkgs.wireplumber
       pkgs.xdg-desktop-portal
@@ -88,7 +90,7 @@ let
   } ''
     mkdir $out
     lndir -ignorelinks -silent ${appimageFhsenv} $out
-    rm $out/etc/dbus-1/session.conf
+    rm $out/etc/dbus-1/session.conf $out/usr/bin/init
   '';
 in
 

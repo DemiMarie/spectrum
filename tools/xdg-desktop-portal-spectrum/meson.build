@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
 
-dbus = dependency('dbus-1')
-
 install_data('spectrum.portal',
   install_dir : get_option('datadir') / 'xdg-desktop-portal/portals')
 
@@ -21,5 +19,4 @@ configure_file(
   configuration : exe_conf_data)
 
 executable('xdg-desktop-portal-spectrum', 'xdg-desktop-portal-spectrum.c',
-  dependencies : dbus,
   install : true)

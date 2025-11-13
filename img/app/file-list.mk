@@ -17,6 +17,7 @@ FILES = \
 	image/etc/s6-linux-init/env/GTK_USE_PORTAL \
 	image/etc/s6-linux-init/env/NIX_XDG_DESKTOP_PORTAL_DIR \
 	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
+	image/etc/s6-linux-init/env/XDG_DESKTOP_PORTAL_SPECTRUM_GUEST_PORT \
 	image/etc/s6-linux-init/env/XDG_RUNTIME_DIR \
 	image/etc/s6-linux-init/run-image/service/getty-hvc0/run \
 	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/notification-fd \
@@ -39,6 +40,10 @@ S6_RC_FILES = \
 	image/etc/s6-rc/app/dependencies.d/wayland-proxy-virtwl \
 	image/etc/s6-rc/app/run \
 	image/etc/s6-rc/app/type \
+	image/etc/s6-rc/dbus-vsock/notification-fd \
+	image/etc/s6-rc/dbus-vsock/run \
+	image/etc/s6-rc/dbus-vsock/type \
+	image/etc/s6-rc/dbus/dependencies.d/dbus-vsock \
 	image/etc/s6-rc/dbus/notification-fd \
 	image/etc/s6-rc/dbus/run \
 	image/etc/s6-rc/dbus/type \

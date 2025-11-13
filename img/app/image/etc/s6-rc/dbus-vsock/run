@@ -1,0 +1,17 @@
+#!/bin/execlineb -P
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
+
+if { modprobe vsock }
+
+export LISTEN_FDS 1
+getpid LISTEN_PID
+export SYSTEMD_LOG_LEVEL notice
+
+systemd-socket-activate -l vsock::219 --now
+
+# Notify readiness.
+if { fdmove 1 3 echo }
+fdclose 3
+
+socat ACCEPT-FD:4,fork UNIX-CONNECT:/run/session-bus

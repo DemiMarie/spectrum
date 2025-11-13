@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: EUPL-1.2+
-// SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
 #include <arpa/inet.h>
 #include <err.h>
@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 #include <sys/socket.h>
@@ -16,11 +15,12 @@
 
 #include <linux/vm_sockets.h>
 
-#include <dbus/dbus.h>
-
 #include "config.h"
 
 static const uint32_t HOST_PORT = 219;
+
+static const char GUEST_PORT_ENV_VAR[] =
+	"XDG_DESKTOP_PORTAL_SPECTRUM_GUEST_PORT";
 
 static int parse_u32(const char *s, uint32_t *v)
 {
@@ -113,36 +113,17 @@ static void check_result(int sock)
 
 int main(void)
 {
-	char *addr = getenv("DBUS_STARTER_ADDRESS");
-
-	DBusAddressEntry **entries;
-	int entries_len, i, sock;
-	DBusError error;
-
-	const char *port_str;
+	int sock;
 	uint32_t port;
+	char *port_str = getenv(GUEST_PORT_ENV_VAR);
 
-	if (!addr)
-		errx(EXIT_FAILURE, "DBUS_STARTER_ADDRESS not set");
+	if (!port_str)
+		errx(EXIT_FAILURE, "%s is not set", GUEST_PORT_ENV_VAR);
 
-	if (!dbus_parse_address(addr, &entries, &entries_len, &error))
-		errx(EXIT_FAILURE, "parsing D-Bus address '%s': %s",
-		     addr, error.message);
+	if (parse_u32(port_str, &port) == -1)
+		err(EXIT_FAILURE, "D-Bus address vsock port");
 
-	for (i = 0; i < entries_len; i++) {
-		if (strcmp(dbus_address_entry_get_method(entries[i]), "vsock"))
-			continue;
-
-		if (!(port_str = dbus_address_entry_get_value(entries[i], "port")))
-			errx(EXIT_FAILURE, "missing vsock port in D-Bus address '%s'",
-			     addr);
-
-		if (parse_u32(port_str, &port) == -1)
-			err(EXIT_FAILURE, "D-Bus address vsock port");
-
-		sock = connect_to_host();
-		send_info(sock, port);
-		check_result(sock);
-		return 0;
-	}
+	sock = connect_to_host();
+	send_info(sock, port);
+	check_result(sock);
 }

@@ -6,7 +6,7 @@ import ../lib/call-package.nix (
 { src, lib, stdenv, fetchCrate, fetchurl, runCommand, buildPackages
 , meson, ninja, pkg-config, rustc
 , llvmPackages, clippy, jq
-, dbus, linuxHeaders
+, linuxHeaders
 , libbpf
 , buildSupport ? false
 , appSupport ? true
@@ -88,8 +88,7 @@ stdenv.mkDerivation (finalAttrs: {
     ++ lib.optionals (appSupport || driverSupport) [ pkg-config ]
     ++ lib.optionals hostSupport [ rustc ]
     ++ lib.optionals driverSupport [ llvmPackages.clang-unwrapped ];
-  buildInputs = lib.optionals appSupport [ dbus ]
-    ++ lib.optionals driverSupport [ libbpf linuxHeaders ];
+  buildInputs = lib.optionals driverSupport [ libbpf linuxHeaders ];
 
   postPatch = lib.optionals hostSupport (lib.concatMapStringsSep "\n" (crate: ''
     mkdir -p subprojects/packagecache
