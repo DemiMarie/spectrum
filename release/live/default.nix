@@ -25,8 +25,12 @@ stdenv.mkDerivation {
     fileset = lib.fileset.intersection src (lib.fileset.unions [
       ./.
       ../../lib/common.mk
+      ../../lib/kcmdline-utils.mk
+      ../../scripts/format-uuid.awk
       ../../scripts/format-uuid.sh
+      ../../scripts/make-gpt.bash
       ../../scripts/make-gpt.sh
+      ../../scripts/make-live-image.sh
       ../../scripts/sfdisk-field.awk
     ]);
   };

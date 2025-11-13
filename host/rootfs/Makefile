@@ -4,6 +4,7 @@
 .POSIX:
 
 include ../../lib/common.mk
+include ../../lib/kcmdline-utils.mk
 include file-list.mk
 
 dest = build
@@ -96,11 +97,10 @@ clean:
 	rm -rf build
 .PHONY: clean
 
-build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(dest)/timestamp
-	../../scripts/make-gpt.sh $@.tmp \
-	    $(dest)/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(dest)/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(dest)/rootfs:root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(dest)/rootfs.verity.roothash)")
-	mv $@.tmp $@
+build/live.img: $(LIVE_IMAGE_DEPS) $(dest)/timestamp
+	ROOT_FS=$(dest)/rootfs ROOT_FS_VERITY=$(dest)/rootfs.verity.superblock \
+		ROOT_FS_VERITY_ROOTHASH=$(dest)/rootfs.verity.roothash \
+		../../scripts/make-live-image.sh live $@
 
 debug:
 	$(GDB) -q \

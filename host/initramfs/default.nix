@@ -99,6 +99,7 @@ stdenvNoCC.mkDerivation {
     fileset = lib.fileset.intersection src (lib.fileset.unions [
       ./.
       ../../lib/common.mk
+      ../../lib/kcmdline-utils.mk
     ]);
   };
   sourceRoot = "source/host/initramfs";
