@@ -4,7 +4,6 @@
 FILES = \
 	image/etc/dbus-1/session.conf \
 	image/etc/fstab \
-	image/etc/init \
 	image/etc/mdev.conf \
 	image/etc/mdev/iface \
 	image/etc/mdev/listen \
@@ -26,7 +25,8 @@ FILES = \
 	image/etc/s6-linux-init/scripts/rc.shutdown \
 	image/etc/s6-linux-init/scripts/rc.shutdown.final \
 	image/etc/wireplumber/wireplumber.conf.d/99_spectrum.conf \
-	image/etc/xdg/xdg-desktop-portal/portals.conf
+	image/etc/xdg/xdg-desktop-portal/portals.conf \
+	image/usr/bin/init
 
 LINKS = \
 	image/bin \
