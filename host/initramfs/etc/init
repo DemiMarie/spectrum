@@ -6,22 +6,16 @@ export PATH /bin
 
 if { mount -a }
 
-piperw 3 4
-if { fdmove 1 4 /etc/getuuids }
-fdclose 4
-# head -1 would be clearer, but it might use buffered I/O and consume
-# too much from the fifo.  Ideally we'd have line(1) from illumos.
-backtick ROOTFS_UUID { fdmove 0 3 dd count=1 bs=37 status=none }
-backtick VERITY_UUID { fdmove 0 3 dd count=1 bs=37 status=none }
-fdclose 3
-
 if { mkfifo /dev/rootfs.poll }
 
 background {
-  fdclose 3
   mdevd -C -b134217728
 }
-importas -iu mdevd_pid !
+
+multisubstitute {
+  importas -iu mdevd_pid !
+  importas -i roothash roothash
+}
 
 if { modprobe erofs }
 
@@ -36,7 +30,6 @@ background { kill $mdevd_pid }
 background { rm /dev/rootfs.poll }
 
 if {
-  importas -Si roothash
   veritysetup open /dev/rootfs root-verity /dev/verity $roothash
 }
 
