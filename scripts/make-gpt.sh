@@ -27,13 +27,6 @@ fillPartition() {
 	lseek -S 1 "$start" cat "$3" 1<>"$1"
 }
 
-# Prints the partition path from a PATH:PARTTYPE[:PARTUUID[:PARTLABEL]] string.
-partitionPath() {
-	awk -F: '{print $1}' <<EOF
-$1
-EOF
-}
-
 scriptsDir="$(dirname "$0")"
 
 out="$1"
@@ -48,8 +41,7 @@ for partition; do
 		sizeMiB=${BASH_REMATCH[1]}
 		partition=${partition%:*}
 	else
-		partitionPath=$(partitionPath "$partition")
-		sizeMiB=$(sizeMiB "$partitionPath")
+		sizeMiB=$(sizeMiB "${partition%%:*}")
 	fi
 	table+=$'\n'"size=${sizeMiB}MiB,$(awk -f "$scriptsDir/sfdisk-field.awk" -v partition="$partition")"
 	gptBytes=$((gptBytes + sizeMiB * ONE_MiB))
@@ -63,7 +55,6 @@ EOF
 
 n=0
 for partition; do
-	partitionPath=$(partitionPath "$partition")
-	fillPartition "$out" "$n" "$partitionPath"
+	fillPartition "$out" "$n" "${partition%%:*}"
 	n=$((n + 1))
 done
