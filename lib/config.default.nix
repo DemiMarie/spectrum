@@ -5,4 +5,5 @@
   pkgsFun = import ./nixpkgs.default.nix;
   pkgsArgs = {};
   compressionLevel = 1;
+  version = "0.0.0";
 }
