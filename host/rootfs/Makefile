@@ -111,7 +111,7 @@ debug:
 	    $(VMLINUX)
 .PHONY: debug
 
-run: build/live.img $(EXT_FS) build/rootfs.verity.roothash
+run: build/live.img build/rootfs.verity.roothash
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$ext" && \
