@@ -26,7 +26,7 @@ $(imgdir)/appvm/vmlinux: $(KERNEL)
 
 $(imgdir)/appvm/blk/root.img: ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/rootfs.erofs
 	mkdir -p $$(dirname $@)
-	../../scripts/make-gpt.sh $@.tmp \
+	bash ../../scripts/make-gpt.sh $@.tmp \
 	    build/rootfs.erofs:root:5460386f-2203-4911-8694-91400125c604:root
 	mv $@.tmp $@
 
