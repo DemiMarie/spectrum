@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
 import ../lib/call-package.nix (
-{ callSpectrumPackage, config, cryptsetup, rootfs
+{ callSpectrumPackage, cryptsetup, rootfs
 , runCommand, stdenv, systemdUkify
 }:
 let

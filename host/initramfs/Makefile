@@ -39,8 +39,8 @@ build/live.img: ../../scripts/format-uuid.awk ../../scripts/make-gpt.sh ../../sc
 	uuids=$$(awk -f ../../scripts/format-uuid.awk < $(ROOT_FS_VERITY_ROOTHASH)) && \
 	set -euo pipefail -- $$uuids && \
 	bash ../../scripts/make-gpt.sh $@.tmp \
-	    $(ROOT_FS_VERITY):verity:$$3 \
-	    $(ROOT_FS):root:$$1
+	    $(ROOT_FS_VERITY):verity:$$3:$(VERSION) \
+	    $(ROOT_FS):root:$$1:$(VERSION)
 	mv $@.tmp $@
 
 build/loop.tar: build/live.img
