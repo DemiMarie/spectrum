@@ -44,8 +44,13 @@ table="label: gpt"
 # Keep 1MiB free at the start, and 1MiB free at the end.
 gptBytes=$((ONE_MiB * 2))
 for partition; do
-	partitionPath=$(partitionPath "$partition")
-	sizeMiB=$(sizeMiB "$partitionPath")
+	if [[ "$partition" =~ :([1-9][0-9]*)MiB$ ]]; then
+		sizeMiB=${BASH_REMATCH[1]}
+		partition=${partition%:*}
+	else
+		partitionPath=$(partitionPath "$partition")
+		sizeMiB=$(sizeMiB "$partitionPath")
+	fi
 	table+=$'\n'"size=${sizeMiB}MiB,$(awk -f "$scriptsDir/sfdisk-field.awk" -v partition="$partition")"
 	gptBytes=$((gptBytes + sizeMiB * ONE_MiB))
 done
