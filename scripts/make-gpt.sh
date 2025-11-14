@@ -1,11 +1,10 @@
-#!/bin/sh -eu
-#
 # SPDX-FileCopyrightText: 2021-2023 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2022 Unikie
 # SPDX-License-Identifier: EUPL-1.2+
 #
-# usage: make-gpt.sh GPT_PATH PATH:PARTTYPE[:PARTUUID[:PARTLABEL]]...
+# usage: bash make-gpt.sh GPT_PATH PATH:PARTTYPE[:PARTUUID[:PARTLABEL]]...
 
+set -xeuo pipefail
 ONE_MiB=1048576
 
 # Prints the number of 1MiB blocks required to store the file named
@@ -40,16 +39,15 @@ scriptsDir="$(dirname "$0")"
 out="$1"
 shift
 
-nl='
-'
 table="label: gpt"
 
 # Keep 1MiB free at the start, and 1MiB free at the end.
 gptBytes=$((ONE_MiB * 2))
 for partition; do
-	sizeMiB="$(sizeMiB "$(partitionPath "$partition")")"
-	table="$table${nl}size=${sizeMiB}MiB,$(awk -f "$scriptsDir/sfdisk-field.awk" -v partition="$partition")"
-	gptBytes="$((gptBytes + sizeMiB * ONE_MiB))"
+	partitionPath=$(partitionPath "$partition")
+	sizeMiB=$(sizeMiB "$partitionPath")
+	table+=$'\n'"size=${sizeMiB}MiB,$(awk -f "$scriptsDir/sfdisk-field.awk" -v partition="$partition")"
+	gptBytes=$((gptBytes + sizeMiB * ONE_MiB))
 done
 
 rm -f "$out"
@@ -60,6 +58,7 @@ EOF
 
 n=0
 for partition; do
-	fillPartition "$out" "$n" "$(partitionPath "$partition")"
-	n="$((n + 1))"
+	partitionPath=$(partitionPath "$partition")
+	fillPartition "$out" "$n" "$partitionPath"
+	n=$((n + 1))
 done

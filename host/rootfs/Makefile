@@ -96,7 +96,7 @@ clean:
 .PHONY: clean
 
 build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(ROOT_FS_DIR)/timestamp $(ROOT_FS)
-	../../scripts/make-gpt.sh $@.tmp \
+	bash ../../scripts/make-gpt.sh $@.tmp \
 	    $(ROOT_FS)/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(ROOT_FS_VERITY_ROOTHASH) bs=32 skip=1 count=1 status=none)") \
 	    $(ROOT_FS)/rootfs:root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH)")
 	mv $@.tmp $@

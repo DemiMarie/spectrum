@@ -9,8 +9,8 @@ DTBS ?= build/empty
 
 dest = build/live.img
 
-$(dest): ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat $(ROOT_FS_IMAGES)
-	../../scripts/make-gpt.sh $@.tmp \
+$(dest): ../../scripts/format-uuid.sh ../../scripts/make-gpt.bash ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat $(ROOT_FS_IMAGES)
+	bash ../../scripts/make-gpt.sh $@.tmp \
 	    build/boot.fat:c12a7328-f81f-11d2-ba4b-00a0c93ec93b \
 	    $(ROOT_FS_VERITY):verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(ROOT_FS_VERITY_ROOTHASH) bs=32 skip=1 count=1 status=none)") \
 	    $(ROOT_FS):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH))")
