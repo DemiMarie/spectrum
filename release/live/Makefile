@@ -10,12 +10,15 @@ DTBS ?= build/empty
 dest = build/live.img
 
 $(dest): ../../scripts/format-uuid.awk ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat $(ROOT_FS_IMAGES)
+	# 162MiB was calculated by running `veritysetup format` on 20GiB from /dev/urandom
 	uuids=$$(awk -f ../../scripts/format-uuid.awk < $(ROOT_FS_VERITY_ROOTHASH)) && \
 	set -euo pipefail -- $$uuids && \
 	bash ../../scripts/make-gpt.sh $@.tmp \
 	    build/boot.fat:c12a7328-f81f-11d2-ba4b-00a0c93ec93b \
-	    $(ROOT_FS_VERITY):verity:$$3:Spectrum_'$(VERSION).verity' \
-	    $(ROOT_FS):root:$$1:Spectrum_'$(VERSION)'
+	    $(ROOT_FS_VERITY):verity:$$3:Spectrum_'$(VERSION).verity:162MiB' \
+	    $(ROOT_FS):root:$$1:Spectrum_'$(VERSION):20000MiB' \
+	    $(ROOT_FS_VERITY):verity:$$4:_empty:162MiB \
+	    $(ROOT_FS):root:$$2:_empty:20000MiB
 	mv $@.tmp $@
 
 build/empty:
