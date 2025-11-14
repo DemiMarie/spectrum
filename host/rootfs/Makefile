@@ -95,13 +95,8 @@ clean:
 	rm -rf build
 .PHONY: clean
 
-build/live.img: ../../scripts/format-uuid.awk ../../scripts/make-gpt.bash ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(ROOT_FS_DIR)/timestamp $(ROOT_FS)
-	uuids=$$(../../scripts/format-uuid.awk < $(ROOT_FS_VERITY_ROOTHASH)) && \
-	set -euo pipefail -- $$uuids && \
-	exec ../../scripts/make-gpt.sh $@.tmp \
-	    $(ROOT_FS_VERITY):verity:$$3 \
-	    $(ROOT_FS):root:$$1
-	mv $@.tmp $@
+build/live.img: $(LIVE_IMAGE_DEPS) build/timestamp
+	../../scripts/make-image.sh live $@ $(ROOT_FS_DIR)
 
 debug:
 	$(GDB) -q \

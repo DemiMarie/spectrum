@@ -32,6 +32,7 @@ stdenv.mkDerivation {
       ../../scripts/format-uuid.awk
       ../../scripts/make-gpt.bash
       ../../scripts/make-gpt.sh
+      ../../scripts/make-image.sh
       ../../scripts/sfdisk-field.awk
     ]);
   };

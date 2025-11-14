@@ -21,6 +21,13 @@ TRUNCATE = truncate
 UKIFY = ukify
 VERITYSETUP = veritysetup
 VIRTIOFSD = virtiofsd
+LIVE_IMAGE_DEPS = \
+	../../lib/common.mk \
+	../../scripts/format-uuid.awk \
+	../../scripts/make-gpt.bash \
+	../../scripts/make-gpt.sh \
+	../../scripts/make-image.sh \
+	../../scripts/sfdisk-field.awk
 
 PACKAGES_FILE != \
 	if [ -n "$$PACKAGES" ]; then \

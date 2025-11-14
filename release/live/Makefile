@@ -9,14 +9,8 @@ DTBS ?= build/empty
 
 dest = build/live.img
 
-$(dest): ../../scripts/format-uuid.bash ../../scripts/make-gpt.bash ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat $(ROOT_FS_IMAGES)
-	uuids=$$(../../scripts/format-uuid.awk < $(ROOT_FS_VERITY_ROOTHASH)) && \
-	set -euo pipefail -- $$uuids && \
-	exec ../../scripts/make-gpt.sh $@.tmp \
-	    build/boot.fat:c12a7328-f81f-11d2-ba4b-00a0c93ec93b \
-	    $(ROOT_FS_VERITY):verity:$$3 \
-	    $(ROOT_FS):root:$$1
-	mv $@.tmp $@
+$(dest): build/boot.fat $(LIVE_IMAGE_DEPS) $(ROOT_FS_IMAGES)
+	../../scripts/make-image.sh live $@ $(ROOT_FS_DIR)
 
 build/empty:
 	mkdir -p $@

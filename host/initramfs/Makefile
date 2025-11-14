@@ -35,13 +35,8 @@ build/mountpoints:
 	cd build/mountpoints && mkdir -p $(MOUNTPOINTS)
 	find build/mountpoints -mindepth 1 -exec touch -d @0 {} ';'
 
-build/live.img: ../../scripts/format-uuid.bash ../../scripts/make-gpt.bash ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat $(ROOT_FS_IMAGES)
-	uuids=$$(../../scripts/format-uuid.awk < $(ROOT_FS_VERITY_ROOTHASH)) && \
-	set -euo pipefail -- $$uuids && \
-	exec ../../scripts/make-gpt.sh $@.tmp \
-	    $(ROOT_FS_VERITY):verity:$$3 \
-	    $(ROOT_FS):root:$$1
-	mv $@.tmp $@
+build/live.img: $(LIVE_IMAGE_DEPS) $(dest)/timestamp
+	../../scripts/make-image.sh live $@ $(ROOT_FS_DIR)
 
 build/loop.tar: build/live.img
 	$(TAR) -cf $@ build/live.img
