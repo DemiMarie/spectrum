@@ -30,6 +30,7 @@ stdenv.mkDerivation {
       ./.
       ../../lib/common.mk
       ../../scripts/format-uuid.sh
+      ../../scripts/make-gpt.bash
       ../../scripts/make-gpt.sh
       ../../scripts/sfdisk-field.awk
     ]);
