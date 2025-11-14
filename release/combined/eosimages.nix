@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2021-2023 Alyssa Ross <hi@alyssa.is>
 
 import ../../lib/call-package.nix (
-{ callSpectrumPackage, runCommand, e2fsprogs, tar2ext4 }:
+{ callSpectrumPackage, runCommand, e2fsprogs, tar2ext4, config }:
 
 runCommand "eosimages.img" {
   nativeBuildInputs = [ e2fsprogs tar2ext4 ];
@@ -12,11 +12,12 @@ runCommand "eosimages.img" {
   unsafeDiscardReferences = { out = true; };
   dontFixup = true;
 } ''
+  set -euo pipefail
   mkdir dir
   cd dir
-  ln -s $image $imageName
-  sha256sum $imageName > $imageName.sha256
-  tar -chf $NIX_BUILD_TOP/eosimages.tar *
-  tar2ext4 -i $NIX_BUILD_TOP/eosimages.tar -o $out
-  e2label $out eosimages
+  ln -s -- "$image" "$imageName"
+  gzip -${builtins.toString (0 + config.compressionLevel)} < "$image" > "$imageName.gz"
+  sha256sum -- "$imageName.gz" > "$imageName.gz.sha256"
+  tar -ch -- "$imageName.gz" "$imageName.gz.sha256" | tar2ext4 -o "$out"
+  e2label "$out" eosimages
 '') (_: {})

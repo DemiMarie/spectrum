@@ -4,4 +4,5 @@
 {
   pkgsFun = import ./nixpkgs.default.nix;
   pkgsArgs = {};
+  compressionLevel = 1;
 }

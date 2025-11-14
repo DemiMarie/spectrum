@@ -42,10 +42,30 @@ still take a very long time.
 == Installing Spectrum
 
 To install Spectrum on a computer, you can use a USB drive as a
-bootable Spectrum installer device.  When booting a system from the
-installer device, you will be able to choose whether to try out
-Spectrum without installing it on your system (as a live image), or to
-install it to your computer's internal storage.
+bootable Spectrum installer device.  You will need to choose whether to
+try out Spectrum without installing it on your system (as a live image),
+or to install it to your computer's internal storage.
+
+=== Building A Live Image
+
+First, you need to build the Spectrum image:
+
+[source,shell]
+----
+git clone https://spectrum-os.org/git/spectrum
+nix-build spectrum/release/live
+----
+
+If you haven't set up the xref:binary-cache.adoc[binary cache], this
+will take a very long time.  When it's done, a symbolic link named
+"result" will appear in the current directory, pointing to the
+installer image.  Write that image to a USB drive, for example using
+`dd` (command line) or
+https://gitlab.com/bztsrc/usbimager[`usbimager`] (graphical, available
+in Nixpkgs).  Boot your system from the USB drive, and Spectrum should
+be ready for you to use.
+
+=== Building The Installer
 
 First, you need to build the Spectrum image:
 
@@ -62,8 +82,7 @@ installer image.  Write that image to a USB drive, for example using
 `dd` (command line) or
 https://gitlab.com/bztsrc/usbimager[`usbimager`] (graphical, available
 in Nixpkgs).  Boot your system from the USB drive, and you should see
-a menu allowing you to choose between "Try Spectrum" and "Install
-Spectrum".
+a menu allowing you to "Install Spectrum".
 
 NOTE: While it's possible to install Spectrum to your internal
 storage, at this point in Spectrum's development there is not much
