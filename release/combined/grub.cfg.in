@@ -15,11 +15,6 @@ set gfxpayload=keep
 terminal_output gfxterm
 terminal_output console
 
-menuentry "Try Spectrum" {
-  loopback live (hd0,gpt3)/Spectrum-0.0-x86_64-generic.0.Live.img
-  chainloader (live,gpt1)/EFI/Linux/spectrum.efi
-}
-
 menuentry "Install Spectrum" {
   set root=(hd0,gpt2)
   linux @linux@ @kernelParams@
