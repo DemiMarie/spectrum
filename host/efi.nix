@@ -31,11 +31,11 @@ runCommand "spectrum-efi" {
           find ${rootfs.kernel}/dtbs -name '*.dtb' -print0 | tr '\0' ' '
       fi
   } | ukify build \
-      --output "$out/spectrum.efi" \
+      --output "$out/Spectrum_${config.version}.efi" \
       --config /dev/stdin \
       --linux ${kernel} \
       --initrd ${initramfs} \
       --os-release $'NAME="Spectrum"\n' \
-      --cmdline "ro intel_iommu=on roothash=$roothash"
+      --cmdline "ro intel_iommu=on roothash=$roothash x-spectrum-version=$VERSION"
   ''
 ) (_: {})

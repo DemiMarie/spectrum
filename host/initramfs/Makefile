@@ -36,7 +36,7 @@ build/mountpoints:
 	find build/mountpoints -mindepth 1 -exec touch -d @0 {} ';'
 
 build/live.img: $(LIVE_IMAGE_DEPS) $(dest)/timestamp
-	../../scripts/make-image.sh live $@ $(ROOT_FS_DIR)
+	../../scripts/make-image.sh live VERSION $@ $(ROOT_FS_DIR)
 
 build/loop.tar: build/live.img
 	$(TAR) -cf $@ build/live.img

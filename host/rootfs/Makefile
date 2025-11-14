@@ -96,7 +96,7 @@ clean:
 .PHONY: clean
 
 build/live.img: $(LIVE_IMAGE_DEPS) build/timestamp
-	../../scripts/make-image.sh live $@ $(ROOT_FS_DIR)
+	../../scripts/make-image.sh live $(VERSION) $@ $(ROOT_FS_DIR)
 
 debug:
 	$(GDB) -q \

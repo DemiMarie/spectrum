@@ -9,13 +9,16 @@ case $0 in
 *) dir=. ;;
 esac
 case $#,${1-} in
-4,release | 3,live) output_file=$2 root_fs_dir=$3 fat_file=${4-} ;;
+5,release | 4,live)
+	shift
+	version=$1 output_file=$2 root_fs_dir=$3 fat_file=${4-}
+	;;
 *)
-	echo 'Usage: make-image.sh [release OUTPUT_FILE ROOT_FS_DIR FAT_IMAGE|live OUTPUT_FILE ROOT_FS_DIR]' >&2
+	echo 'Usage: make-image.sh [release VERSION OUTPUT_FILE ROOT_FS_DIR FAT_IMAGE|live VERSION OUTPUT_FILE ROOT_FS_DIR]' >&2
 	exit 1
 	;;
 esac
-shift
+
 for i; do
 	# Some characters not special to the shell can't be handled by this code.
 	case $i in
@@ -39,6 +42,6 @@ set -- $root_hashes
 
 "$dir/make-gpt.sh" "$output_file.tmp" \
 	${fat_file:+"$fat_file:c12a7328-f81f-11d2-ba4b-00a0c93ec93b"} \
-	"$root_fs_dir/rootfs.verity.superblock:verity:$3" \
-	"$root_fs_dir/rootfs:root:$1"
+	"$root_fs_dir/rootfs.verity.superblock:verity:$3:Spectrum_$version" \
+	"$root_fs_dir/rootfs:root:$1:Spectrum_$version"
 mv -- "$output_file.tmp" "$output_file"

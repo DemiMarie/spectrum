@@ -10,7 +10,7 @@ DTBS ?= build/empty
 dest = build/live.img
 
 $(dest): build/boot.fat $(LIVE_IMAGE_DEPS) $(ROOT_FS_IMAGES)
-	../../scripts/make-image.sh live $@ $(ROOT_FS_DIR)
+	../../scripts/make-image.sh release $(VERSION) $@ $(ROOT_FS_DIR) build/boot.fat
 
 build/empty:
 	mkdir -p $@

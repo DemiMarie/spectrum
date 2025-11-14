@@ -4,4 +4,5 @@
 {
   pkgsFun = import ./nixpkgs.default.nix;
   pkgsArgs = {};
+  version = "0.0.0";
 }
