@@ -39,9 +39,17 @@ root_hashes=$(LC_ALL=C awk -f "${dir}/format-uuid.awk" < \
 # and has no characters special for globbing.
 # shellcheck disable=SC2086
 set -- $root_hashes
-
-"$dir/make-gpt.sh" "$output_file.tmp" \
-	${fat_file:+"$fat_file:c12a7328-f81f-11d2-ba4b-00a0c93ec93b"} \
-	"$root_fs_dir/rootfs.verity.superblock:verity:$3:Spectrum_$version" \
-	"$root_fs_dir/rootfs:root:$1:Spectrum_$version"
+if [ -n "$fat_file" ]; then
+	"$dir/make-gpt.sh" "$output_file.tmp" \
+		${fat_file:+"$fat_file:c12a7328-f81f-11d2-ba4b-00a0c93ec93b"} \
+		"$root_fs_dir/rootfs.verity.superblock:verity:$1:Spectrum_$version.verity:1024MiB" \
+		"$root_fs_dir/rootfs:root:$2:Spectrum_$version:20480MiB" \
+		"/dev/null:verity:$3:_empty:1024MiB" \
+		"/dev/null:root:$4:_empty:20480MiB"
+else
+	"$dir/make-gpt.sh" "$output_file.tmp" \
+		${fat_file:+"$fat_file:c12a7328-f81f-11d2-ba4b-00a0c93ec93b"} \
+		"$root_fs_dir/rootfs.verity.superblock:verity:$3:Spectrum_$version" \
+		"$root_fs_dir/rootfs:root:$1:Spectrum_$version"
+fi
 mv -- "$output_file.tmp" "$output_file"
