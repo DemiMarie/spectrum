@@ -29,7 +29,7 @@ stdenv.mkDerivation {
     fileset = lib.fileset.intersection src (lib.fileset.unions [
       ./.
       ../../lib/common.mk
-      ../../scripts/format-uuid.sh
+      ../../scripts/format-uuid.awk
       ../../scripts/make-gpt.sh
       ../../scripts/sfdisk-field.awk
     ]);

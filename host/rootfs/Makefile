@@ -90,9 +90,11 @@ clean:
 .PHONY: clean
 
 build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(ROOT_FS_DIR)/verity-timestamp $(ROOT_FS)
+	uuids=$$(awk -f ../../scripts/format-uuid.awk < $(ROOT_FS_VERITY_ROOTHASH)) && \
+	set -euo pipefail -- $$uuids && \
 	bash ../../scripts/make-gpt.sh $@.tmp \
-	    $(ROOT_FS)/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(ROOT_FS_VERITY_ROOTHASH) bs=32 skip=1 count=1 status=none)") \
-	    $(ROOT_FS)/rootfs:root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH)")
+	    $(ROOT_FS_VERITY):verity:$$3 \
+	    $(ROOT_FS):root:$$1
 	mv $@.tmp $@
 
 debug:
