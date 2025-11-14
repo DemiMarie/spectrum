@@ -14,8 +14,10 @@ $(dest): ../../scripts/format-uuid.bash ../../scripts/make-gpt.sh ../../scripts/
 	set -euo pipefail -- $$uuids && \
 	bash ../../scripts/make-gpt.sh $@.tmp \
 	    build/boot.fat:c12a7328-f81f-11d2-ba4b-00a0c93ec93b \
-	    $(ROOT_FS_VERITY):verity:$$3:$(VERSION) \
-	    $(ROOT_FS):root:$$1:$(VERSION)
+	    $(ROOT_FS_VERITY):verity:$$3:$(VERSION):162MiB \
+	    $(ROOT_FS):root:$$1:$(VERSION):20000MiB \
+	    /dev/null:verity:$$4:$(VERSION):162MiB \
+	    /dev/null:root:$$2:$(VERSION):20000MiB
 	mv $@.tmp $@
 
 build/empty:
