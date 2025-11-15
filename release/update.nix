@@ -14,15 +14,17 @@ runCommand "spectrum-update-directory" {
   dontFixup = true;
   env = { VERSION = config.version; };
 } ''
+  # One would expect that this is enabled already but it is not.
+  set -euo pipefail
   mkdir -- "$out"
   cd -- "$out"
   read -r roothash < ${efi.rootfs}/rootfs.verity.roothash
   [[ "$roothash" =~ ^[0-9a-f]{64}$ ]]
   cp -- ${efi}/"Spectrum_$VERSION.efi" "Spectrum_$VERSION.efi"
-  cp -- ${efi.rootfs}/rootfs.verity.superblock "Spectrum_$VERSION_''${roothash:32:32}.verity"
-  cp -- ${efi.rootfs}/rootfs "Spectrum_$VERSION_''${roothash:0:32}.rootfs"
+  cp -- ${efi.rootfs}/rootfs.verity.superblock "Spectrum_''${VERSION}_''${roothash:32:32}.verity"
+  cp -- ${efi.rootfs}/rootfs "Spectrum_''${VERSION}_''${roothash:0:32}.rootfs"
   sha256sum "Spectrum_$VERSION.efi" \
-    "Spectrum_$VERSION_''${roothash:32:32}.verity" \
-    "Spectrum_$VERSION_''${roothash:0:32}.rootfs" > SHA256SUMS
+    "Spectrum_''${VERSION}_''${roothash:32:32}.verity" \
+    "Spectrum_''${VERSION}_''${roothash:0:32}.rootfs" > SHA256SUMS
   ''
 ) (_: {})
