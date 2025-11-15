@@ -22,9 +22,15 @@ runCommand "spectrum-update-directory" {
   [[ "$roothash" =~ ^[0-9a-f]{64}$ ]]
   cp -- ${efi}/"Spectrum_$VERSION.efi" "Spectrum_$VERSION.efi"
   cp -- ${efi.rootfs}/rootfs.verity.superblock "Spectrum_''${VERSION}_''${roothash:32:32}.verity"
-  cp -- ${efi.rootfs}/rootfs "Spectrum_''${VERSION}_''${roothash:0:32}.rootfs"
-  sha256sum "Spectrum_$VERSION.efi" \
+  cp -- ${efi.rootfs}/rootfs "Spectrum_''${VERSION}_''${roothash:0:32}.root"
+  ln -s "Spectrum_''${VERSION}_''${roothash:32:32}.verity" "Spectrum_$VERSION.verity"
+  ln -s "Spectrum_''${VERSION}_''${roothash:0:32}.root" "Spectrum_$VERSION.root"
+  sha256sum -b "Spectrum_$VERSION.efi" \
     "Spectrum_''${VERSION}_''${roothash:32:32}.verity" \
-    "Spectrum_''${VERSION}_''${roothash:0:32}.rootfs" > SHA256SUMS
+    "Spectrum_''${VERSION}_''${roothash:0:32}.root" > SHA256SUMS
+  # Add hashes for the short-named files
+  sed -nEi -- 'p
+s,^([[:xdigit:]]{64} [ *]Spectrum_.*)_[[:xdigit:]]{32}\.(root|verity)$,\1.\2,p' \
+    SHA256SUMS
   ''
 ) (_: {})
