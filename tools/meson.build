@@ -20,6 +20,7 @@ if get_option('host')
   add_languages('rust')
 
   add_project_arguments('-W', 'clippy::map-unwrap-or', language : 'rust')
+  add_project_arguments('-W', 'clippy::ptr-as-ptr', language : 'rust')
 
   miniserde_dep = dependency('miniserde-rs')
 

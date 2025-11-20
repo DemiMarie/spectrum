@@ -97,7 +97,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                 // SAFETY: we check the result.
                 let net = unsafe {
                     net_setup(
-                        name_bytes.as_ptr() as _,
+                        name_bytes.as_ptr().cast(),
                         name_bytes
                             .len()
                             .try_into()
