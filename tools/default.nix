@@ -73,7 +73,7 @@ stdenv.mkDerivation (finalAttrs: {
     ] ++ lib.optionals appSupport [
       ./xdg-desktop-portal-spectrum
     ] ++ lib.optionals hostSupport [
-      ./lsvm
+      ./lsvm.rs
       ./sd-notify-adapter.c
       ./start-vmm
       ./subprojects
