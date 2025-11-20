@@ -20,8 +20,7 @@ fn prog_name() -> String {
         .as_ref()
         .map(Path::new)
         .and_then(Path::file_name)
-        .map(OsStr::to_string_lossy)
-        .unwrap_or(Cow::Borrowed("lsvm"))
+        .map_or(Cow::Borrowed("lsvm"), OsStr::to_string_lossy)
         .into_owned()
 }
 

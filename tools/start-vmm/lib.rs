@@ -25,8 +25,7 @@ pub fn prog_name() -> String {
         .as_ref()
         .map(Path::new)
         .and_then(Path::file_name)
-        .map(OsStr::to_string_lossy)
-        .unwrap_or(Cow::Borrowed("start-vmm"))
+        .map_or(Cow::Borrowed("start-vmm"), OsStr::to_string_lossy)
         .into_owned()
 }
 

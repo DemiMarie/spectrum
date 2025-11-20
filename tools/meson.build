@@ -16,12 +16,10 @@ if not get_option('unwind')
   add_project_arguments('-C', 'panic=abort', language : 'rust')
 endif
 
-if get_option('build')
-  executable('lseek', 'lseek.c', c_args : '-D_XOPEN_SOURCE', install : true)
-endif
-
 if get_option('host')
   add_languages('rust')
+
+  add_project_arguments('-W', 'clippy::map-unwrap-or', language : 'rust')
 
   miniserde_dep = dependency('miniserde-rs')
 
@@ -31,6 +29,10 @@ if get_option('host')
 
   subdir('lsvm')
   subdir('start-vmm')
+endif
+
+if get_option('build')
+  executable('lseek', 'lseek.c', c_args : '-D_XOPEN_SOURCE', install : true)
 endif
 
 if get_option('app')
