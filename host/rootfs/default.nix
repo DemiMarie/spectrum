@@ -35,28 +35,11 @@ let
   packages = [
     cloud-hypervisor cryptsetup dbus execline inotify-tools iproute2
     jq mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools
-    virtiofsd xdg-desktop-portal-spectrum-host
+    util-linuxMinimal virtiofsd xdg-desktop-portal-spectrum-host
 
     (busybox.override {
-      extraConfig = ''
-        CONFIG_CHATTR n
-        CONFIG_DEPMOD n
-        CONFIG_FINDFS n
-        CONFIG_HALT n
-        CONFIG_INIT n
-        CONFIG_INSMOD n
-        CONFIG_IP n
-        CONFIG_LSATTR n
-        CONFIG_LSMOD n
-        CONFIG_MKE2FS n
-        CONFIG_MKFS_EXT2 n
-        CONFIG_MODINFO n
-        CONFIG_MODPROBE n
-        CONFIG_MOUNT n
-        CONFIG_POWEROFF n
-        CONFIG_REBOOT n
-        CONFIG_RMMOD n
-      '';
+      # Use a separate file as it is a bit too big.
+      extraConfig = builtins.readFile ./busybox-config;
     })
 
   # Take kmod from pkgsGui since we use pkgsGui.kmod.lib below anyway.
@@ -96,6 +79,12 @@ let
     mkdir -p $out/usr/bin $out/usr/share/dbus-1/services \
       $out/usr/share/icons/hicolor/20x20/apps
 
+    # lndir silently ignores existing links, so run it before ln
+    # so that ln catches any duplicates.
+    for pkg in ${escapeShellArgs usrPackages}; do
+        lndir -ignorelinks -silent "$pkg" "$out/usr"
+    done
+
     # Weston doesn't support SVG icons.
     inkscape -w 20 -h 20 \
         -o $out/usr/share/icons/hicolor/20x20/apps/com.system76.CosmicFiles.png \
@@ -110,18 +99,9 @@ let
     ln -st $out/usr/share/dbus-1/services \
         ${pkgsGui.xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
 
-    for pkg in ${escapeShellArgs usrPackages}; do
-        lndir -ignorelinks -silent "$pkg" "$out/usr"
-    done
-
     ${concatStrings (mapAttrsToList (name: path: ''
       ln -s ${path} $out/usr/lib/spectrum/vm/${name}
     '') appvms)}
-
-    # TODO: this is a hack and we should just build the util-linux
-    # programs we want.
-    # https://lore.kernel.org/util-linux/87zgrl6ufb.fsf@alyssa.is/
-    ln -s ${util-linuxMinimal}/bin/{findfs,uuidgen,lsblk,mount} $out/usr/bin
   '';
 in
 
