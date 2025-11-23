@@ -1,9 +1,38 @@
 #!/bin/execlineb -P
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
 s6-ipcserver -1a 0700 -C 1 -b 1 env/crosvm.sock
 
+bwrap
+  --unshare-all
+  # --unshare-all only implies --unshare-user-try.
+  # Make this more than a "try".
+  --unshare-user
+  --bind /run/user/0/wayland-1 /run/user/0/wayland-1
+  --ro-bind /usr /usr
+  --ro-bind /lib /lib
+  --tmpfs /tmp
+  --dev /dev
+  --tmpfs /dev/shm
+  --ro-bind /nix /nix
+  --disable-userns
+  --proc /proc
+  --ro-bind /proc/sys /proc/sys
+  --tmpfs /proc/scsi
+  --remount-ro /proc/scsi
+  --tmpfs /proc/acpi
+  --remount-ro /proc/acpi
+  --tmpfs /proc/fs
+  --remount-ro /proc/fs
+  --tmpfs /proc/irq
+  --remount-ro /proc/irq
+  --ro-bind /dev/null /proc/timer_list
+  --ro-bind /dev/null /proc/kcore
+  --ro-bind /dev/null /proc/kallsyms
+  --ro-bind /dev/null /proc/sysrq-trigger
+  --
 crosvm --no-syslog device gpu
   --fd 0
   --wayland-sock /run/user/0/wayland-1
