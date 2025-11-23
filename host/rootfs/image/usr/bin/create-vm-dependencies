@@ -8,6 +8,6 @@ if { mkdir -p /run/vm/by-id/${1}/doc-run/doc /run/vm/by-id/${1}/fs/doc }
 if { mount --rbind /run/vm/by-id/${1}/doc-run/doc /run/vm/by-id/${1}/fs/doc }
 
 if { s6-instance-create /run/service/vm-services $1 }
-elglob services /run/service/vm-services/instance/${1}/services/*
+elglob -0 services /run/service/vm-services/instance/${1}/services/*
 forx -pE service { $services }
 s6-svwait -U $service

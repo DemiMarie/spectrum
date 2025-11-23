@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
 
 pipeline {
-  elglob modules_devname /lib/modules/*/modules.devname
+  elglob -0 modules_devname /lib/modules/*/modules.devname
   /etc/parse-devname $modules_devname
 }
 
