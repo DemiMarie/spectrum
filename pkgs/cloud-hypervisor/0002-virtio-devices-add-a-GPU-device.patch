@@ -1,4 +1,4 @@
-From ab2e3dd78df006b8c0f535855096fd67462493ae Mon Sep 17 00:00:00 2001
+From 3bfb2da3929830be4c52c52526057f1df1419a05 Mon Sep 17 00:00:00 2001
 From: Alyssa Ross <alyssa.ross@unikie.com>
 Date: Wed, 7 Sep 2022 14:16:29 +0000
 Subject: [PATCH 2/2] virtio-devices: add a GPU device
@@ -33,7 +33,7 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  virtio-devices/src/lib.rs                     |   4 +-
  virtio-devices/src/seccomp_filters.rs         |  16 +
  virtio-devices/src/transport/pci_device.rs    |   4 +-
- virtio-devices/src/vhost_user/gpu.rs          | 416 ++++++++++++++++++
+ virtio-devices/src/vhost_user/gpu.rs          | 407 ++++++++++++++++++
  virtio-devices/src/vhost_user/mod.rs          |   6 +
  .../src/vhost_user/vu_common_ctrl.rs          |   9 +-
  vmm/src/api/dbus/mod.rs                       |   7 +-
@@ -46,7 +46,7 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  vmm/src/lib.rs                                |  80 +++-
  vmm/src/vm.rs                                 |  28 +-
  vmm/src/vm_config.rs                          |  10 +
- 19 files changed, 968 insertions(+), 29 deletions(-)
+ 19 files changed, 959 insertions(+), 29 deletions(-)
  create mode 100644 virtio-devices/src/vhost_user/gpu.rs
 
 REUSE-IgnoreStart
@@ -299,10 +299,10 @@ index 4f34ffea6..96d0ff8b6 100644
                      );
 diff --git a/virtio-devices/src/vhost_user/gpu.rs b/virtio-devices/src/vhost_user/gpu.rs
 new file mode 100644
-index 000000000..1db0dec19
+index 000000000..0811906b3
 --- /dev/null
 +++ b/virtio-devices/src/vhost_user/gpu.rs
-@@ -0,0 +1,416 @@
+@@ -0,0 +1,407 @@
 +// Copyright 2019 Intel Corporation. All Rights Reserved.
 +// Copyright 2022 Unikie
 +// Copyright 2023 Alyssa Ross <hi@alyssa.is>
@@ -414,15 +414,6 @@ index 000000000..1db0dec19
 +
 +        Ok(0)
 +    }
-+}
-+
-+#[derive(Default)]
-+#[repr(C, packed)]
-+pub struct VirtioGpuConfig {
-+    pub events_read: u32,
-+    pub events_clear: u32,
-+    pub num_scanouts: u32,
-+    pub num_capsets: u32,
 +}
 +
 +pub struct Gpu {
