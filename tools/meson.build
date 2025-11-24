@@ -4,7 +4,7 @@
 project('spectrum-tools', 'c',
   default_options : {
     'c_std': 'c23',
-    'rust_std': '2018',
+    'rust_std': '2024',
     'warning_level': '3',
   })
 

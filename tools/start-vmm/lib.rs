@@ -83,10 +83,14 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
         },
         fs: [FsConfig {
             tag: "virtiofs0",
-            socket: format!("/run/service/vm-services/instance/{vm_name}/data/service/vhost-user-fs/env/virtiofsd.sock"),
+            socket: format!(
+                "/run/service/vm-services/instance/{vm_name}/data/service/vhost-user-fs/env/virtiofsd.sock"
+            ),
         }],
         gpu: vec![GpuConfig {
-            socket: format!("/run/service/vm-services/instance/{vm_name}/data/service/vhost-user-gpu/env/crosvm.sock"),
+            socket: format!(
+                "/run/service/vm-services/instance/{vm_name}/data/service/vhost-user-gpu/env/crosvm.sock"
+            ),
         }],
         memory: MemoryConfig {
             size: 1 << 30,

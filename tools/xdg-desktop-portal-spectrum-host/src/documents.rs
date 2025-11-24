@@ -6,8 +6,8 @@ use std::os::unix::prelude::*;
 use std::path::PathBuf;
 use std::sync::OnceLock;
 
-use rustix::fs::{open, Mode, OFlags};
-use zbus::{proxy, Connection};
+use rustix::fs::{Mode, OFlags, open};
+use zbus::{Connection, proxy};
 
 const DOCUMENT_ADD_FLAGS_REUSE_EXISTING: u32 = 1 << 0;
 

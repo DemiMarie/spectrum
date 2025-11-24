@@ -12,7 +12,7 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use std::string::FromUtf8Error;
 
-use miniserde::{json, Serialize};
+use miniserde::{Serialize, json};
 
 use crate::net::MacAddress;
 use crate::s6::notify_readiness;
@@ -148,10 +148,10 @@ pub fn add_net(vm_dir: &Path, net: &NetConfig) -> Result<(), NonZeroI32> {
         .spawn()
         .or(Err(EPERM))?;
 
-    if let Ok(ch_remote_status) = ch_remote.wait() {
-        if ch_remote_status.success() {
-            return Ok(());
-        }
+    if let Ok(ch_remote_status) = ch_remote.wait()
+        && ch_remote_status.success()
+    {
+        return Ok(());
     }
 
     Err(EPROTO)

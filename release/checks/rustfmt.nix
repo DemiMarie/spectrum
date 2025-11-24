@@ -13,6 +13,6 @@ runCommand "spectrum-rustfmt" {
   nativeBuildInputs = [ rustfmt ];
 } ''
   shopt -s globstar
-  rustfmt --check --edition 2018 $src/**/*.rs
+  rustfmt --check --edition 2024 $src/**/*.rs
   touch $out
 '') (_: {})

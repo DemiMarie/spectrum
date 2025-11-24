@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: EUPL-1.2+
-// SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2022-2025 Alyssa Ross <hi@alyssa.is>
 
 use std::borrow::Cow;
 use std::ffi::{c_char, c_int};
 use std::fmt::{self, Display, Formatter};
 
-use miniserde::ser::Fragment;
 use miniserde::Serialize;
+use miniserde::ser::Fragment;
 
 use crate::ch::NetConfigC;
 
@@ -36,7 +36,8 @@ impl Serialize for MacAddress {
     }
 }
 
-extern "C" {
+// SAFETY: declaration is compatible with C.
+unsafe extern "C" {
     /// # Safety
     ///
     /// The rest of the result is only valid if the returned fd is not -1.

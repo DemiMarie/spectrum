@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2022-2023 Alyssa Ross <hi@alyssa.is>
 
 use std::collections::BTreeSet;
-use std::fs::{create_dir, create_dir_all, File};
+use std::fs::{File, create_dir, create_dir_all};
 use std::os::unix::fs::symlink;
 use std::path::PathBuf;
 

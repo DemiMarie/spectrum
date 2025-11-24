@@ -19,7 +19,7 @@ use async_executor::StaticExecutor;
 use async_io::Async;
 use futures_lite::prelude::*;
 use futures_lite::stream::StreamExt;
-use zbus::{connection, AuthMechanism, Connection, MessageStream};
+use zbus::{AuthMechanism, Connection, MessageStream, connection};
 
 use file_chooser::FileChooser;
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: EUPL-1.2+
-// SPDX-FileCopyrightText: 2022-2023 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2022-2023, 2025 Alyssa Ross <hi@alyssa.is>
 
 use std::ffi::OsString;
 use std::io;
@@ -10,7 +10,8 @@ use std::sync::LazyLock;
 
 use start_vmm::prog_name;
 
-extern "C" {
+// SAFETY: declaration is compatible with C.
+unsafe extern "C" {
     fn mkdtemp(template: *mut c_char) -> *mut c_char;
 }
 

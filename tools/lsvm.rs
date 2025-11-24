@@ -6,13 +6,13 @@ use std::collections::HashMap;
 use std::env::args_os;
 use std::ffi::{OsStr, OsString};
 use std::fs::read_dir;
-use std::io::{self, stdout, Write};
+use std::io::{self, Write, stdout};
 use std::os::unix::prelude::*;
 use std::path::Path;
-use std::process::{exit, Command, Stdio};
+use std::process::{Command, Stdio, exit};
 use std::str;
 
-use miniserde::{json, Deserialize};
+use miniserde::{Deserialize, json};
 
 fn prog_name() -> String {
     args_os()

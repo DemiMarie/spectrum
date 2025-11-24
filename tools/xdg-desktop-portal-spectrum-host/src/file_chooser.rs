@@ -10,7 +10,7 @@ use std::sync::OnceLock;
 use percent_encoding::percent_decode;
 use url::Url;
 use zbus::zvariant::{Array, ObjectPath, OwnedValue, Value};
-use zbus::{interface, Connection};
+use zbus::{Connection, interface};
 
 use crate::documents::share_file;
 use crate::msg;

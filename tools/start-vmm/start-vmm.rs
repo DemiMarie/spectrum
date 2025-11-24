@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: EUPL-1.2+
-// SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2022-2025 Alyssa Ross <hi@alyssa.is>
 
 use std::env::args_os;
 use std::fs::File;
@@ -28,7 +28,8 @@ unsafe fn run() -> Result<(), String> {
     }
 
     let vm_dir = Path::new("/run/vm/by-id").join(vm_name);
-    let ready_fd = File::from_raw_fd(3);
+    // SAFETY: invoker promises this FD is valid.
+    let ready_fd = unsafe { File::from_raw_fd(3) };
 
     create_vm(&vm_dir, ready_fd)
 }
