@@ -110,9 +110,11 @@ clean:
 .PHONY: clean
 
 build/live.img: ../../scripts/format-uuid.awk ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/verity-timestamp $(ROOT_FS_IMAGES)
+	uuids=$$(awk -f ../../scripts/format-uuid.awk < $(ROOT_FS_VERITY_ROOTHASH)) && \
+	set -u -- $$uuids && \
 	../../scripts/make-gpt.sh $@.tmp \
-	    $(ROOT_FS_VERITY):verity:$$(awk -f ../../scripts/format-uuid.awk "$$(dd if=$(ROOT_FS_VERITY_ROOTHASH) bs=32 skip=1 count=1 status=none)"):Spectrum_'$(VERSION).verity' \
-	    $(ROOT_FS_IMAGE):root:$$(awk -f ../../scripts/format-uuid.awk "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH))"):Spectrum_'$(VERSION)'
+	    $(ROOT_FS_VERITY):verity:$$2:Spectrum_'$(VERSION).verity' \
+	    $(ROOT_FS_IMAGE):root:$$1:Spectrum_'$(VERSION)'
 	mv $@.tmp $@
 
 debug:
