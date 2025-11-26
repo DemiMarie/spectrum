@@ -1,12 +1,18 @@
 #!/bin/execlineb -P
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2023-2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
-s6-ipcserver-socketbinder -B /run/pipewire/pipewire-0
+# PipeWire likes to create its own .lock files for its sockets,
+# so we have to disable lockfile creation in s6-ipcserver-socketbinder
+# by disabling SO_REUSEADDR, and work around that by removing potential
+# previous instances of the sockets first.
+if { rm -f /run/pipewire/pipewire-0 /run/pipewire/pipewire-0-manager }
+
+s6-ipcserver-socketbinder -BD /run/pipewire/pipewire-0
 fdmove -c 3 0
 
-s6-ipcserver-socketbinder -B /run/pipewire/pipewire-0-manager
+s6-ipcserver-socketbinder -BD /run/pipewire/pipewire-0-manager
 fdmove -c 4 0
 
 redirfd -r 0 /dev/null
