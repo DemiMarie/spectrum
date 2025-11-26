@@ -8,7 +8,7 @@
 
 foreground { mkdir /tmp/.X11-unix }
 
-s6-ipcserver-socketbinder -B /run/user/0/wayland-0
+s6-ipcserver-socketbinder -B /run/wayland
 fdmove -c 3 0
 
 s6-ipcserver-socketbinder -B /tmp/.X11-unix/X0
