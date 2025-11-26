@@ -1,8 +1,17 @@
 #!/bin/execlineb -P
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2023, 2025 Alyssa Ross <hi@alyssa.is>
+
+s6-ipcserver-socketbinder -Ba 0770 /run/session-bus
+
+export LISTEN_FDS 1
+getpid LISTEN_PID
+
+fdmove -c 3 0
+redirfd -r 0 /dev/null
 
 dbus-daemon
+  --address systemd:
   --config-file /etc/dbus-1/session.conf
   --nofork
-  --print-address 3
+  --print-address 4
