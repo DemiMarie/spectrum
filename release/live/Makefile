@@ -7,11 +7,11 @@ include ../../lib/common.mk
 
 dest = build/live.img
 
-$(dest): ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat $(ROOT_FS_IMAGES)
+$(dest): ../../scripts/format-uuid.awk ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/boot.fat $(ROOT_FS_IMAGES)
 	../../scripts/make-gpt.sh $@.tmp \
 	    build/boot.fat:c12a7328-f81f-11d2-ba4b-00a0c93ec93b \
-	    $(ROOT_FS_VERITY):verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(ROOT_FS_VERITY_ROOTHASH) bs=32 skip=1 count=1 status=none)"):Spectrum_'$(VERSION).verity:162' \
-	    $(ROOT_FS_IMAGE):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH))"):Spectrum_'$(VERSION):20000' \
+	    $(ROOT_FS_VERITY):verity:$$(awk -f ../../scripts/format-uuid.awk "$$(dd if=$(ROOT_FS_VERITY_ROOTHASH) bs=32 skip=1 count=1 status=none)"):Spectrum_'$(VERSION).verity:162' \
+	    $(ROOT_FS_IMAGE):root:$$(awk -f ../../scripts/format-uuid.awk "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH))"):Spectrum_'$(VERSION):20000' \
 	    /dev/null:verity:18f2ccff-92f1-4bb1-a80e-24f76ecda90c:_empty:162 \
 	    /dev/null:root:ec0c5ff3-f6b1-4adf-82b4-61336c4d135f:_empty:20000
 	mv $@.tmp $@
