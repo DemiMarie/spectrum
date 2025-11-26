@@ -31,6 +31,7 @@ $(imgdir)/appvm/blk/root.img: ../../scripts/make-gpt.sh ../../scripts/sfdisk-fie
 	mv $@.tmp $@
 
 DIRS = dev run proc sys tmp \
+	etc/s6-linux-init/run-image/pipewire \
 	etc/s6-linux-init/run-image/service \
 	etc/s6-linux-init/run-image/user \
 	etc/s6-linux-init/run-image/wait

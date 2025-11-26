@@ -19,6 +19,8 @@ FILES = \
 	image/etc/s6-linux-init/env/DISPLAY \
 	image/etc/s6-linux-init/env/GTK_USE_PORTAL \
 	image/etc/s6-linux-init/env/NIX_XDG_DESKTOP_PORTAL_DIR \
+	image/etc/s6-linux-init/env/PIPEWIRE_RUNTIME_DIR \
+	image/etc/s6-linux-init/env/PULSE_RUNTIME_PATH \
 	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
 	image/etc/s6-linux-init/env/XDG_DESKTOP_PORTAL_SPECTRUM_GUEST_PORT \
 	image/etc/s6-linux-init/env/XDG_RUNTIME_DIR \

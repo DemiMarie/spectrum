@@ -3,10 +3,10 @@
 # SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
-s6-ipcserver-socketbinder -B /run/user/0/pipewire-0
+s6-ipcserver-socketbinder -B /run/pipewire/pipewire-0
 fdmove -c 3 0
 
-s6-ipcserver-socketbinder -B /run/user/0/pipewire-0-manager
+s6-ipcserver-socketbinder -B /run/pipewire/pipewire-0-manager
 fdmove -c 4 0
 
 redirfd -r 0 /dev/null
