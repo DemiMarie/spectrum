@@ -5,11 +5,13 @@ FILES = \
 	image/etc/dbus-1/session.conf \
 	image/etc/flatpak/installations.d/extra.conf \
 	image/etc/fstab \
+	image/etc/group \
 	image/etc/mdev.conf \
 	image/etc/mdev/iface \
 	image/etc/mdev/listen \
 	image/etc/mdev/virtiofs \
 	image/etc/mdev/wait \
+	image/etc/nsswitch.conf \
 	image/etc/passwd \
 	image/etc/pipewire/pipewire.conf \
 	image/etc/resolv.conf \
