@@ -23,7 +23,6 @@ FILES = \
 	image/etc/s6-linux-init/env/PULSE_RUNTIME_PATH \
 	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
 	image/etc/s6-linux-init/env/XDG_DESKTOP_PORTAL_SPECTRUM_GUEST_PORT \
-	image/etc/s6-linux-init/env/XDG_RUNTIME_DIR \
 	image/etc/s6-linux-init/run-image/service/getty-hvc0/run \
 	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/notification-fd \
 	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/run \
