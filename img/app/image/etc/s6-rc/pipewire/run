@@ -3,6 +3,9 @@
 # SPDX-FileCopyrightText: 2023-2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
+if { chown pipewire:pipewire /run/pipewire }
+if { chmod 0755 /run/pipewire }
+
 # PipeWire likes to create its own .lock files for its sockets,
 # so we have to disable lockfile creation in s6-ipcserver-socketbinder
 # by disabling SO_REUSEADDR, and work around that by removing potential
@@ -23,6 +26,10 @@ fdclose 5
 
 # Wait for sound devices to be available
 if { /etc/mdev/wait controlC0 }
+
+nice -n -11
+s6-softlimit -P 88
+s6-setuidgid pipewire
 
 export LISTEN_FDS 2
 getpid LISTEN_PID
