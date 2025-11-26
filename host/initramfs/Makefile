@@ -35,26 +35,10 @@ build/mountpoints:
 	cd build/mountpoints && mkdir -p $(MOUNTPOINTS)
 	find build/mountpoints -mindepth 1 -exec touch -d @0 {} ';'
 
-# veritysetup format produces two files, but Make only (portably)
-# supports one output per rule, so we combine the two outputs then
-# define two more rules to separate them again.
-build/rootfs.verity: $(ROOT_FS)
-	mkdir -p build
-	$(VERITYSETUP) format $(ROOT_FS) build/rootfs.verity.superblock.tmp \
-	    | awk -F ':[[:blank:]]*' '$$1 == "Root hash" {print $$2; exit}' \
-	    > build/rootfs.verity.roothash.tmp
-	cat build/rootfs.verity.roothash.tmp build/rootfs.verity.superblock.tmp \
-	    > $@
-	rm build/rootfs.verity.roothash.tmp build/rootfs.verity.superblock.tmp
-build/rootfs.verity.roothash: build/rootfs.verity
-	head -n 1 build/rootfs.verity > $@
-build/rootfs.verity.superblock: build/rootfs.verity
-	tail -n +2 build/rootfs.verity > $@
-
-build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/rootfs.verity.superblock build/rootfs.verity.roothash $(ROOT_FS)
+build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk $(ROOT_FS_IMAGES)
 	../../scripts/make-gpt.sh $@.tmp \
-	    build/rootfs.verity.superblock:verity:$$(../../scripts/format-uuid.sh "$$(dd if=build/rootfs.verity.roothash bs=32 skip=1 count=1 status=none)") \
-	    $(ROOT_FS):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 build/rootfs.verity.roothash)")
+	    $(ROOT_FS_VERITY):verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(ROOT_FS_VERITY_ROOTHASH) bs=32 skip=1 count=1 status=none)") \
+	    $(ROOT_FS_IMAGE):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH))")
 	mv $@.tmp $@
 
 build/loop.tar: build/live.img
@@ -69,12 +53,12 @@ clean:
 	rm -rf build
 .PHONY: clean
 
-run: $(dest) build/rootfs.verity.roothash $(RUN_IMAGE)
+run: $(dest) $(ROOT_FS_VERITY_ROOTHASH) $(RUN_IMAGE)
 	@../../scripts/run-qemu.sh -m 4G \
 	    -machine virtualization=on \
 	    -kernel $(KERNEL) \
 	    -initrd $(dest) \
-	    -append "ro earlycon console=hvc0 intel_iommu=on roothash=$$(< build/rootfs.verity.roothash) nokaslr" \
+	    -append "ro earlycon console=hvc0 intel_iommu=on roothash=$$(< $(ROOT_FS_VERITY_ROOTHASH)) nokaslr" \
 	    -cpu max \
 	    -gdb unix:build/gdb.sock,server,nowait \
 	    -parallel none \

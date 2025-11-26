@@ -105,6 +105,7 @@ stdenvNoCC.mkDerivation {
 
   env = {
     PACKAGES_CPIO = packagesCpio;
+    ROOT_FS = rootfs;
   } // lib.optionalAttrs stdenvNoCC.hostPlatform.isx86_64 {
     MICROCODE = microcode;
   };
