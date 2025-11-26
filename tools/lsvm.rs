@@ -85,7 +85,6 @@ fn run() -> Result<(), String> {
             .file_type()
             .map_err(|e| format!("getting type of {:?}: {e}", entry.path()))?
             .is_dir()
-            && entry.file_name() != "by-name"
         {
             names.insert(entry.file_name(), Vec::new());
         }
