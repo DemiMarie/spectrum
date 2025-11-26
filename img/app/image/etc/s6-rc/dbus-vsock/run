@@ -14,4 +14,6 @@ systemd-socket-activate -l vsock::219 --now
 if { fdmove 1 3 echo }
 fdclose 3
 
+s6-setuidgid user
+
 socat ACCEPT-FD:4,fork UNIX-CONNECT:/run/session-bus

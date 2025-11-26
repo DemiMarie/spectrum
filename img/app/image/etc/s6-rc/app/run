@@ -4,15 +4,8 @@
 
 export TMPDIR /run
 
-backtick USER { id -un }
-backtick HOME {
-  importas -i user USER
-  homeof $user
-}
-
-importas -i home HOME
-if { mkdir -p -- $home }
-cd $home
+export HOME /home/user
+cd /home/user
 
 if { /etc/mdev/wait virtiofs0 }
 
@@ -22,6 +15,7 @@ foreground {
   case $type {
     appimage {
       if { modprobe fuse }
+      s6-setuidgid user
       export LD_LIBRARY_PATH /lib64
       /run/virtiofs/virtiofs0/config/run
     }
@@ -44,6 +38,7 @@ foreground {
 	  store /nix/store
       }
 
+      s6-setuidgid user
       /run/virtiofs/virtiofs0/config/run
     }
   }

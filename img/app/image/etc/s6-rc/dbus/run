@@ -3,6 +3,9 @@
 # SPDX-FileCopyrightText: 2023, 2025 Alyssa Ross <hi@alyssa.is>
 
 s6-ipcserver-socketbinder -Ba 0770 /run/session-bus
+if { chown user: /run/session-bus }
+
+s6-setuidgid user
 
 export LISTEN_FDS 1
 getpid LISTEN_PID
