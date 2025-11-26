@@ -10,6 +10,8 @@
     }
   );
 
+  gtk3 = import ./gtk3 { inherit final super; };
+
   mailutils = super.mailutils.overrideAttrs (_: (
     final.lib.optionalAttrs final.stdenv.hostPlatform.isMusl { doCheck = false; }
   ));
