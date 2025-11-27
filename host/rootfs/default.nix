@@ -18,19 +18,10 @@ pkgsStatic.callPackage (
 let
   inherit (nixosAllHardware.config.hardware) firmware;
   inherit (lib)
-    concatMapStringsSep concatStrings escapeShellArgs fileset optionalAttrs
-    mapAttrsToList systems trivial;
+    concatMapStringsSep concatStrings escapeShellArgs fileset mapAttrsToList
+    trivial;
 
-  pkgsGui = pkgsMusl.extend (
-    _: super:
-    (optionalAttrs (systems.equals pkgsMusl.stdenv.hostPlatform super.stdenv.hostPlatform) {
-      flatpak = super.flatpak.override {
-        withMalcontent = false;
-      };
-    })
-  );
-
-  foot = pkgsGui.foot.override { allowPgo = false; };
+  foot = pkgsMusl.foot.override { allowPgo = false; };
 
   packages = [
     cloud-hypervisor cryptsetup dbus execline inotify-tools iproute2
@@ -42,8 +33,8 @@ let
       extraConfig = builtins.readFile ./busybox-config;
     })
 
-  # Take kmod from pkgsGui since we use pkgsGui.kmod.lib below anyway.
-  ] ++ (with pkgsGui; [ cosmic-files crosvm foot fuse3 kmod systemd ]);
+  # Take kmod from pkgsMusl since we use pkgsMusl.kmod.lib below anyway.
+  ] ++ (with pkgsMusl; [ cosmic-files crosvm foot fuse3 kmod systemd ]);
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
@@ -64,7 +55,7 @@ let
   # https://inbox.vuxu.org/musl/20251017-dlopen-use-rpath-of-caller-dso-v1-1-46c69eda1473@iscas.ac.cn/
   usrPackages = [
     appvm kernel.modules firmware netvm
-  ] ++ (with pkgsGui; [ dejavu_fonts kmod.lib mesa westonLite ]);
+  ] ++ (with pkgsMusl; [ dejavu_fonts kmod.lib mesa westonLite ]);
 
   appvms = {
     appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};
@@ -88,16 +79,16 @@ let
     # Weston doesn't support SVG icons.
     inkscape -w 20 -h 20 \
         -o $out/usr/share/icons/hicolor/20x20/apps/com.system76.CosmicFiles.png \
-        ${pkgsGui.cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
+        ${pkgsMusl.cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
 
     ln -st $out/usr/bin \
         ${concatMapStringsSep " " (p: "${p}/bin/*") packages} \
-        ${pkgsGui.xdg-desktop-portal}/libexec/xdg-document-portal \
-        ${pkgsGui.xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
+        ${pkgsMusl.xdg-desktop-portal}/libexec/xdg-document-portal \
+        ${pkgsMusl.xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
     ln -st $out/usr/share/dbus-1 \
         ${dbus}/share/dbus-1/session.conf
     ln -st $out/usr/share/dbus-1/services \
-        ${pkgsGui.xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
+        ${pkgsMusl.xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
 
     ${concatStrings (mapAttrsToList (name: path: ''
       ln -s ${path} $out/usr/lib/spectrum/vm/${name}
@@ -140,7 +131,7 @@ stdenvNoCC.mkDerivation {
   dontFixup = true;
 
   passthru = {
-    inherit appvm firmware kernel nixosAllHardware packagesSysroot pkgsGui;
+    inherit appvm firmware kernel nixosAllHardware packagesSysroot;
   };
 
   meta = with lib; {

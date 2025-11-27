@@ -4,5 +4,11 @@
 (final: super: {
   cloud-hypervisor = import ./cloud-hypervisor { inherit final super; };
 
+  flatpak = super.flatpak.override (
+    final.lib.optionalAttrs final.stdenv.hostPlatform.isMusl {
+      withMalcontent = false;
+    }
+  );
+
   skawarePackages = import ./skaware-packages { inherit final super; };
 })
