@@ -55,6 +55,7 @@ build/verity-timestamp: $(ROOT_FS_IMAGE)
 # a nonzero status.
 	echo >> $(ROOT_FS_VERITY_ROOTHASH)
 	touch -- $@
+$(ROOTFS_VERITY_ROOTHASH) $(ROOTFS_VERITY): build/verity-timestamp
 
 $(ROOT_FS_IMAGE): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_FILES) build/empty build/fifo file-list.mk
 	mkdir -p $(ROOT_FS) && \
