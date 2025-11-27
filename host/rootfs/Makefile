@@ -46,6 +46,7 @@ BUILD_FILES = build/etc/s6-rc
 # files, a timestamp file is created as the last step.  The actual
 # outputs are produced as side-effects.
 build/verity-timestamp: $(ROOT_FS_IMAGE)
+	mkdir -p build
 	$(VERITYSETUP) format \
 		--root-hash-file $(ROOT_FS_VERITY_ROOTHASH) \
 		-- $(ROOT_FS_IMAGE) $(ROOT_FS_VERITY)
@@ -105,7 +106,7 @@ debug:
 	    $(VMLINUX)
 .PHONY: debug
 
-run: build/live.img build/rootfs.verity.roothash
+run: build/live.img $(ROOTFS_VERITY_ROOTHASH)
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$ext" && \
