@@ -4,15 +4,17 @@
 
 import ../../lib/call-package.nix (
 { callSpectrumPackage, spectrum-build-tools, src
-, pkgsMusl, pkgsStatic, linux_latest
+, pkgsMusl, inkscape, linux_latest, xorg
 }:
-pkgsStatic.callPackage (
+pkgsMusl.callPackage (
 
 { spectrum-host-tools
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
-, busybox, cloud-hypervisor, cryptsetup, dbus, execline, inkscape
-, iproute2, inotify-tools, jq, mdevd, s6, s6-linux-init, socat
-, util-linuxMinimal, virtiofsd, xorg, xdg-desktop-portal-spectrum-host
+, busybox, cloud-hypervisor, cosmic-files, crosvm, cryptsetup
+, dejavu_fonts, dbus, execline, foot, fuse3, iproute2, inotify-tools
+, jq, kmod, mdevd, mesa, s6, s6-linux-init, socat, systemd
+, util-linuxMinimal, virtiofsd, westonLite, xdg-desktop-portal
+, xdg-desktop-portal-gtk, xdg-desktop-portal-spectrum-host
 }:
 
 let
@@ -21,20 +23,19 @@ let
     concatMapStringsSep concatStrings escapeShellArgs fileset mapAttrsToList
     trivial;
 
-  foot = pkgsMusl.foot.override { allowPgo = false; };
-
   packages = [
-    cloud-hypervisor cryptsetup dbus execline inotify-tools iproute2
-    jq mdevd s6 s6-linux-init s6-rc socat spectrum-host-tools
-    util-linuxMinimal virtiofsd xdg-desktop-portal-spectrum-host
+    cloud-hypervisor cosmic-files crosvm cryptsetup dbus execline
+    fuse3 inotify-tools iproute2 jq kmod mdevd s6 s6-linux-init s6-rc
+    socat spectrum-host-tools systemd util-linuxMinimal virtiofsd
+    xdg-desktop-portal-spectrum-host
+
+    (foot.override { allowPgo = false; })
 
     (busybox.override {
       # Use a separate file as it is a bit too big.
       extraConfig = builtins.readFile ./busybox-config;
     })
-
-  # Take kmod from pkgsMusl since we use pkgsMusl.kmod.lib below anyway.
-  ] ++ (with pkgsMusl; [ cosmic-files crosvm foot fuse3 kmod systemd ]);
+  ];
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
@@ -54,8 +55,9 @@ let
   # It doesn't get picked up from libsystemd-shared.so's RUNPATH due to
   # https://inbox.vuxu.org/musl/20251017-dlopen-use-rpath-of-caller-dso-v1-1-46c69eda1473@iscas.ac.cn/
   usrPackages = [
-    appvm kernel.modules firmware netvm
-  ] ++ (with pkgsMusl; [ dejavu_fonts kmod.lib mesa westonLite ]);
+    appvm dejavu_fonts kmod.lib mesa westonLite kernel.modules
+    firmware netvm
+  ];
 
   appvms = {
     appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};
@@ -79,16 +81,16 @@ let
     # Weston doesn't support SVG icons.
     inkscape -w 20 -h 20 \
         -o $out/usr/share/icons/hicolor/20x20/apps/com.system76.CosmicFiles.png \
-        ${pkgsMusl.cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
+        ${cosmic-files}/share/icons/hicolor/24x24/apps/com.system76.CosmicFiles.svg
 
     ln -st $out/usr/bin \
         ${concatMapStringsSep " " (p: "${p}/bin/*") packages} \
-        ${pkgsMusl.xdg-desktop-portal}/libexec/xdg-document-portal \
-        ${pkgsMusl.xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
+        ${xdg-desktop-portal}/libexec/xdg-document-portal \
+        ${xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
     ln -st $out/usr/share/dbus-1 \
         ${dbus}/share/dbus-1/session.conf
     ln -st $out/usr/share/dbus-1/services \
-        ${pkgsMusl.xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
+        ${xdg-desktop-portal-gtk}/share/dbus-1/services/org.freedesktop.impl.portal.desktop.gtk.service
 
     ${concatStrings (mapAttrsToList (name: path: ''
       ln -s ${path} $out/usr/lib/spectrum/vm/${name}

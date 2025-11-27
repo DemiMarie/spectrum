@@ -56,6 +56,7 @@ let
     # the CLI easily.
     inherit (pkgs) cloud-hypervisor dbus;
 
+    pkgsMusl = makeScopeWithSplicing pkgs.pkgsMusl;
     pkgsStatic = makeScopeWithSplicing pkgs.pkgsStatic;
 
     srcWithNix = fileset.difference
