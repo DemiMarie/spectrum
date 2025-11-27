@@ -25,11 +25,11 @@ trap 'chmod -R +w -- "$root" && rm -rf -- "$root"' EXIT
 while read -r arg1; do
 	read -r arg2 || ex_usage
 
-	printf "%s" "$arg1"
+	printf "%s" "$arg1" >&2
 	if [ "${arg1#/}" != "${arg2#/}" ]; then
-		printf " -> %s" "$arg2"
+		printf " -> %s" "$arg2" >&2
 	fi
-	echo
+	echo >&2
 
 	# The below simple version of dirname(1) can only handle
 	# a subset of all paths, but this subset includes all of
