@@ -1,10 +1,10 @@
 #!/bin/sh --
 #
-# SPDX-FileCopyrightText: 2021-2023 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021-2023, 2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2022 Unikie
 # SPDX-License-Identifier: EUPL-1.2+
 #
-# usage: make-gpt.sh GPT_PATH PATH:PARTTYPE[:PARTUUID[:PARTLABEL]]...
+# usage: make-gpt.sh GPT_PATH PATH:PARTTYPE[:PARTUUID[:PARTLABEL[:PARTMiB]]]...
 
 set -euo pipefail
 
@@ -35,21 +35,28 @@ scriptsDir="$(dirname "$0")"
 out="$1"
 shift
 
-nl='
-'
-table="label: gpt"
+table=$(for partition; do
+	size="$(sizeMiB "${partition%%:*}")"
+	awk -f "$scriptsDir/sfdisk-field.awk" \
+		-v partition="$partition" \
+		-v size="$size"
+done)
 
 # Keep 1MiB free at the start, and 1MiB free at the end.
-gptBytes=$((ONE_MiB * 2))
-for partition; do
-	sizeMiB="$(sizeMiB "${partition%%:*}")"
-	table="$table${nl}size=${sizeMiB}MiB,$(awk -f "$scriptsDir/sfdisk-field.awk" -v partition="$partition")"
-	gptBytes="$((gptBytes + sizeMiB * ONE_MiB))"
-done
+gptMiB=2
+while read -r partition; do
+	# Here we rely on sfdisk-field.awk always putting size last.
+	: $((gptMiB += ${partition##*=}))
+done <<EOF
+$table
+EOF
 
 rm -f "$out"
-truncate -s "$gptBytes" "$out"
+truncate -s "${gptMiB}M" "$out"
+
 sfdisk --no-reread --no-tell-kernel "$out" <<EOF
+label: gpt
+sector-size: $ONE_MiB
 $table
 EOF
 
