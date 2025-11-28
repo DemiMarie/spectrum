@@ -1,10 +1,12 @@
-#!/bin/sh -eu
+#!/bin/sh --
 #
 # SPDX-FileCopyrightText: 2021-2023 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2022 Unikie
 # SPDX-License-Identifier: EUPL-1.2+
 #
 # usage: make-gpt.sh GPT_PATH PATH:PARTTYPE[:PARTUUID[:PARTLABEL]]...
+
+set -euo pipefail
 
 ONE_MiB=1048576
 
