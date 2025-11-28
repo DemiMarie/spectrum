@@ -20,6 +20,7 @@ build/empty:
 	mkdir -p $@
 
 build/spectrum.efi: $(ROOT_FS_VERITY_ROOTHASH) $(DTBS) $(KERNEL) $(INITRAMFS)
+	mkdir -p build
 	{ \
 	    printf "[UKI]\nDeviceTreeAuto=" && \
 	    find $(DTBS) -name '*.dtb' -print0 | tr '\0' ' ' ;\
