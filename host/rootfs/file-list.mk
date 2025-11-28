@@ -15,6 +15,8 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/getty-tty2/run \
 	image/etc/s6-linux-init/run-image/service/getty-tty3/run \
 	image/etc/s6-linux-init/run-image/service/getty-tty4/run \
+	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/notification-fd \
+	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/run \
 	image/etc/s6-linux-init/run-image/service/s6-svscan-log/notification-fd \
 	image/etc/s6-linux-init/run-image/service/s6-svscan-log/run \
 	image/etc/s6-linux-init/run-image/service/serial-getty-generator/run \
@@ -37,6 +39,8 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/vmm/run \
 	image/etc/s6-linux-init/run-image/service/vmm/template/notification-fd \
 	image/etc/s6-linux-init/scripts/rc.init \
+	image/etc/s6-linux-init/scripts/rc.shutdown \
+	image/etc/s6-linux-init/scripts/rc.shutdown.final \
 	image/etc/udev/rules.d/99-spectrum.rules \
 	image/etc/xdg/weston/autolaunch \
 	image/etc/xdg/weston/weston.ini \

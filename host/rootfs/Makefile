@@ -37,7 +37,9 @@ DIRS = \
 	run \
 	sys
 
-FIFOS = etc/s6-linux-init/run-image/service/s6-svscan-log/fifo
+FIFOS = \
+	etc/s6-linux-init/run-image/service/s6-svscan-log/fifo \
+	etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/fifo
 
 BUILD_FILES = build/etc/s6-rc
 
