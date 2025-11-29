@@ -10,5 +10,9 @@
     }
   );
 
+  mailutils = super.mailutils.overrideAttrs (_: (
+    final.lib.optionalAttrs final.stdenv.hostPlatform.isMusl { doCheck = false; }
+  ));
+
   skawarePackages = import ./skaware-packages { inherit final super; };
 })
