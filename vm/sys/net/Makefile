@@ -29,7 +29,7 @@ $(vmdir)/netvm/blk/root.img: ../../../scripts/make-gpt.sh ../../../scripts/sfdis
 	    build/rootfs.erofs:root:ea21da27-0391-48da-9235-9d2ab2ca7844:root
 	mv $@.tmp $@
 
-DIRS = dev etc/s6-linux-init/env proc run sys var/lib/connman
+DIRS = dev etc/s6-linux-init/env proc run sys
 
 BUILD_FILES = build/etc/s6-rc
 

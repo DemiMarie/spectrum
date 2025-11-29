@@ -7,7 +7,7 @@ pkgsMusl.callPackage (
 
 { lib, stdenvNoCC, nixos, runCommand, writeClosure
 , erofs-utils, jq, s6-rc, util-linux, xorg
-, busybox, connmanMinimal, dbus, execline, kmod, linux_latest, mdevd, nftables
+, busybox, dbus, execline, kmod, linux_latest, mdevd, nftables
 , s6, s6-linux-init
 }:
 
@@ -51,10 +51,8 @@ let
     ];
   });
 
-  connman = connmanMinimal;
-
   packages = [
-    connman dbus execline kmod mdevd s6 s6-linux-init s6-rc
+    dbus execline kmod mdevd s6 s6-linux-init s6-rc
 
     (busybox.override {
       extraConfig = ''
@@ -73,7 +71,7 @@ let
 
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
-  usrPackages = [ connman dbus firmware kernel.modules terminfo ];
+  usrPackages = [ dbus firmware kernel.modules terminfo ];
 
   packagesSysroot = runCommand "packages-sysroot" {
     inherit packages;

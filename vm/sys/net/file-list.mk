@@ -20,9 +20,6 @@ LINKS = \
 	image/var/run
 
 S6_RC_FILES = \
-	image/etc/s6-rc/connman/dependencies.d/dbus \
-	image/etc/s6-rc/connman/run \
-	image/etc/s6-rc/connman/type \
 	image/etc/s6-rc/dbus/notification-fd \
 	image/etc/s6-rc/dbus/run \
 	image/etc/s6-rc/dbus/type \
