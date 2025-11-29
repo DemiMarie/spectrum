@@ -18,6 +18,8 @@ Spectrum is free software, currently under active development.
 TIP: For information on writing guidelines,
 see xref:../contributing/writing_documentation.adoc[Documentation Style Guide].
 
+If you want to update Spectrum without reinstalling, see how to
+xref:updates.adoc[Enable updates].
 
 == Mailing Lists
 

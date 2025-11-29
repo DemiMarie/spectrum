@@ -1,0 +1,42 @@
+= Updating the OS
+:page-parent: Development
+
+// SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+// SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
+
+Right now, there is no official update server or update signing key.
+However, it is possible to run your own update server.  See
+xref:../development/build-configuration.adoc[build configuration]
+for how to enable updates for your own Spectrum images.
+
+== Updating the system
+
+If you have built your image with updates enabled, you can update the
+system using the `spectrum-update` command.  This takes the path to a
+staging directory as argument.  This directory must be on a BTRFS
+filesystem.  It is strongly recommended to not use this directory
+for any other purpose.  However, it's safe to rename the directory
+and use `spectrum-update` with the new path afterwards.
+
+If there is a problem with the update, it's safe to try again.
+If that still doesn't work, you can delete the directory and
+try again with an empty one.  This will cause `spectrum-update`
+to download the latest version even if it is already installed, but
+is otherwise harmless.
+
+Updates are atomic and take effect after the system reboots.
+If the system is rebooted, crashes, or loses power during an
+update, the update will not take effect.  It is safe to resume
+an interrupted update.
+
+Since Spectrum's host has no network access, the VM that does the
+updates (`sys.appvm-systemd-sysupdate`) is given a BTRFS subvolume to
+write the updates into.  It uses `systemd-sysupdate` to download the updates
+into this directory.  Once it exits, the host snapshots this directory and
+checks it for malicious filenames or non-regular files.  If the check
+passes, this directory is used as the source for `systemd-sysupdate`,
+which installs the updates to the OS volume and EFI system partition.
+
+See the documentation of
+https://www.freedesktop.org/software/systemd/man/systemd-sysupdate.html[systemd-sysupdate].
+for some of the details.
