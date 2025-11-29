@@ -59,6 +59,14 @@ Spectrum combined live system / installer image.
 
 The Spectrum installer system.
 
+=== `18f2ccff-92f1-4bb1-a80e-24f76ecda90c`
+
+The not-yet-used B verity partition.
+
+=== `ec0c5ff3-f6b1-4adf-82b4-61336c4d135f`
+
+The not-yet-used B root filesystem partition.
+
 '''
 
 == Finding Undocumented UUIDs

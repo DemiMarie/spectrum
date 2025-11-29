@@ -25,7 +25,7 @@ in
 writeShellScript "run-spectrum-installer-vm.sh" ''
   export PATH=${makeBinPath [ coreutils qemu_kvm ]}
   img="$(mktemp spectrum-installer-target.XXXXXXXXXX.img)"
-  truncate -s 20G "$img"
+  truncate -s 40G "$img"
   exec 3<>"$img"
   rm -f "$img"
   exec ${../../scripts/run-qemu.sh} -cpu max -m 4G \
