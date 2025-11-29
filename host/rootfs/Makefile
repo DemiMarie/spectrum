@@ -98,8 +98,8 @@ clean:
 
 build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/verity-timestamp $(ROOT_FS_IMAGES)
 	../../scripts/make-gpt.sh $@.tmp \
-	    $(ROOT_FS_VERITY):verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(ROOT_FS_VERITY_ROOTHASH) bs=32 skip=1 count=1 status=none)") \
-	    $(ROOT_FS_IMAGE):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH))")
+	    $(ROOT_FS_VERITY):verity:$$(../../scripts/format-uuid.sh "$$(dd if=$(ROOT_FS_VERITY_ROOTHASH) bs=32 skip=1 count=1 status=none)"):Spectrum_'$(VERSION).verity' \
+	    $(ROOT_FS_IMAGE):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH))"):Spectrum_'$(VERSION)'
 	mv $@.tmp $@
 
 debug:

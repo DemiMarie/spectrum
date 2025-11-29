@@ -4,6 +4,7 @@
 import ../../lib/call-package.nix (
 { callSpectrumPackage, rootfs, pkgsStatic, stdenv
 , cryptsetup, jq, qemu_kvm, tar2ext4, util-linux
+, config
 }:
 
 let
@@ -18,5 +19,6 @@ initramfs.overrideAttrs ({ nativeBuildInputs ? [], env ? {}, ... }: {
   env = env // {
     KERNEL = "${rootfs.kernel}/${stdenv.hostPlatform.linux-kernel.target}";
     ROOT_FS = rootfs;
+    VERSION = config.version;
   };
 })) (_: {})

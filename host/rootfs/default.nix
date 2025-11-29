@@ -3,8 +3,8 @@
 # SPDX-FileCopyrightText: 2022 Unikie
 
 import ../../lib/call-package.nix (
-{ callSpectrumPackage, spectrum-build-tools, src
-, pkgsMusl, inkscape, linux_latest, xorg
+{ callSpectrumPackage, config, spectrum-build-tools
+, src, pkgsMusl, inkscape, linux_latest, xorg
 }:
 pkgsMusl.callPackage (
 
@@ -118,6 +118,7 @@ stdenvNoCC.mkDerivation {
       printf "%s\n/\n" ${packagesSysroot} >$out
       sed p ${writeClosure [ packagesSysroot] } >>$out
     '';
+    VERSION = config.version;
   };
 
   # The Makefile uses $(ROOT_FS), not $(dest), so it can share code
