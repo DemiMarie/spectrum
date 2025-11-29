@@ -20,6 +20,7 @@ background -d {
     assign-devices
   }
 
+  # Find any net-provider relationships this VM is involved in
   cd /run/vm/by-id
   elglob -0 providers */config/providers/net/*
   forx -pE path { $providers }
@@ -31,23 +32,21 @@ background -d {
     backtick -E link_path { readlink /run/vm/by-name/${router} }
     basename -- $link_path
   }
-
+  # This VM may be either the driver or the client
   if -n {
     if { test $client_id != $1 }
     test $router_id != $1
   }
 
-  backtick -E mac {
-    pipeline { ip -j link show client-${client_id} }
-    pipeline { jq -r ".[].ifindex" }
-    awk "{
-      printf \"02:01:%02X:%02X:%02X:%02X\", $0 / 256 ^ 3 % 256,
-	$0 / 256 ^ 2 % 256, $0 / 256 % 256, $0 % 256
-    }"
+  if {
+    s6-svc -U /run/service/vm-services/instance/${router_id}/data/service/spectrum-router
   }
-
-  ch-remote --api-socket /run/vm/by-id/${router_id}/vmm add-net
-    id=router-${client_id},tap=router-${client_id},mac=${mac}
+  if {
+    s6-svwait -U /run/service/vmm/instance/${router_id}
+  }
+  # Adding the interface is re-entrant and may be called multiple times. Thus, accept failures.
+  redirfd -w 2 /dev/null
+  ch-remote --api-socket /run/vm/by-id/${router_id}/vmm add-net id=router,vhost_user=on,socket=/run/vm/by-id/${router_id}/router-driver.sock,mac=02:01:00:00:00:01
 }
 unexport !
 fdmove -c 3 0

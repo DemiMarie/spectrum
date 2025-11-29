@@ -1,25 +1,18 @@
 // SPDX-License-Identifier: EUPL-1.2+
 // SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
 
-use std::convert::TryFrom;
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write;
-use std::mem::take;
-use std::num::NonZeroI32;
 use std::os::unix::prelude::*;
 use std::path::Path;
 use std::process::{Command, Stdio};
-use std::string::FromUtf8Error;
 
 use miniserde::{Serialize, json};
 
 use crate::net::MacAddress;
 use crate::s6::notify_readiness;
-
-// Trivially safe.
-const EPERM: NonZeroI32 = NonZeroI32::new(1).unwrap();
-const EPROTO: NonZeroI32 = NonZeroI32::new(71).unwrap();
 
 #[derive(Serialize)]
 pub struct ConsoleConfig {
@@ -46,7 +39,8 @@ pub struct GpuConfig {
 
 #[derive(Serialize)]
 pub struct NetConfig {
-    pub fd: RawFd,
+    pub vhost_user: bool,
+    pub vhost_socket: String,
     pub id: String,
     pub mac: MacAddress,
 }
@@ -99,11 +93,7 @@ fn command(vm_dir: &Path, s: impl AsRef<OsStr>) -> Command {
     command
 }
 
-pub fn create_vm(vm_dir: &Path, ready_fd: File, mut config: VmConfig) -> Result<(), String> {
-    // Net devices can't be created from file descriptors in vm.create.
-    // https://github.com/cloud-hypervisor/cloud-hypervisor/issues/5523
-    let nets = take(&mut config.net);
-
+pub fn create_vm(vm_dir: &Path, ready_fd: File, config: VmConfig) -> Result<(), String> {
     let mut ch_remote = command(vm_dir, "create")
         .args(["--", "-"])
         .stdin(Stdio::piped())
@@ -128,53 +118,5 @@ pub fn create_vm(vm_dir: &Path, ready_fd: File, mut config: VmConfig) -> Result<
 
     notify_readiness(ready_fd)?;
 
-    for net in nets {
-        add_net(vm_dir, &net).map_err(|e| format!("failed to add net: {e}"))?;
-    }
-
     Ok(())
-}
-
-pub fn add_net(vm_dir: &Path, net: &NetConfig) -> Result<(), NonZeroI32> {
-    let mut ch_remote = command(vm_dir, "add-net")
-        .arg(format!("fd={},id={},mac={}", net.fd, net.id, net.mac))
-        .stdout(Stdio::piped())
-        .spawn()
-        .or(Err(EPERM))?;
-
-    if let Ok(ch_remote_status) = ch_remote.wait()
-        && ch_remote_status.success()
-    {
-        return Ok(());
-    }
-
-    Err(EPROTO)
-}
-
-#[repr(C)]
-pub struct NetConfigC {
-    pub fd: RawFd,
-    pub id: [u8; 18],
-    pub mac: MacAddress,
-}
-
-impl<'a> TryFrom<&'a NetConfigC> for NetConfig {
-    type Error = FromUtf8Error;
-
-    fn try_from(c: &'a NetConfigC) -> Result<NetConfig, Self::Error> {
-        let nul_index = c.id.iter().position(|&c| c == 0).unwrap_or(c.id.len());
-        Ok(NetConfig {
-            fd: c.fd,
-            id: String::from_utf8(c.id[..nul_index].to_vec())?,
-            mac: c.mac,
-        })
-    }
-}
-
-impl TryFrom<NetConfigC> for NetConfig {
-    type Error = FromUtf8Error;
-
-    fn try_from(c: NetConfigC) -> Result<NetConfig, Self::Error> {
-        Self::try_from(&c)
-    }
 }

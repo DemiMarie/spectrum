@@ -8,7 +8,7 @@ import ../../lib/call-package.nix (
 }:
 pkgsMusl.callPackage (
 
-{ spectrum-host-tools
+{ spectrum-host-tools, spectrum-router
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
 , busybox, cloud-hypervisor, cosmic-files, crosvm, cryptsetup
 , dejavu_fonts, dbus, execline, foot, fuse3, iproute2, inotify-tools
@@ -27,7 +27,7 @@ let
   packages = [
     btrfs-progs cloud-hypervisor cosmic-files crosvm cryptsetup dbus
     execline fuse3 inotify-tools iproute2 jq kmod mdevd s6 s6-linux-init
-    s6-rc socat spectrum-host-tools util-linuxMinimal virtiofsd
+    s6-rc socat spectrum-host-tools spectrum-router util-linuxMinimal virtiofsd
     xdg-desktop-portal-spectrum-host
 
     (foot.override { allowPgo = false; })

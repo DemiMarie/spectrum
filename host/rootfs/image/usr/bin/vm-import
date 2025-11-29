@@ -14,19 +14,6 @@ if { ln -s -- ${dir} /run/vm/by-name/${1}.${name} }
 if { ln -s -- ${2}/${name} ${dir}/config }
 if { ln -s -- /run/service/vmm/instance/${id} ${dir}/service }
 
-if {
-  if -t { elglob -0d " " providers ${name}/providers/net test -n $providers }
-
-  if { ip link add br-${id} type bridge }
-  if { ip link set br-${id} up }
-
-  if { ip tuntap add client-${id} mode tap }
-  if { ip link set client-${id} master br-${id} up }
-
-  if { ip tuntap add router-${id} mode tap }
-  ip link set router-${id} master br-${id} up
-}
-
 if { create-vm-dependencies $id }
 
 s6-instance-create -- /run/service/vmm $id

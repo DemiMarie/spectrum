@@ -2,13 +2,10 @@
 // SPDX-FileCopyrightText: 2022-2025 Alyssa Ross <hi@alyssa.is>
 
 use std::borrow::Cow;
-use std::ffi::{c_char, c_int};
 use std::fmt::{self, Display, Formatter};
 
 use miniserde::Serialize;
 use miniserde::ser::Fragment;
-
-use crate::ch::NetConfigC;
 
 #[repr(transparent)]
 #[derive(Copy, Clone)]
@@ -34,14 +31,6 @@ impl Serialize for MacAddress {
     fn begin(&self) -> Fragment<'_> {
         Fragment::Str(Cow::Owned(self.to_string()))
     }
-}
-
-// SAFETY: declaration is compatible with C.
-unsafe extern "C" {
-    /// # Safety
-    ///
-    /// The rest of the result is only valid if the returned fd is not -1.
-    pub fn net_setup(name: *const c_char, len: c_int) -> NetConfigC;
 }
 
 #[cfg(test)]

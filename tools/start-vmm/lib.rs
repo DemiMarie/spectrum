@@ -1,23 +1,24 @@
 // SPDX-License-Identifier: EUPL-1.2+
 // SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
 
 mod ch;
 mod net;
 mod s6;
 
 use std::borrow::Cow;
-use std::convert::TryInto;
 use std::env::args_os;
 use std::ffi::OsStr;
 use std::fs::File;
-use std::io::{self, ErrorKind};
+use std::hash::{Hash, Hasher};
+use std::io::ErrorKind;
 use std::path::Path;
 
 use ch::{
-    ConsoleConfig, DiskConfig, FsConfig, GpuConfig, LandlockConfig, MemoryConfig, PayloadConfig,
-    VmConfig, VsockConfig,
+    ConsoleConfig, DiskConfig, FsConfig, GpuConfig, LandlockConfig, MemoryConfig, NetConfig,
+    PayloadConfig, VmConfig, VsockConfig,
 };
-use net::net_setup;
+use net::MacAddress;
 
 pub fn prog_name() -> String {
     args_os()
@@ -39,8 +40,6 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
     if vm_name.contains(':') {
         return Err(format!("VM name may not contain a colon: {vm_name:?}"));
     }
-
-    let name_bytes = vm_name.as_bytes();
 
     let config_dir = vm_dir.join("config");
     let blk_dir = config_dir.join("blk");
@@ -97,24 +96,48 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
             shared: true,
         },
         net: match net_providers_dir.read_dir() {
-            Ok(_) => {
-                // SAFETY: we check the result.
-                let net = unsafe {
-                    net_setup(
-                        name_bytes.as_ptr().cast(),
-                        name_bytes
-                            .len()
-                            .try_into()
-                            .map_err(|e| format!("VM name too long: {e}"))?,
-                    )
-                };
-                if net.fd == -1 {
-                    let e = io::Error::last_os_error();
-                    return Err(format!("setting up networking failed: {e}"));
-                }
+            Ok(entries) => entries
+                .into_iter()
+                .map(|result| {
+                    Ok(result
+                        .map_err(|e| format!("examining directory entry: {e}"))?
+                        .path())
+                })
+                .map(|result: Result<_, String>| {
+                    let provider_name = result?
+                        .file_name()
+                        .ok_or("unable to get net provider name".to_string())?
+                        .to_str()
+                        .unwrap()
+                        .to_string();
 
-                vec![net.try_into().unwrap()]
-            }
+                    if provider_name.contains(',') {
+                        return Err(format!(
+                            "illegal ',' character in net provider name {provider_name:?}"
+                        ));
+                    }
+
+                    let mut hasher = std::hash::DefaultHasher::new();
+                    vm_name.hash(&mut hasher);
+                    let id_hashed = hasher.finish();
+
+                    let mac = MacAddress::new([
+                        0x02, // IEEE 802c administratively assigned
+                        0x00, // Spectrum client
+                        (id_hashed >> 24) as u8,
+                        (id_hashed >> 16) as u8,
+                        (id_hashed >> 8) as u8,
+                        id_hashed as u8,
+                    ]);
+
+                    Ok(NetConfig {
+                        vhost_user: true,
+                        vhost_socket: format!("/run/vm/by-name/{provider_name}/router-app.sock"),
+                        id: provider_name,
+                        mac,
+                    })
+                })
+                .collect::<Result<_, _>>()?,
             Err(e) if e.kind() == ErrorKind::NotFound => Default::default(),
             Err(e) => return Err(format!("reading directory {net_providers_dir:?}: {e}")),
         },

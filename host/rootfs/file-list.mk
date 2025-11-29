@@ -27,6 +27,8 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/vm-services/run \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/dbus/notification-fd \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/dbus/run \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/spectrum-router/down \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/spectrum-router/run \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-fs/notification-fd \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-fs/run \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-gpu/notification-fd \
