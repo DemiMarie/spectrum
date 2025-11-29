@@ -15,6 +15,7 @@ pkgsMusl.callPackage (
 , jq, kmod, mdevd, mesa, s6, s6-linux-init, socat, systemd
 , util-linuxMinimal, virtiofsd, westonLite, xdg-desktop-portal
 , xdg-desktop-portal-gtk, xdg-desktop-portal-spectrum-host
+, btrfs-progs
 }:
 
 let
@@ -24,9 +25,9 @@ let
     trivial;
 
   packages = [
-    cloud-hypervisor cosmic-files crosvm cryptsetup dbus execline
-    fuse3 inotify-tools iproute2 jq kmod mdevd s6 s6-linux-init s6-rc
-    socat spectrum-host-tools systemd util-linuxMinimal virtiofsd
+    btrfs-progs cloud-hypervisor cosmic-files crosvm cryptsetup dbus
+    execline fuse3 inotify-tools iproute2 jq kmod mdevd s6 s6-linux-init
+    s6-rc socat spectrum-host-tools util-linuxMinimal virtiofsd
     xdg-desktop-portal-spectrum-host
 
     (foot.override { allowPgo = false; })
@@ -56,18 +57,20 @@ let
   # https://inbox.vuxu.org/musl/20251017-dlopen-use-rpath-of-caller-dso-v1-1-46c69eda1473@iscas.ac.cn/
   usrPackages = [
     appvm dejavu_fonts kmod.lib mesa westonLite kernel.modules
-    firmware netvm
+    firmware netvm systemd
   ];
 
   appvms = {
     appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};
     appvm-foot = callSpectrumPackage ../../vm/app/foot.nix {};
     appvm-gnome-text-editor = callSpectrumPackage ../../vm/app/gnome-text-editor.nix {};
+    appvm-systemd-sysupdate = callSpectrumPackage ../../vm/app/systemd-sysupdate {};
   };
 
   packagesSysroot = runCommand "packages-sysroot" {
     depsBuildBuild = [ inkscape ];
     nativeBuildInputs = [ xorg.lndir ];
+    src = builtins.path { name = "os-release"; path = ./os-release.in; };
   } ''
     mkdir -p $out/usr/bin $out/usr/share/dbus-1/services \
       $out/usr/share/icons/hicolor/20x20/apps
@@ -118,6 +121,11 @@ stdenvNoCC.mkDerivation {
       printf "%s\n/\n" ${packagesSysroot} >$out
       sed p ${writeClosure [ packagesSysroot] } >>$out
     '';
+    UPDATE_SIGNING_KEY = builtins.path {
+      name = "signing-key";
+      path = config.updateSigningKey;
+    };
+    UPDATE_URL = config.updateUrl;
     VERSION = config.version;
   };
 

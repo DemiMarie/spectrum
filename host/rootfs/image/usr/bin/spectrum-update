@@ -1,0 +1,87 @@
+#!/bin/execlineb -WS1
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+
+if { mkdir -p -m 0700 /run/updater }
+
+# Take a global lock to avoid races.
+s6-setlock /run/update-lock
+
+foreground { redirfd -w 2 /dev/null rmdir -- $1 }
+if { umask 0077 mkdir -p -- $1 }
+cd $1
+foreground {
+  # If this exists already that is okay.
+  foreground { redirfd -w 2 /dev/null btrfs subvolume create -- shared }
+
+  # Delete any stale temporary files.  Delete any existing signature
+  # files.  If the VM is still running (it should not be), the VM might
+  # have write access to the directory.  However, updates-dir-check is
+  # safe against that.
+  if { updates-dir-check cleanup shared }
+
+  if {
+    foreground {
+      # TODO: suppress only "subvolume does not exist" errors.
+      redirfd -w 2 /dev/null
+      btrfs subvolume delete snapshot
+    }
+    rm -f snapshot
+  }
+
+  backtick -E update_vm_id {
+    backtick -E id_path { readlink /run/vm/by-name/sys.appvm-systemd-sysupdate }
+    basename -- $id_path
+  }
+
+  # Set up /etc with what the VM needs.  The VM will overlay this
+  # on its own /etc.
+  #
+  # In the future, this should use a bind mount instead of copying
+  # into a tmpfs.  However, this would significantly complicate the
+  # cleanup code.  Deleting fs/etc would require undoing the bind
+  # mounts instead of rm -rf.  Once this code is in a separate mount
+  # namespace, the copies should be replaced by bind mounts.
+  if {
+    if { rm -rf -- /run/vm/by-id/${update_vm_id}/fs/etc }
+    umask 022
+    if { mkdir -p -- /run/vm/by-id/${update_vm_id}/fs/updates /run/vm/by-id/${update_vm_id}/fs/etc/systemd }
+    if { cp -R -- /etc/vm-sysupdate.d /etc/update-url /run/vm/by-id/${update_vm_id}/fs/etc }
+    cp -- /etc/systemd/import-pubring.gpg /run/vm/by-id/${update_vm_id}/fs/etc/systemd
+  }
+
+  # If the directory is already mounted, unmount it.  This prevents a
+  # confusing error from mount.
+  foreground { redirfd -w 2 /dev/null umount -- /run/vm/by-id/${update_vm_id}/fs/updates }
+
+  # Share the update directory with the VM.
+  if { mount --bind -- shared /run/vm/by-id/${update_vm_id}/fs/updates }
+
+  # Start the update VM.
+  if { vm-start $update_vm_id }
+
+  # Wait for the VM to exit.
+  # TODO: This is racy.  If the update finishes before this code runs,
+  # the s6-svwait call will fail.
+  if { s6-svwait -D /run/service/vmm/instance/${update_vm_id} }
+
+  # Remove the bind mount.
+  if { umount -- /run/vm/by-id/${update_vm_id}/fs/updates }
+
+  # Ensure that the VM cannot change the directory
+  # while systemd-sysupdate is using it.
+  if { btrfs subvolume snapshot -- shared snapshot }
+
+  # Validate the update directory.  Delete any stale temporary files.
+  # Check that a signature file was downloaded.
+  if { updates-dir-check check snapshot }
+
+  unshare --mount
+  if { mount --bind -o ro -- snapshot /run/updater }
+
+  /usr/lib/systemd/systemd-sysupdate update
+}
+importas -i sysupdate_exit_status ?
+# Clean up.
+foreground { btrfs subvolume delete -- snapshot }
+exit $sysupdate_exit_status

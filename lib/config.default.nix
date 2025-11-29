@@ -5,4 +5,6 @@
   pkgsFun = import ./nixpkgs.default.nix;
   pkgsArgs = {};
   version = "0.0.0";
+  updateUrl = "https://your-spectrum-os-update-server.invalid/download-directory";
+  updateSigningKey = ./fake-update-signing-key.gpg;
 }
