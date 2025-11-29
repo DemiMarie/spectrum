@@ -33,6 +33,10 @@ if get_option('host')
     install: true)
 
   subdir('start-vmm')
+
+  executable('updates-dir-check', 'updates-dir-check.c',
+    c_args : '-D_GNU_SOURCE',
+    install: true)
 endif
 
 if get_option('build')
