@@ -49,6 +49,7 @@ let
       appSupport = false;
       driverSupport = true;
     };
+    spectrum-router = self.callSpectrumPackage ../tools/router {};
     xdg-desktop-portal-spectrum-host =
       self.callSpectrumPackage ../tools/xdg-desktop-portal-spectrum-host {};
 
