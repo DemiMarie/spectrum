@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: EUPL-1.2+
 // SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
 
 #include "lib.h"
 
@@ -12,21 +13,27 @@
 #include <net/if.h>
 
 #include <sys/ioctl.h>
+#include <linux/ipv6.h>
 
 static int setup_server(void)
 {
 	int fd;
 	struct ifreq ifr;
+	struct in6_ifreq ifr6;
 
-	struct sockaddr_in addr = {
-		.sin_family = AF_INET,
-		.sin_port = htons(1234),
-		.sin_addr = { .s_addr = htonl(INADDR_LOOPBACK) },
+	struct sockaddr_in6 addr = {
+		.sin6_family = AF_INET6,
+		.sin6_port = htons(1234),
+		.sin6_addr = { .s6_addr = { 0xfd, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 } },
 	};
 
 	sprintf(ifr.ifr_name, "lo");
 
-	if ((fd = socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, 0)) == -1) {
+	ifr6.ifr6_ifindex = 1;
+	ifr6.ifr6_addr = addr.sin6_addr;
+	ifr6.ifr6_prefixlen = 128;
+
+	if ((fd = socket(AF_INET6, SOCK_STREAM|SOCK_CLOEXEC, 0)) == -1) {
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
@@ -42,9 +49,21 @@ static int setup_server(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if (bind(fd, &addr, sizeof addr) == -1) {
-		perror("bind");
+	if (ioctl(fd, SIOCSIFADDR, &ifr6) == -1) {
+		perror("SIOCSIFADDR");
 		exit(EXIT_FAILURE);
+	}
+
+	if ((fd = socket(AF_INET6, SOCK_STREAM|SOCK_CLOEXEC, 0)) == -1) {
+		perror("socket");
+		exit(EXIT_FAILURE);
+	}
+
+	int tries = 0;
+	while (bind(fd, &addr, sizeof addr) == -1) {
+		perror("bind");
+		if (tries++ >= 5)
+			exit(EXIT_FAILURE);
 	}
 
 	if (listen(fd, 1) == -1) {
