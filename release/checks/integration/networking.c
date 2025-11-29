@@ -57,32 +57,44 @@ static int setup_server(void)
 
 static void expect_connection(int listener)
 {
-	int conn_fd;
-	FILE *conn;
+	int conn, r;
 	char msg[7];
 	size_t len;
 
-	fputs("waiting for server connection\n", stderr);
-	if ((conn_fd = accept(listener, nullptr, nullptr)) == -1) {
-		perror("accept");
-		exit(EXIT_FAILURE);
-	}
-	fputs("accepted connection!\n", stderr);
-	if (!(conn = fdopen(conn_fd, "r"))) {
-		perror("fdopen(server connection)");
-		exit(EXIT_FAILURE);
-	}
+	for (;;) {
+		len = 0;
 
-	len = fread(msg, 1, sizeof msg, conn);
-	if (len != 6 || memcmp("hello\n", msg, 6)) {
-		if (ferror(conn))
-			perror("fread(server connection)");
-		else
+		fputs("waiting for server connection\n", stderr);
+		if ((conn = accept(listener, nullptr, nullptr)) == -1) {
+			perror("accept");
+			exit(EXIT_FAILURE);
+		}
+		fputs("accepted connection!\n", stderr);
+
+		for (;;) {
+			r = read(conn, msg + len, sizeof msg - len);
+			if (r == -1) {
+				perror("read");
+				exit(EXIT_FAILURE);
+			}
+			if (r == 0)
+				break;
+			len += r;
+		}
+		close(conn);
+
+		if (memcmp("hello\n", msg, len) || len > 6) {
 			fprintf(stderr, "unexpected connection data: %.*s",
 			        (int)len, msg);
-		exit(EXIT_FAILURE);
+			exit(EXIT_FAILURE);
+		}
+
+		// If connection was disconnect partway through, try again.
+		if (len < 6)
+			continue;
+
+		return;
 	}
-	fclose(conn);
 }
 
 static void drain_connections(int listener)
