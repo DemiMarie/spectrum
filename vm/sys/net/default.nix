@@ -8,7 +8,7 @@ pkgsMusl.callPackage (
 { lib, stdenvNoCC, nixos, runCommand, writeClosure
 , erofs-utils, jq, s6-rc, util-linux, xorg
 , busybox, dbus, execline, kmod, linux_latest, mdevd, nftables
-, s6, s6-linux-init
+, s6, s6-linux-init, spectrum-driver-tools, xdp-tools
 }:
 
 let
@@ -52,7 +52,7 @@ let
   });
 
   packages = [
-    dbus execline kmod mdevd s6 s6-linux-init s6-rc
+    dbus execline kmod mdevd s6 s6-linux-init s6-rc xdp-tools
 
     (busybox.override {
       extraConfig = ''
@@ -71,7 +71,12 @@ let
 
   # Packages that should be fully linked into /usr,
   # (not just their bin/* files).
-  usrPackages = [ dbus firmware kernel.modules terminfo ];
+  usrPackages = [
+    dbus firmware kernel.modules terminfo
+
+    # for xdp-forwarder
+    spectrum-driver-tools
+  ];
 
   packagesSysroot = runCommand "packages-sysroot" {
     inherit packages;
