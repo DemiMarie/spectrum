@@ -14,9 +14,9 @@ runCommand "eosimages.img" {
 } ''
   mkdir dir
   cd dir
-  ln -s $image $imageName
-  sha256sum $imageName > $imageName.sha256
-  tar -chf $NIX_BUILD_TOP/eosimages.tar *
-  tar2ext4 -i $NIX_BUILD_TOP/eosimages.tar -o $out
+  ln -s -- $image $imageName
+  gzip -1 < $image > $imageName.gz
+  sha256sum -- $imageName.gz > $imageName.gz.sha256
+  tar -ch -- $imageName.gz $imageName.gz.sha256 | tar2ext4 -o $out
   e2label $out eosimages
 '') (_: {})

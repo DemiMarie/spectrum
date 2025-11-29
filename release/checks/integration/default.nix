@@ -7,8 +7,7 @@ import ../../../lib/call-package.nix (
 }:
 
 let
-  combined = callSpectrumPackage ../../combined {};
-  live = combined.eosimages.image;
+  live = callSpectrumPackage ../../live {};
 
   appimage = writeShellScript "test.appimage" ''
     #!/bin/execlineb -P
@@ -87,7 +86,6 @@ stdenv.mkDerivation (finalAttrs: {
   env = {
     QEMU_SYSTEM = "qemu-system-${stdenv.hostPlatform.qemuArch} -nographic";
     EFI_PATH = "${qemu_kvm}/share/qemu/edk2-${stdenv.hostPlatform.qemuArch}-code.fd";
-    COMBINED_PATH = combined;
     LIVE_PATH = live;
     USER_DATA_PATH = userData;
   };

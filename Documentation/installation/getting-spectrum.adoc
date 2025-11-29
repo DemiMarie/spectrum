@@ -23,6 +23,17 @@ documentation for
 https://nix.dev/manual/nix/2.24/advanced-topics/cores-vs-jobs.html[tuning
 cores and jobs].
 
+To get Spectrum, run
+
+[source,shell]
+----
+git clone https://spectrum-os.org/git/spectrum
+----
+
+Then follow one of the instructions below.  If you haven't set up the
+xref:binary-cache.adoc[binary cache], all of the following Nix commands
+will take a very long time.
+
 == Trying Spectrum
 
 If you want to try Spectrum out to get a feel for it, without
@@ -31,27 +42,30 @@ applications.
 
 [source,shell]
 ----
-git clone https://spectrum-os.org/git/spectrum
 cd spectrum/host/rootfs
 nix-shell --run 'make run'
 ----
 
-This builds just enough of Spectrum to try it out in a VM, but it will
-still take a very long time.
+This builds just enough of Spectrum to try it out in a VM.
 
 == Installing Spectrum
 
 To install Spectrum on a computer, you can use a USB drive as a
-bootable Spectrum installer device.  When booting a system from the
-installer device, you will be able to choose whether to try out
-Spectrum without installing it on your system (as a live image), or to
-install it to your computer's internal storage.
+bootable Spectrum installer device.  You will need to choose whether to
+try out Spectrum without installing it on your system (as a live image),
+or to install it to your computer's internal storage.
 
-First, you need to build the Spectrum image:
+To build a live image, run:
 
 [source,shell]
 ----
-git clone https://spectrum-os.org/git/spectrum
+nix-build spectrum/release/live
+----
+
+To build an installer, run:
+
+[source,shell]
+----
 nix-build spectrum/release/combined
 ----
 
@@ -61,15 +75,17 @@ will take a very long time.  When it's done, a symbolic link named
 installer image.  Write that image to a USB drive, for example using
 `dd` (command line) or
 https://gitlab.com/bztsrc/usbimager[`usbimager`] (graphical, available
-in Nixpkgs).  Boot your system from the USB drive, and you should see
-a menu allowing you to choose between "Try Spectrum" and "Install
-Spectrum".
+in Nixpkgs).  Then boot your system from the USB drive
+
+If you built a live image, Spectrum should be ready for you to use.
+If you built an installer, you should see a menu allowing you to
+"Install Spectrum".
 
 NOTE: While it's possible to install Spectrum to your internal
 storage, at this point in Spectrum's development there is not much
 reason to, as OS updates are not yet implemented, and persistent
-storage is not yet exposed to VMs.  Using the "Try Spectrum" option to
-boot Spectrum will let you try out everything in Spectrum, without
+storage is not yet exposed to VMs.  Using a live image to boot
+Spectrum will let you try out everything in Spectrum, without
 having to go through the additional step of reinstalling Spectrum
 every time you want to use a newer version.
 

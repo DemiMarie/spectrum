@@ -41,14 +41,6 @@ build/live.img: ../../scripts/format-uuid.sh ../../scripts/make-gpt.sh ../../scr
 	    $(ROOT_FS_IMAGE):root:$$(../../scripts/format-uuid.sh "$$(head -c 32 $(ROOT_FS_VERITY_ROOTHASH))")
 	mv $@.tmp $@
 
-build/loop.tar: build/live.img
-	$(TAR) -cf $@ build/live.img
-
-build/loop.img: ../../scripts/make-gpt.sh ../../scripts/sfdisk-field.awk build/loop.ext4
-	../../scripts/make-gpt.sh $@.tmp \
-	    build/loop.ext4:56a3bbc3-aefa-43d9-a64d-7b3fd59bbc4e
-	mv $@.tmp $@
-
 clean:
 	rm -rf build
 .PHONY: clean
