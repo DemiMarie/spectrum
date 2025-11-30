@@ -10,12 +10,12 @@ pkgsMusl.callPackage (
 
 { spectrum-host-tools, spectrum-router
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
-, busybox, cloud-hypervisor, cosmic-files, crosvm, cryptsetup
-, dejavu_fonts, dbus, execline, foot, fuse3, iproute2, inotify-tools
-, jq, kmod, mdevd, mesa, s6, s6-linux-init, socat, systemd
-, util-linuxMinimal, virtiofsd, westonLite, xdg-desktop-portal
-, xdg-desktop-portal-gtk, xdg-desktop-portal-spectrum-host
-, btrfs-progs
+, btrfs-progs, busybox, cloud-hypervisor, cosmic-files, crosvm
+, cryptsetup, dejavu_fonts, dbus, execline, foot, fuse3, iproute2
+, inotify-tools, jq, kmod, mdevd, mesa, s6, s6-linux-init, socat
+, systemd, util-linuxMinimal, virtiofsd, westonLite
+, xdg-desktop-portal, xdg-desktop-portal-gtk
+, xdg-desktop-portal-spectrum-host
 }:
 
 let
