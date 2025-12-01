@@ -59,9 +59,12 @@ FILES = \
 	image/usr/bin/run-vmm \
 	image/usr/bin/spectrum-update \
 	image/usr/bin/vm-console \
+	image/usr/bin/vm-console-by-name \
 	image/usr/bin/vm-import \
 	image/usr/bin/vm-start \
+	image/usr/bin/vm-start-by-name \
 	image/usr/bin/vm-stop \
+	image/usr/bin/vm-stop-by-name \
 	image/usr/bin/xdg-open \
 	image/usr/libexec/net-add \
 	image/usr/share/dbus-1/services/org.freedesktop.portal.Documents.service

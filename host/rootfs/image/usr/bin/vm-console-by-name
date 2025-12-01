@@ -1,0 +1,9 @@
+#!/bin/execlineb -WS1
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
+# SPDX-FileCopyrightText: 2022-2023, 2025 Alyssa Ross <hi@alyssa.is>
+backtick -E vm_id {
+  backtick -E id_path { readlink /run/vm/by-name/${1} }
+  basename -- $id_path
+}
+vm-console $vm_id
