@@ -29,7 +29,18 @@ clean:
 .PHONY: clean
 
 run: $(dest)
-	@../../scripts/run-qemu.sh -m 4G \
+	@set -xueo pipefail && \
+	img="$$(mktemp build/spectrum-rootfs.XXXXXXXXX.img)" && \
+	cp $(dest) "$$img" && \
+	exec 3<>"$$img" && \
+	rm -f "$$img" && \
+	userdata="$$(mktemp build/spectrum-userdata.XXXXXXXXXX.img)" && \
+	truncate -s 10G "$$userdata" && \
+	mkfs.btrfs "$$userdata" && \
+	exec 4<>"$$userdata" && \
+	rm -f "$$userdata" && \
+	set +x && \
+	exec ../../scripts/run-qemu.sh -m 4G \
 	    -machine virtualization=on \
 	    -cpu max \
 	    -device virtio-keyboard \
@@ -40,5 +51,6 @@ run: $(dest)
 	    -device qemu-xhci \
 	    -device usb-storage,drive=drive1,removable=true \
 	    -drive file=$(OVMF_CODE),format=raw,if=pflash,readonly=true \
-	    -drive file=$(dest),id=drive1,format=raw,if=none,readonly=true
+	    -drive file=/proc/self/fd/3,id=drive1,format=raw,if=none \
+	    -drive file=/proc/self/fd/4,if=virtio,format=raw
 .PHONY: run
