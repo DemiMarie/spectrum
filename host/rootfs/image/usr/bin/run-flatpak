@@ -1,0 +1,47 @@
+#!/bin/execlineb -W
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
+
+backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
+backtick -E id { basename -- $dir }
+
+if {
+  elgetpositionals
+
+  if { mkdir -p /run/configs/${id}/fs }
+
+  if {
+    ln -s /usr/lib/spectrum/img/appvm/blk /usr/lib/spectrum/img/appvm/vmlinux
+      /run/configs/${id}
+  }
+
+  if { ln -s /run/configs/${id} ${dir}/config }
+
+  if { create-vm-dependencies $id }
+
+  if {
+    nsenter --mount=${dir}/mount
+    cd ${dir}/fs/config
+    if { redirfd -w 1 type echo flatpak }
+    mount-flatpak $@
+  }
+
+  piperw 4 3
+  background {
+    fdclose 3
+    fdmove 0 4
+
+    # Wait for the VMM to be up, then start the VM.
+    if { redirfd -w 1 /dev/null head -1 }
+    vm-start $id
+  }
+  fdclose 4
+
+  foreground { run-vmm $id }
+}
+
+if { s6-instance-delete -- /run/service/vm-services $id }
+
+if { umount ${dir}/mount } # mount namespace
+if { umount ${dir}/mount } # private bind mount
+rm -r $dir /run/configs/${id}

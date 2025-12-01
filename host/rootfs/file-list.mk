@@ -55,6 +55,7 @@ FILES = \
 	image/usr/bin/assign-devices \
 	image/usr/bin/create-vm-dependencies \
 	image/usr/bin/run-appimage \
+	image/usr/bin/run-flatpak \
 	image/usr/bin/run-vmm \
 	image/usr/bin/spectrum-update \
 	image/usr/bin/vm-console \
