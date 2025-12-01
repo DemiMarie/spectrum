@@ -75,7 +75,7 @@ $(ROOT_FS_IMAGE): ../../scripts/make-erofs.sh $(PACKAGES_FILE) $(FILES) $(BUILD_
 
 build/etc/update-url:
 	mkdir -p build/etc
-	# might have metacharacters, so avoid interpolation
+# might have metacharacters, so avoid interpolation
 	printf %s\\n "$${UPDATE_URL:?'update URL empty or missing'}" > build/etc/update-url
 
 build/etc/os-release:
