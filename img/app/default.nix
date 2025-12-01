@@ -65,6 +65,7 @@ let
       pkgs.cacert
       pkgs.dejavu_fonts
       pkgs.execline
+      pkgs.fuse3
       pkgs.kmod
       pkgs.mdevd
       pkgs.pipewire
