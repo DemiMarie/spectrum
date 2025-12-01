@@ -50,6 +50,9 @@ foreground {
     cp -- /etc/systemd/import-pubring.gpg /run/vm/by-id/${update_vm_id}/fs/etc/systemd
   }
 
+  nsenter --mount=/run/vm/by-id/${update_vm_id}/mount
+  cd $1
+
   # If the directory is already mounted, unmount it.  This prevents a
   # confusing error from mount.
   foreground { redirfd -w 2 /dev/null umount -- /run/vm/by-id/${update_vm_id}/fs/updates }

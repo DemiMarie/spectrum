@@ -1,11 +1,29 @@
 #!/bin/execlineb -S1
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
-if { mount -m --rbind -o nofail /run/vm/by-id/${1}/config/fs /run/vm/by-id/${1}/fs/config }
+if { touch /run/vm/by-id/${1}/mount }
+if { mount --make-private --bind /run/vm/by-id/${1}/mount /run/vm/by-id/${1}/mount }
 
-if { mkdir -p /run/vm/by-id/${1}/doc-run/doc /run/vm/by-id/${1}/fs/doc }
-if { mount --rbind /run/vm/by-id/${1}/doc-run/doc /run/vm/by-id/${1}/fs/doc }
+if {
+  unshare --propagation=slave --mount=/run/vm/by-id/${1}/mount
+
+  if {
+    mkdir -p
+      /run/vm/by-id/${1}/doc-run/doc
+      /run/vm/by-id/${1}/fs/config
+      /run/vm/by-id/${1}/fs/doc
+  }
+
+  if { mount --make-shared --rbind /run/vm/by-id/${1} /run/vm/by-id/${1} }
+
+  # The VM should not be able to write directly into a tmpfs, and the host
+  # should be able to assume there are no untrusted symlinks there, but there
+  # can be writable block-based bind mounted subdirectories.
+  if { mount --rbind -o nofail /run/vm/by-id/${1}/config/fs /run/vm/by-id/${1}/fs/config }
+  if { mount --rbind -o ro /run/vm/by-id/${1}/fs /run/vm/by-id/${1}/fs }
+  mount --rbind /run/vm/by-id/${1}/doc-run/doc /run/vm/by-id/${1}/fs/doc
+}
 
 if { s6-instance-create /run/service/vm-services $1 }
 elglob -0 services /run/service/vm-services/instance/${1}/services/*

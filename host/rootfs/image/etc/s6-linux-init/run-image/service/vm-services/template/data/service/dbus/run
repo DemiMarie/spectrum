@@ -4,6 +4,8 @@
 
 importas -i VM VM
 
+nsenter --mount=${VM}/mount
+
 dbus-daemon
   --config-file /usr/share/dbus-1/session.conf
   --print-address 3

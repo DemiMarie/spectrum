@@ -10,10 +10,6 @@ redirfd -r 0 /dev/null
 
 export TMPDIR /run
 
-# The VM should not be able to write directly into a tmpfs, but there
-# can be writable block-based bind mounted subdirectories.
-unshare -m --propagation slave
 importas -i VM VM
-if { mount --rbind -o ro ${VM}/fs ${VM}/fs }
-
+nsenter --mount=${VM}/mount
 virtiofsd --fd 3 --shared-dir ${VM}/fs

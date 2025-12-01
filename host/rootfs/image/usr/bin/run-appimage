@@ -1,14 +1,12 @@
 #!/bin/execlineb -S1
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
 backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
 backtick -E id { basename -- $dir }
 
 if { mkdir -p /run/configs/${id}/fs }
-if { redirfd -w 1 /run/configs/${id}/fs/type echo appimage }
-if { touch /run/configs/${id}/fs/run }
-if { mount --rbind $1 /run/configs/${id}/fs/run }
+
 if {
   ln -s /usr/lib/spectrum/img/appvm/blk /usr/lib/spectrum/img/appvm/vmlinux
     /run/configs/${id}
@@ -17,6 +15,14 @@ if {
 if { ln -s /run/configs/${id} ${dir}/config }
 
 if { create-vm-dependencies $id }
+
+if {
+  nsenter --mount=${dir}/mount
+  cd ${dir}/fs/config
+  if { redirfd -w 1 type echo appimage }
+  if { touch run }
+  mount --bind $1 run
+}
 
 piperw 4 3
 background {
@@ -34,13 +40,6 @@ fdclose 3
 
 if { s6-instance-delete /run/service/vm-services $id }
 
-if {
-  forx -E mount {
-    /run/configs/${id}/fs/run
-    ${dir}/fs/config
-    ${dir}/fs/doc
-  }
-  umount $mount
-}
-
+if { umount ${dir}/mount } # mount namespace
+if { umount ${dir}/mount } # private bind mount
 rm -r $dir /run/configs/${id}
