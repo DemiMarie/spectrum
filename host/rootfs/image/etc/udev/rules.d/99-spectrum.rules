@@ -3,3 +3,6 @@
 
 # systemd-udevd unsets PATH, so fix that.
 ACTION!="remove", ENV{PCI_CLASS}=="2????", RUN+="/usr/bin/env PATH=/usr/bin /usr/libexec/net-add"
+
+# make /dev/kvm world-accessible
+KERNEL=="kvm", MODE="0666"
