@@ -26,6 +26,7 @@ S6_RC_FILES = \
 	image/etc/s6-rc/mdevd-coldplug/dependencies.d/mdevd \
 	image/etc/s6-rc/mdevd-coldplug/type \
 	image/etc/s6-rc/mdevd-coldplug/up \
+	image/etc/s6-rc/mdevd/dependencies.d/nftables \
 	image/etc/s6-rc/mdevd/notification-fd \
 	image/etc/s6-rc/mdevd/run \
 	image/etc/s6-rc/mdevd/type \
