@@ -36,6 +36,7 @@ let
       path: (import path { inherit (self) callPackage; }).override;
 
     rootfs = self.callSpectrumPackage ../host/rootfs {};
+    mount-flatpak = self.callSpectrumPackage ../tools/mount-flatpak {};
     spectrum-build-tools = self.callSpectrumPackage ../tools {
       appSupport = false;
       buildSupport = true;
