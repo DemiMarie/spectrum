@@ -3,6 +3,7 @@
 
 FILES = \
 	image/etc/dbus-1/session.conf \
+	image/etc/flatpak/installations.d/extra.conf \
 	image/etc/fstab \
 	image/etc/mdev.conf \
 	image/etc/mdev/iface \

@@ -1,6 +1,6 @@
 #!/bin/execlineb -P
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2021, 2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2021, 2024-2025 Alyssa Ross <hi@alyssa.is>
 
 export TMPDIR /run
 
@@ -24,6 +24,18 @@ foreground {
       if { modprobe fuse }
       export LD_LIBRARY_PATH /lib64
       /run/virtiofs/virtiofs0/config/run
+    }
+    flatpak {
+      s6-envdir -fnL /run/virtiofs/virtiofs0/config/params
+      multisubstitute {
+        importas -iu id id
+        importas -iu arch arch
+        importas -iu branch branch
+        importas -iu commit commit
+        importas -iu runtime_commit runtime-commit
+      }
+      flatpak run --installation=virtiofs --arch=${arch} --branch=${branch}
+        --commit=${commit} --runtime-commit=${runtime_commit} $id
     }
     nix {
       if {

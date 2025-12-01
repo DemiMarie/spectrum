@@ -49,6 +49,7 @@ let
     name = "vm-fhs-env";
     targetPkgs = pkgs: appimageTools.defaultFhsEnvArgs.targetPkgs pkgs ++ [
       pkgs.fuse
+      pkgs.flatpak
 
       (pkgs.busybox.override {
         enableMinimal = true;
