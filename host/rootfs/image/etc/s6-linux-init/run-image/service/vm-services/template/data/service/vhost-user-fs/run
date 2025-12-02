@@ -11,5 +11,8 @@ redirfd -r 0 /dev/null
 export TMPDIR /run
 
 importas -i VM VM
+
 nsenter --mount=${VM}/mount
+unshare -U --map-user 1000 --map-group 1000
+
 virtiofsd --fd 3 --shared-dir ${VM}/fs
