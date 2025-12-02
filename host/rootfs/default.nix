@@ -11,11 +11,11 @@ pkgsMusl.callPackage (
 { spectrum-host-tools, spectrum-router
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
 , btrfs-progs, busybox, cloud-hypervisor, cosmic-files, crosvm
-, cryptsetup, dejavu_fonts, dbus, execline, foot, fuse3, iproute2
-, inotify-tools, jq, kmod, mdevd, mesa, mount-flatpak, s6
-, s6-linux-init, socat, systemd, util-linuxMinimal, virtiofsd
-, westonLite, xdg-desktop-portal, xdg-desktop-portal-gtk
-, xdg-desktop-portal-spectrum-host
+, cryptsetup, dejavu_fonts, dbus, execline, foot, fuse3, gdb, iproute2
+, inotify-tools, jq, kmod, less, mdevd, mesa, mount-flatpak, s6
+, s6-linux-init, socat, strace, systemd, util-linuxMinimal, vim
+, virtiofsd, westonLite, xdg-desktop-portal
+, xdg-desktop-portal-gtk, xdg-desktop-portal-spectrum-host
 }:
 
 let
@@ -34,7 +34,11 @@ let
 
     (busybox.override {
       # Use a separate file as it is a bit too big.
-      extraConfig = builtins.readFile ./busybox-config;
+      extraConfig =
+        (if config.includeDebugTools then ''
+CONFIG_LESS n
+CONFIG_VI n
+'' else "") + builtins.readFile ./busybox-config;
     })
   ];
 
@@ -58,7 +62,9 @@ let
   usrPackages = [
     appvm dejavu_fonts kmod.lib mesa westonLite kernel.modules
     firmware netvm systemd
-  ];
+  ] ++ (if config.includeDebugTools then [
+    gdb less strace vim
+  ] else []);
 
   appvms = {
     appvm-firefox = callSpectrumPackage ../../vm/app/firefox.nix {};
