@@ -6,6 +6,11 @@ importas -i VM VM
 
 nsenter --mount=${VM}/mount
 
+unshare
+  --cgroup
+  --ipc
+  --net
+  --uts
 dbus-daemon
   --config-file /usr/share/dbus-1/session.conf
   --print-address 3
