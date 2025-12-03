@@ -14,7 +14,6 @@ runCommand "eosimages.img" {
 } ''
   mkdir dir
   cd dir
-  ln -s -- $image $imageName
   gzip -1 < $image > $imageName.gz
   sha256sum -- $imageName.gz > $imageName.gz.sha256
   tar -ch -- $imageName.gz $imageName.gz.sha256 | tar2ext4 -o $out
