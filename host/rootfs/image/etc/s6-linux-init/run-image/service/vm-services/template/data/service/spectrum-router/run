@@ -4,6 +4,19 @@
 
 importas -i VM VM
 
-export RUST_LOG spectrum-router=debug,info
+bwrap
+  --unshare-all
+  --unshare-user
+  --dev-bind / /
+  --setenv RUST_LOG spectrum-router=debug,info
+  --tmpfs /tmp
+  --dev /dev
+  --tmpfs /dev/shm
+  --ro-bind /nix /nix
+  --ro-bind /etc /etc
+  --tmpfs /run
+  --ro-bind /usr /usr
+  --ro-bind /lib /lib
+  --bind $VM $VM
+  --
 spectrum-router --app-listen-path ${VM}/router-app.sock --driver-listen-path ${VM}/router-driver.sock
-
