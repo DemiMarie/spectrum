@@ -13,6 +13,6 @@ export TMPDIR /run
 importas -i VM VM
 
 nsenter --mount=${VM}/mount
-unshare -U --map-user 1000 --map-group 1000
+unshare -U --map-user 1000 --map-group 1000 --uts --ipc --cgroup
 
 virtiofsd --fd 3 --shared-dir ${VM}/fs
