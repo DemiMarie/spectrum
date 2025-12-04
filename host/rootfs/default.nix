@@ -10,9 +10,9 @@ pkgsMusl.callPackage (
 
 { spectrum-host-tools, spectrum-router
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
-, btrfs-progs, busybox, cloud-hypervisor, cosmic-files, crosvm
-, cryptsetup, dejavu_fonts, dbus, execline, foot, fuse3, iproute2
-, inotify-tools, jq, kmod, mdevd, mesa, mount-flatpak, s6
+, btrfs-progs, bubblewrap, busybox, cloud-hypervisor, cosmic-files
+, crosvm, cryptsetup, dejavu_fonts, dbus, execline, foot, fuse3
+, iproute2, inotify-tools, jq, kmod, mdevd, mesa, mount-flatpak, s6
 , s6-linux-init, socat, systemd, util-linuxMinimal, virtiofsd
 , westonLite, xdg-desktop-portal, xdg-desktop-portal-gtk
 , xdg-desktop-portal-spectrum-host
@@ -25,7 +25,7 @@ let
     trivial;
 
   packages = [
-    btrfs-progs cloud-hypervisor cosmic-files crosvm cryptsetup dbus
+    btrfs-progs bubblewrap cloud-hypervisor cosmic-files crosvm cryptsetup dbus
     execline fuse3 inotify-tools iproute2 jq kmod mdevd mount-flatpak s6
     s6-linux-init s6-rc socat spectrum-host-tools spectrum-router
     util-linuxMinimal virtiofsd xdg-desktop-portal-spectrum-host
