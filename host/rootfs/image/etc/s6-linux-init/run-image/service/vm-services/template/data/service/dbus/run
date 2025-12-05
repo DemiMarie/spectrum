@@ -6,7 +6,23 @@ importas -i VM VM
 
 nsenter --mount=${VM}/mount
 
-unshare --cgroup --ipc --net --uts
+unshare --cgroup --ipc --net --uts --
+setpriv
+  --landlock-access fs
+#  --landlock-rule path-beneath:execute,read-file,read-dir:/usr
+#  --landlock-rule path-beneath:execute,read-file,read-dir:/nix
+#  --landlock-rule path-beneath:execute,read-file,read-dir:/etc
+#  --landlock-rule path-beneath:read-dir:/
+#  --landlock-rule path-beneath:read-file:/lib
+#  --landlock-rule path-beneath:read-file:/bin
+#  --landlock-rule path-beneath:read-file:/sbin
+#  --landlock-rule path-beneath:read-file,read-dir:/proc
+#  --landlock-rule path-beneath:read-file,read-dir:/sys
+#  --landlock-rule path-beneath:read-file,read-dir,write-file:/dev
+#  --landlock-rule path-beneath:read-file,write-file,read-dir,remove-dir,remove-file,make-char,make-dir,make-reg,make-sock,make-fifo,make-block,make-sym,refer,truncate:/home
+#  --landlock-rule path-beneath:read-file,write-file,read-dir,remove-dir,remove-file,make-dir,make-reg,make-sock,make-sym,refer,truncate:/run
+  --landlock-rule path-beneath:read-file,write-file,read-dir,remove-dir,remove-file,make-char,make-dir,make-reg,make-sock,make-fifo,make-block,make-sym,refer,truncate,execute:/
+  --
 dbus-daemon
   --config-file /usr/share/dbus-1/session.conf
   --print-address 3
