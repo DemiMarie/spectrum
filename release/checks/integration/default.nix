@@ -10,7 +10,7 @@ let
   live = callSpectrumPackage ../../live {};
 
   appimage = writeShellScript "test.appimage" ''
-    #!/bin/execlineb -P
+    #!/bin/execlineb -WP
     echo hello world
   '';
 

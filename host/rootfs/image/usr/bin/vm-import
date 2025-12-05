@@ -1,4 +1,4 @@
-#!/bin/execlineb -S2
+#!/bin/execlineb -WS2
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
 

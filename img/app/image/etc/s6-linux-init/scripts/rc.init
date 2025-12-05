@@ -1,4 +1,4 @@
-#!/bin/execlineb -P
+#!/bin/execlineb -WP
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2020-2022 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
