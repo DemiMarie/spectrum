@@ -102,15 +102,15 @@ fn run(mut args: ArgsOs) -> Result<(), String> {
         ex_usage();
     }
 
-    let mut user_data =
-        Root::open(&user_data_path).map_err(|e| format!("opening user data partition: {e}"))?;
-    user_data.set_resolver_flags(ResolverFlags::NO_SYMLINKS);
+    let user_data = Root::open(&user_data_path)
+        .map_err(|e| format!("opening user data partition: {e}"))?
+        .with_resolver_flags(ResolverFlags::NO_SYMLINKS);
 
-    let mut source_installation_dir = user_data
+    let source_installation_dir = user_data
         .open_subpath(&installation_path, OpenFlags::O_PATH)
         .map(Root::from_fd)
-        .map_err(|e| format!("opening source flatpak installation: {e}"))?;
-    source_installation_dir.set_resolver_flags(ResolverFlags::NO_SYMLINKS);
+        .map_err(|e| format!("opening source flatpak installation: {e}"))?
+        .with_resolver_flags(ResolverFlags::NO_SYMLINKS);
 
     std::fs::create_dir("flatpak")
         .map_err(|e| format!("creating target flatpak installation: {e}"))?;
@@ -124,8 +124,8 @@ fn run(mut args: ArgsOs) -> Result<(), String> {
             | OpenTreeFlags::AT_SYMLINK_NOFOLLOW,
     )
     .map_err(|e| format!("opening target flatpak installation: {e}"))?;
-    let mut target_installation_dir = Root::from_fd(target_installation_dir);
-    target_installation_dir.set_resolver_flags(ResolverFlags::NO_SYMLINKS);
+    let target_installation_dir =
+        Root::from_fd(target_installation_dir).with_resolver_flags(ResolverFlags::NO_SYMLINKS);
 
     let mut full_app_path = PathBuf::from("app");
     full_app_path.push(&app);
