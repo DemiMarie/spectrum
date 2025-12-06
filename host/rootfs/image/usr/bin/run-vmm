@@ -52,5 +52,36 @@ unexport !
 fdmove -c 3 0
 redirfd -r 0 /dev/null
 
+s6-softlimit -H -l 18446744073709551615
 if { udevadm wait /dev/kvm }
+bwrap
+  --unshare-all
+  --unshare-user
+  --dev /dev
+  --dev-bind /dev/kvm /dev/kvm
+  --dev-bind /dev/vfio /dev/vfio
+  --tmpfs /dev/shm
+  --tmpfs /tmp
+  --tmpfs /var/tmp
+  --ro-bind /etc /etc
+  --ro-bind /lib /lib
+  --ro-bind /nix /nix
+  --ro-bind /usr /usr
+  --ro-bind /sys /sys
+  --bind /run /run
+  --proc /proc
+  --ro-bind /proc/sys /proc/sys
+  --tmpfs /proc/scsi
+  --remount-ro /proc/scsi
+  --tmpfs /proc/acpi
+  --remount-ro /proc/acpi
+  --tmpfs /proc/fs
+  --remount-ro /proc/fs
+  --tmpfs /proc/irq
+  --remount-ro /proc/irq
+  --ro-bind /dev/null /proc/timer_list
+  --ro-bind /dev/null /proc/kcore
+  --ro-bind /dev/null /proc/kallsyms
+  --ro-bind /dev/null /proc/sysrq-trigger
+  --
 cloud-hypervisor --api-socket fd=3
