@@ -7,6 +7,7 @@ backtick -E id {
   basename -- $dir
 }
 if { useradd -P /run -Urd / -s /bin/nologin gpu-${id} }
+if { useradd -P /run -Urd / -s /bin/nologin xdp-spectrum-${id} }
 
 if {
   elgetpositionals

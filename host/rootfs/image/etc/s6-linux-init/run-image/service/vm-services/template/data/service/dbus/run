@@ -4,11 +4,17 @@
 
 importas -i VM VM
 
+if {
+  redirfd -w 1 data/dbus.conf
+  sed "s/@XDP_SPECTRUM_USER@/xdp-spectrum-${VM}/g" /etc/dbus-portal.conf.in
+}
+
 s6-ipcserver-socketbinder -B /run/portal-bus/${VM}
 
 fdmove -c 3 0
 redirfd -r 0 /dev/null
 
+getcwd -E dir
 nsenter --mount=/run/vm/by-id/${VM}/mount
 
 unshare --cgroup --ipc --net --uts
@@ -17,6 +23,6 @@ export LISTEN_FDS 1
 getpid LISTEN_PID
 
 dbus-daemon
-  --config-file /usr/share/dbus-1/session.conf
+  --config-file ${dir}/data/dbus.conf
   --print-address 4
   --address systemd:

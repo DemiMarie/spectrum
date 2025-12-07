@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
 FILES = \
+	image/etc/dbus-portal.conf.in \
 	image/etc/fonts/fonts.conf \
 	image/etc/fstab \
 	image/etc/init \

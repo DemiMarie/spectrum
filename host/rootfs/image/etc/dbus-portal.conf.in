@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: CC0-1.0 -->
+<!-- SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is> -->
+<!DOCTYPE busconfig SYSTEM "busconfig.dtd">
+<busconfig>
+  <include>/usr/share/dbus-1/session.conf</include>
+
+  <policy context="default">
+    <allow user="@XDP_SPECTRUM_USER@"/>
+  </policy>
+</busconfig>

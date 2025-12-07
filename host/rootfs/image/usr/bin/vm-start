@@ -20,4 +20,21 @@ foreground {
   redirfd -w 2 /dev/null
   s6-svwait -U /run/service/vmm/instance/${1}
 }
-ch-remote --api-socket /run/vm/by-id/${1}/vmm boot
+foreground { ch-remote --api-socket /run/vm/by-id/${1}/vmm boot }
+importas -Siu ?
+if {
+  if -t { test $? -eq 0 }
+
+  # This is technically racy: if somehow we don't get here before the VM boots
+  # and connects to xdg-desktop-portal-spectrum-host, it won't be able to
+  # connect.  The VM rebooting will also break this, because the socket will be
+  # re-created with the wrong mode, but VM reboots are broken anyway at the time
+  # of writing:
+  #
+  # https://github.com/cloud-hypervisor/cloud-hypervisor/issues/7547
+  #
+  # Ideally we'd be able to give a listening socket FD to Cloud Hypervisor for
+  # its VSOCK socket.
+  chown xdp-spectrum-${1} /run/vsock/${1}/vsock
+}
+exit $?
