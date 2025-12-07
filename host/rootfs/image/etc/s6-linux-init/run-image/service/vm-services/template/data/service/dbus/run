@@ -4,10 +4,19 @@
 
 importas -i VM VM
 
+s6-ipcserver-socketbinder -B /run/vm/by-id/${VM}/portal-bus
+
+fdmove -c 3 0
+redirfd -r 0 /dev/null
+
 nsenter --mount=/run/vm/by-id/${VM}/mount
 
 unshare --cgroup --ipc --net --uts
+
+export LISTEN_FDS 1
+getpid LISTEN_PID
+
 dbus-daemon
   --config-file /usr/share/dbus-1/session.conf
-  --print-address 3
-  --address unix:path=/run/vm/by-id/${VM}/portal-bus
+  --print-address 4
+  --address systemd:
