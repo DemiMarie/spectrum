@@ -4,7 +4,7 @@
 
 importas -i VM VM
 
-s6-ipcserver-socketbinder -B /run/vm/by-id/${VM}/portal-bus
+s6-ipcserver-socketbinder -B /run/portal-bus/${VM}
 
 fdmove -c 3 0
 redirfd -r 0 /dev/null

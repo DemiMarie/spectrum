@@ -14,6 +14,7 @@ DIRS = \
 	dev \
 	etc/s6-linux-init/env \
 	etc/s6-linux-init/run-image/configs \
+	etc/s6-linux-init/run-image/portal-bus \
 	etc/s6-linux-init/run-image/sd-notify-wrapper \
 	etc/s6-linux-init/run-image/service/serial-getty/instance \
 	etc/s6-linux-init/run-image/service/serial-getty/instances \

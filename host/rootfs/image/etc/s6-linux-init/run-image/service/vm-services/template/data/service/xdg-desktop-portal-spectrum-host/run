@@ -4,7 +4,7 @@
 
 importas -i VM VM
 
-export DBUS_SESSION_BUS_ADDRESS unix:path=/run/vm/by-id/${VM}/portal-bus
+export DBUS_SESSION_BUS_ADDRESS unix:path=/run/portal-bus/${VM}
 
 if { mkdir -p /run/vsock/${VM} }
 s6-ipcserver-socketbinder -a 0700 /run/vsock/${VM}/vsock_219
