@@ -43,11 +43,11 @@ foreground {
   # mounts instead of rm -rf.  Once this code is in a separate mount
   # namespace, the copies should be replaced by bind mounts.
   if {
-    if { rm -rf -- /run/vm/by-id/${update_vm_id}/fs/etc }
+    if { rm -rf -- /run/fs/${update_vm_id}/etc }
     umask 022
-    if { mkdir -p -- /run/vm/by-id/${update_vm_id}/fs/updates /run/vm/by-id/${update_vm_id}/fs/etc/systemd }
-    if { cp -R -- /etc/vm-sysupdate.d /etc/update-url /run/vm/by-id/${update_vm_id}/fs/etc }
-    cp -- /etc/systemd/import-pubring.gpg /run/vm/by-id/${update_vm_id}/fs/etc/systemd
+    if { mkdir -p -- /run/fs/${update_vm_id}/updates /run/fs/${update_vm_id}/etc/systemd }
+    if { cp -R -- /etc/vm-sysupdate.d /etc/update-url /run/fs/${update_vm_id}/etc }
+    cp -- /etc/systemd/import-pubring.gpg /run/fs/${update_vm_id}/etc/systemd
   }
 
   nsenter --mount=/run/vm/by-id/${update_vm_id}/ns/mnt
@@ -55,10 +55,10 @@ foreground {
 
   # If the directory is already mounted, unmount it.  This prevents a
   # confusing error from mount.
-  foreground { redirfd -w 2 /dev/null umount -- /run/vm/by-id/${update_vm_id}/fs/updates }
+  foreground { redirfd -w 2 /dev/null umount -- /run/fs/${update_vm_id}/updates }
 
   # Share the update directory with the VM.
-  if { mount --bind -- shared /run/vm/by-id/${update_vm_id}/fs/updates }
+  if { mount --bind -- shared /run/fs/${update_vm_id}/updates }
 
   # Start the update VM.
   if { vm-start $update_vm_id }
@@ -69,7 +69,7 @@ foreground {
   if { s6-svwait -D /run/service/vmm/instance/${update_vm_id} }
 
   # Remove the bind mount.
-  if { umount -- /run/vm/by-id/${update_vm_id}/fs/updates }
+  if { umount -- /run/fs/${update_vm_id}/updates }
 
   # Ensure that the VM cannot change the directory
   # while systemd-sysupdate is using it.

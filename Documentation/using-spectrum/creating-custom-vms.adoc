@@ -91,9 +91,9 @@ should configure `eth0` with the IPv4 address `100.64.165.70` (because
 
 === Filesystem
 
-Every VM has a virtio-fs device that exposes the /run/vm/by-id/_VM
-ID_/fs directory on the host, with the tag "host".  The VM cannot
-write directly into that directory, but it's possible to create a
+Every VM has a virtio-fs device that exposes the /run/fs/_VM ID_
+directory on the host, with the tag "host".  The VM cannot write
+directly into that directory, but it's possible to create a
 subdirectory on the host and bind mount a directory from a writeable
 filesystem into it to provide the VM with access to shared storage.
 

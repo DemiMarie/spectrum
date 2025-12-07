@@ -15,4 +15,4 @@ importas -i VM VM
 nsenter --mount=/run/vm/by-id/${VM}/ns/mnt
 unshare -U --map-user 1000 --map-group 1000 --uts --ipc --cgroup
 
-virtiofsd --fd 3 --shared-dir /run/vm/by-id/${VM}/fs
+virtiofsd --fd 3 --shared-dir /run/fs/${VM}

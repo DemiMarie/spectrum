@@ -5,8 +5,8 @@
 if {
   mkdir -p
     /run/doc/${1}/doc
-    /run/vm/by-id/${1}/fs/config
-    /run/vm/by-id/${1}/fs/doc
+    /run/fs/${1}/config
+    /run/fs/${1}/doc
     /run/vm/by-id/${1}/ns
 }
 if { mount --make-private --rbind /run/vm/by-id/${1}/ns /run/vm/by-id/${1}/ns }
@@ -19,18 +19,19 @@ if {
     --mount=/run/vm/by-id/${1}/ns/mnt
     --user=/run/vm/by-id/${1}/ns/user
 
-  if { mount --make-shared --rbind /run/vm/by-id/${1} /run/vm/by-id/${1} }
-
   # The VM should not be able to write directly into a tmpfs, and the host
   # should be able to assume there are no untrusted symlinks there, but there
   # can be writable block-based bind mounted subdirectories.
-  if { mount --rbind -o nofail /run/vm/by-id/${1}/config/fs /run/vm/by-id/${1}/fs/config }
-  if { mount --rbind -o ro /run/vm/by-id/${1}/fs /run/vm/by-id/${1}/fs }
+
+  # Needs to be shared so that additional mounts under config/ (e.g. from
+  # mount-flatpak) will be propagated into the virtiofsd sandbox.
+  if { mount --make-shared --rbind -o nofail /run/vm/by-id/${1}/config/fs /run/fs/${1}/config }
+  if { mount --rbind -o ro /run/fs/${1} /run/fs/${1} }
 
   # Needs to be shared so that when xdg-document-portal mounts its fuse
   # filesystem at /run/doc/${1}/doc, it will propagate to /run/fs/${1}/doc.
   if { mount --make-shared --rbind /run/doc/${1} /run/doc/${1} }
-  mount --rbind /run/doc/${1}/doc /run/vm/by-id/${1}/fs/doc
+  mount --rbind /run/doc/${1}/doc /run/fs/${1}/doc
 }
 
 if { s6-instance-create /run/service/vm-services $1 }

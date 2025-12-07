@@ -22,7 +22,7 @@ if { create-vm-dependencies $id }
 
 if {
   nsenter --mount=/run/vm/by-id/${id}/ns/mnt
-  cd /run/vm/by-id/${id}/fs/config
+  cd /run/fs/${id}/config
   if { redirfd -w 1 type echo appimage }
   if { touch run }
   importas -Siu 1
