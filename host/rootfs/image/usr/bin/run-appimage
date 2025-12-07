@@ -21,7 +21,7 @@ if { ln -s /run/configs/${id} /run/vm/by-id/${id}/config }
 if { create-vm-dependencies $id }
 
 if {
-  nsenter --mount=/run/vm/by-id/${id}/mount
+  nsenter --mount=/run/vm/by-id/${id}/ns/mnt
   cd /run/vm/by-id/${id}/fs/config
   if { redirfd -w 1 type echo appimage }
   if { touch run }
@@ -45,6 +45,5 @@ fdclose 3
 
 if { s6-instance-delete /run/service/vm-services $id }
 
-if { umount /run/vm/by-id/${id}/mount } # mount namespace
-if { umount /run/vm/by-id/${id}/mount } # private bind mount
+if { umount -R /run/vm/by-id/${id}/ns }
 rm -r /run/vm/by-id/${id} /run/configs/${id}

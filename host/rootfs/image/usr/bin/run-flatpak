@@ -24,7 +24,7 @@ if {
   if { create-vm-dependencies $id }
 
   if {
-    nsenter --mount=/run/vm/by-id/${id}/mount
+    nsenter --mount=/run/vm/by-id/${id}/ns/mnt
     cd /run/vm/by-id/${id}/fs/config
     if { redirfd -w 1 type echo flatpak }
     mount-flatpak $@
@@ -46,6 +46,5 @@ if {
 
 if { s6-instance-delete -- /run/service/vm-services $id }
 
-if { umount /run/vm/by-id/${id}/mount } # mount namespace
-if { umount /run/vm/by-id/${id}/mount } # private bind mount
+if { umount -R /run/vm/by-id/${id}/ns }
 rm -r /run/vm/by-id/${id} /run/configs/${id}

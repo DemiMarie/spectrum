@@ -2,18 +2,22 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
-if { touch /run/vm/by-id/${1}/mount }
-if { mount --make-private --bind /run/vm/by-id/${1}/mount /run/vm/by-id/${1}/mount }
-
 if {
   mkdir -p
     /run/vm/by-id/${1}/doc-run/doc
     /run/vm/by-id/${1}/fs/config
     /run/vm/by-id/${1}/fs/doc
+    /run/vm/by-id/${1}/ns
 }
+if { mount --make-private --rbind /run/vm/by-id/${1}/ns /run/vm/by-id/${1}/ns }
+if { touch /run/vm/by-id/${1}/ns/mnt /run/vm/by-id/${1}/ns/user }
 
 if {
-  unshare --propagation=slave --mount=/run/vm/by-id/${1}/mount
+  unshare --propagation=slave
+    --map-users all
+    --map-groups all
+    --mount=/run/vm/by-id/${1}/ns/mnt
+    --user=/run/vm/by-id/${1}/ns/user
 
   if { mount --make-shared --rbind /run/vm/by-id/${1} /run/vm/by-id/${1} }
 

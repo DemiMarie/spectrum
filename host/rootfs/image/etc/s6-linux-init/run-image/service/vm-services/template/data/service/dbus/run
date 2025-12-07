@@ -15,7 +15,7 @@ fdmove -c 3 0
 redirfd -r 0 /dev/null
 
 getcwd -E dir
-nsenter --mount=/run/vm/by-id/${VM}/mount
+nsenter --mount=/run/vm/by-id/${VM}/ns/mnt
 
 unshare --cgroup --ipc --net --uts
 

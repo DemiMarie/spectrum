@@ -50,7 +50,7 @@ foreground {
     cp -- /etc/systemd/import-pubring.gpg /run/vm/by-id/${update_vm_id}/fs/etc/systemd
   }
 
-  nsenter --mount=/run/vm/by-id/${update_vm_id}/mount
+  nsenter --mount=/run/vm/by-id/${update_vm_id}/ns/mnt
   cd $1
 
   # If the directory is already mounted, unmount it.  This prevents a
