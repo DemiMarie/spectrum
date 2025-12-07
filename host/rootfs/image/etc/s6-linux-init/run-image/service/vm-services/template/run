@@ -2,6 +2,6 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 
-export VM /run/vm/by-id/${1}
+export VM $1
 
 s6-svscan -d3 data/service

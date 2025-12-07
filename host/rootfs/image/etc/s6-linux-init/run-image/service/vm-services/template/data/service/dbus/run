@@ -4,10 +4,10 @@
 
 importas -i VM VM
 
-nsenter --mount=${VM}/mount
+nsenter --mount=/run/vm/by-id/${VM}/mount
 
 unshare --cgroup --ipc --net --uts
 dbus-daemon
   --config-file /usr/share/dbus-1/session.conf
   --print-address 3
-  --address unix:path=${VM}/portal-bus
+  --address unix:path=/run/vm/by-id/${VM}/portal-bus

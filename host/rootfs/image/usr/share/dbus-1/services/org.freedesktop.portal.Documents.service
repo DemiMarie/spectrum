@@ -3,4 +3,4 @@
 
 [D-BUS Service]
 Name=org.freedesktop.portal.Documents
-Exec=/bin/importas -Si VM export XDG_RUNTIME_DIR ${VM}/doc-run xdg-document-portal
+Exec=/bin/importas -Si VM export XDG_RUNTIME_DIR /run/vm/by-id/${VM}/doc-run xdg-document-portal

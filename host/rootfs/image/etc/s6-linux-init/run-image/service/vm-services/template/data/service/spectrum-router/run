@@ -17,6 +17,8 @@ bwrap
   --tmpfs /run
   --ro-bind /usr /usr
   --ro-bind /lib /lib
-  --bind $VM $VM
+  --bind /run/vm/by-id/${VM} /run/vm/by-id/${VM}
   --
-spectrum-router --app-listen-path ${VM}/router-app.sock --driver-listen-path ${VM}/router-driver.sock
+spectrum-router
+  --app-listen-path /run/vm/by-id/${VM}/router-app.sock
+  --driver-listen-path /run/vm/by-id/${VM}/router-driver.sock
