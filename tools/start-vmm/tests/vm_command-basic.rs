@@ -42,7 +42,7 @@ fn main() -> std::io::Result<()> {
     assert_eq!(config.serial.mode, "File");
     assert_eq!(config.serial.file.unwrap(), "/run/testvm.log");
     assert_eq!(config.vsock.cid, 3);
-    assert_eq!(PathBuf::from(config.vsock.socket), vm_dir.join("vsock"));
+    assert_eq!(config.vsock.socket, "/run/vsock/testvm/vsock");
 
     Ok(())
 }

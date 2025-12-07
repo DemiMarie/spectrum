@@ -154,7 +154,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
         },
         vsock: VsockConfig {
             cid: 3,
-            socket: vm_dir.join("vsock").into_os_string().into_string().unwrap(),
+            socket: format!("/run/vsock/{vm_name}/vsock"),
         },
         landlock_enable: true,
         landlock_rules: vec![
