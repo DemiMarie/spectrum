@@ -10,9 +10,14 @@ redirfd -r 0 /dev/null
 
 export TMPDIR /run
 
+s6-envuidgid fs
+s6-applyuidgid -Uzu 0
 importas -i VM VM
+nsenter --preserve-credentials -S0
+  --mount=/run/vm/by-id/${VM}/ns/mnt
+  --user=/run/vm/by-id/${VM}/ns/user
 
-nsenter --mount=/run/vm/by-id/${VM}/ns/mnt
+# Show the guest files owned by uid/gid 1000.
 unshare -U --map-user 1000 --map-group 1000 --uts --ipc --cgroup
 
 virtiofsd --fd 3 --shared-dir /run/fs/${VM}

@@ -14,8 +14,12 @@ s6-ipcserver-socketbinder -B /run/portal-bus/${VM}
 fdmove -c 3 0
 redirfd -r 0 /dev/null
 
+s6-envuidgid fs
+s6-applyuidgid -Uzu 0
 getcwd -E dir
-nsenter --mount=/run/vm/by-id/${VM}/ns/mnt
+nsenter --preserve-credentials -S0
+  --mount=/run/vm/by-id/${VM}/ns/mnt
+  --user=/run/vm/by-id/${VM}/ns/user
 
 unshare --cgroup --ipc --net --uts
 

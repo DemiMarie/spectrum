@@ -13,9 +13,14 @@ if { mount --make-private --rbind /run/vm/by-id/${1}/ns /run/vm/by-id/${1}/ns }
 if { touch /run/vm/by-id/${1}/ns/mnt /run/vm/by-id/${1}/ns/user }
 
 if {
-  unshare --propagation=slave
-    --map-users all
-    --map-groups all
+  redirfd -r 3 /run/vm/by-id/${1}/config
+
+  s6-envuidgid fs
+  s6-applyuidgid -Uzu 0
+
+  unshare -S0 --propagation=slave
+    --map-users 0:1000:1 --map-users 1:1:999 --map-users 1001:1001:4294966294
+    --map-groups 0:1000:1 --map-groups 1:1:999 --map-groups 1001:1001:4294966294
     --mount=/run/vm/by-id/${1}/ns/mnt
     --user=/run/vm/by-id/${1}/ns/user
 
@@ -25,7 +30,7 @@ if {
 
   # Needs to be shared so that additional mounts under config/ (e.g. from
   # mount-flatpak) will be propagated into the virtiofsd sandbox.
-  if { mount --make-shared --rbind -o nofail /run/vm/by-id/${1}/config/fs /run/fs/${1}/config }
+  if { mount --make-shared --rbind -o nofail /proc/self/fd/3/fs /run/fs/${1}/config }
   if { mount --rbind -o ro /run/fs/${1} /run/fs/${1} }
 
   # Needs to be shared so that when xdg-document-portal mounts its fuse

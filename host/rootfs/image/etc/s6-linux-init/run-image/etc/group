@@ -14,3 +14,4 @@ cdrom:x:12:
 tape:x:13:
 kvm:x:14:
 wayland:x:15:wayland
+fs:x:1000:

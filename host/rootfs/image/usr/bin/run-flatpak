@@ -12,7 +12,7 @@ if { useradd -P /run -Urd / -s /bin/nologin xdp-spectrum-${id} }
 if {
   elgetpositionals
 
-  if { mkdir -p /run/configs/${id}/fs }
+  if { install -do fs /run/configs/${id}/fs }
 
   if {
     ln -s /usr/lib/spectrum/img/appvm/blk /usr/lib/spectrum/img/appvm/vmlinux
@@ -24,7 +24,11 @@ if {
   if { create-vm-dependencies $id }
 
   if {
-    nsenter --mount=/run/vm/by-id/${id}/ns/mnt
+    s6-envuidgid fs
+    s6-applyuidgid -Uzu 0
+    nsenter --preserve-credentials -S0
+      --mount=/run/vm/by-id/${id}/ns/mnt
+      --user=/run/vm/by-id/${id}/ns/user
     cd /run/fs/${id}/config
     if { redirfd -w 1 type echo flatpak }
     mount-flatpak $@
