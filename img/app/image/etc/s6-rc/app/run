@@ -14,10 +14,17 @@ foreground {
   withstdinas -E type
   case $type {
     appimage {
-      if { modprobe fuse }
+      if { modprobe loop }
+      if {
+        backtick -E offset { /run/virtiofs/virtiofs0/config/run --appimage-offset }
+        mount -o offset=${offset} /run/virtiofs/virtiofs0/config/run /mnt
+      }
       s6-setuidgid user
+      export APPIMAGE /run/virtiofs/virtiofs0/config/run
+      export APPDIR /mnt
+      export ARGV0 /mnt/AppRun
       export LD_LIBRARY_PATH /lib64
-      /run/virtiofs/virtiofs0/config/run
+      /mnt/AppRun
     }
     flatpak {
       s6-envdir -fnL /run/virtiofs/virtiofs0/config/params

@@ -30,7 +30,7 @@ $(imgdir)/appvm/blk/root.img: ../../scripts/make-gpt.sh ../../scripts/sfdisk-fie
 	    build/rootfs.erofs:root:5460386f-2203-4911-8694-91400125c604:root
 	mv $@.tmp $@
 
-DIRS = dev home/user run proc sys tmp \
+DIRS = dev home/user run mnt proc sys tmp \
 	etc/s6-linux-init/run-image/pipewire \
 	etc/s6-linux-init/run-image/service \
 	etc/s6-linux-init/run-image/user \
