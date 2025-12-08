@@ -21,6 +21,7 @@ foreground {
     }
     flatpak {
       s6-envdir -fnL /run/virtiofs/virtiofs0/config/params
+      s6-setuidgid user
       multisubstitute {
         importas -iu id id
         importas -iu arch arch
