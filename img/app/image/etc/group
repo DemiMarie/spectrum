@@ -1,4 +1,3 @@
-wayland:x:1:wayland
 wireplumber:x:2:wireplumber
 pipewire:x:3:pipewire
 user:x:1000:user

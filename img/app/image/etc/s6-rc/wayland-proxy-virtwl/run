@@ -26,6 +26,6 @@ export LISTEN_FDS 2
 export LISTEN_FDNAMES wayland:x11
 getpid LISTEN_PID
 
-s6-setuidgid wayland
+s6-setuidgid user
 
 wayland-proxy-virtwl --virtio-gpu --x-display=0
