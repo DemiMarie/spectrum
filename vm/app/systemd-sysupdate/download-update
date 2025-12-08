@@ -1,5 +1,6 @@
 #!/usr/bin/env -S execlineb -WS0
 # SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 export LC_ALL C
 export LANGUAGE C
@@ -59,7 +60,12 @@ multisubstitute {
   importas -iuS SYSTEMD_SYSUPDATE_PATH
   importas -iuS tmpdir
 }
-if { $SYSTEMD_SYSUPDATE_PATH --definitions=${tmpdir} update }
+if {
+  forx -x 0 _ { 1 2 3 4 5 }
+  if -nt { $SYSTEMD_SYSUPDATE_PATH --definitions=${tmpdir} update }
+  foreground { sleep 1 }
+  exit 1
+}
 # [ and ] are allowed in update URLs so that IPv6 addresses work, but
 # they cause globbing in the curl command-line tool by default.  Use --globoff
 # to disable this feature.
