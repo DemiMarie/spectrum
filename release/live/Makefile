@@ -43,6 +43,10 @@ run: $(dest)
 	exec ../../scripts/run-qemu.sh -m 4G \
 	    -machine virtualization=on \
 	    -cpu max \
+	    -smbios type=11,value=io.systemd.stub.kernel-cmdline-extra=console=hvc0 \
+	    -chardev vc,id=virtiocon0 \
+	    -device virtio-serial \
+	    -device virtconsole,chardev=virtiocon0 \
 	    -device virtio-keyboard \
 	    -device virtio-mouse \
 	    -device virtio-gpu \
