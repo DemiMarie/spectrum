@@ -5,7 +5,6 @@
 unexport WAYLAND_DISPLAY
 
 if { mkdir -p -m 0700 /run/user/0 }
-unexport ?
 
 backtick USER { id -un }
 backtick HOME {
