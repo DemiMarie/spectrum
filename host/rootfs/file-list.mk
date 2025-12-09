@@ -4,13 +4,13 @@
 FILES = \
 	image/etc/fonts/fonts.conf \
 	image/etc/fstab \
-	image/etc/group \
 	image/etc/init \
 	image/etc/login \
 	image/etc/parse-devname \
-	image/etc/passwd \
 	image/etc/s6-linux-init/env/WAYLAND_DISPLAY \
 	image/etc/s6-linux-init/env/XDG_RUNTIME_DIR \
+	image/etc/s6-linux-init/run-image/etc/group \
+	image/etc/s6-linux-init/run-image/etc/passwd \
 	image/etc/s6-linux-init/run-image/service/getty-tty1/run \
 	image/etc/s6-linux-init/run-image/service/getty-tty2/run \
 	image/etc/s6-linux-init/run-image/service/getty-tty3/run \
@@ -68,6 +68,8 @@ FILES = \
 
 LINKS = \
 	image/bin \
+	image/etc/group \
+	image/etc/passwd \
 	image/etc/s6-linux-init/run-image/opengl-driver \
 	image/etc/s6-linux-init/run-image/service/vmm/template/run \
 	image/lib \

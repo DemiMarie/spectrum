@@ -1,15 +1,1 @@
-root:x:0:root
-clock:x:1:
-dialout:x:2:
-kmem:x:3:
-input:x:4:
-tty:x:5:
-video:x:6:
-render:x:7:
-sgx:x:8:
-audio:x:9:
-lp:x:10:
-disk:x:11:
-cdrom:x:12:
-tape:x:13:
-kvm:x:14:
+../run/etc/group
