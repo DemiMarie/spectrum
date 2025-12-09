@@ -11,13 +11,15 @@ fdmove -c 3 0
 s6-ipcserver-socketbinder -a 0770 /run/router/${VM}
 fdmove -c 4 0
 
+redirfd -r 0 /dev/null
+
 # Notify readiness.
 if {
   fdmove -c 5 1
   echo
 }
 
-redirfd -r 0 /dev/null
+s6-setuidgid router
 
 bwrap
   --unshare-all
