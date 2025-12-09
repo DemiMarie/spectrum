@@ -11,6 +11,6 @@ backtick HOME {
 importas -i home HOME
 cd $home
 
-export PATH /bin # Clear out execlineb wrapper path
+export PATH /usr/bin # Clear out execlineb wrapper path
 /bin/exec -l
 sh
