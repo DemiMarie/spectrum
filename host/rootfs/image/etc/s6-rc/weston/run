@@ -34,10 +34,13 @@ backtick HOME {
   homeof $user
 }
 
+if { install -do wayland -g wayland -m 0770 /run/wayland }
+if { chown wayland /dev/tty0 /dev/tty1 }
 redirfd -r 0 /dev/tty1
 
 importas -i home HOME
 cd $home
 if { udevadm wait /dev/dri/card0 }
 unshare --cgroup --ipc --net --uts
+s6-setuidgid wayland
 weston -S $WAYLAND_DISPLAY

@@ -4,6 +4,8 @@
 
 s6-ipcserver-socketbinder -a 0700 /run/root-terminal
 
+if { chown wayland /run/root-terminal }
+
 fdmove 1 3
 s6-ipcserverd -1P
 
