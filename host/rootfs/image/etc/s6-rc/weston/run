@@ -4,6 +4,26 @@
 
 importas -Siu WAYLAND_DISPLAY
 
+piperw 4 3
+background {
+  fdclose 3
+
+  if {
+    fdmove -c 0 4
+    redirfd -w 1 /dev/null
+    head -c 1
+  }
+  fdclose 4
+
+  if { chmod -- 0770 $WAYLAND_DISPLAY }
+  if { chgrp -- wayland $WAYLAND_DISPLAY }
+
+  fdmove -c 1 5
+  echo
+}
+fdclose 4
+fdclose 5
+
 # Workaround for
 # https://gitlab.freedesktop.org/wayland/weston/-/merge_requests/1911
 if { mkdir -p -m 0700 /run/user/0 }

@@ -13,3 +13,4 @@ disk:x:11:
 cdrom:x:12:
 tape:x:13:
 kvm:x:14:
+wayland:x:15:
