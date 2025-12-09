@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
-s6-ipcserver -1a 0700 -C 1 -b 1 env/crosvm.sock
+s6-ipcserver -1a 0700 -c 1 -b 1 env/crosvm.sock
 
 bwrap
   --unshare-all
