@@ -5,12 +5,14 @@
 
 s6-ipcserver -1a 0700 -c 1 -b 1 env/crosvm.sock
 
+importas -Si WAYLAND_DISPLAY
+
 bwrap
   --unshare-all
   # --unshare-all only implies --unshare-user-try.
   # Make this more than a "try".
   --unshare-user
-  --bind /run/user/0/wayland-1 /run/user/0/wayland-1
+  --bind $WAYLAND_DISPLAY $WAYLAND_DISPLAY
   --ro-bind /usr /usr
   --ro-bind /lib /lib
   --tmpfs /tmp
@@ -35,5 +37,5 @@ bwrap
   --
 crosvm --no-syslog device gpu
   --fd 0
-  --wayland-sock /run/user/0/wayland-1
+  --wayland-sock $WAYLAND_DISPLAY
   --params "{\"context-types\":\"cross-domain\"}"

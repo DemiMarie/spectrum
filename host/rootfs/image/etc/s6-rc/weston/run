@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
 
-unexport WAYLAND_DISPLAY
+importas -Siu WAYLAND_DISPLAY
 
 if { mkdir -p -m 0700 /run/user/0 }
 
@@ -18,4 +18,4 @@ importas -i home HOME
 cd $home
 if { udevadm wait /dev/dri/card0 }
 unshare --cgroup --ipc --net --uts
-weston
+weston -S $WAYLAND_DISPLAY
