@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: EUPL-1.2+
-// SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2022-2025 Alyssa Ross <hi@alyssa.is>
 // SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
 
 mod ch;
@@ -117,6 +117,16 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                         ));
                     }
 
+                    let provider_path = Path::new("/run/vm/by-name").join(&provider_name);
+                    let provider_target = provider_path
+                        .read_link()
+                        .map_err(|e| format!("dereferencing {provider_path:?}: {e}"))?;
+                    let provider_id = provider_target
+                        .file_name()
+                        .ok_or_else(|| format!("{provider_path:?} target has no file name"))?
+                        .to_str()
+                        .ok_or_else(|| format!("{provider_target:?} has non-UTF-8 basename"))?;
+
                     let mut hasher = std::hash::DefaultHasher::new();
                     vm_name.hash(&mut hasher);
                     let id_hashed = hasher.finish();
@@ -132,7 +142,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
 
                     Ok(NetConfig {
                         vhost_user: true,
-                        vhost_socket: format!("/run/vm/by-name/{provider_name}/router-app.sock"),
+                        vhost_socket: format!("/run/router/{provider_id}"),
                         id: provider_name,
                         mac,
                     })

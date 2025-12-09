@@ -8,7 +8,7 @@ importas -i VM VM
 s6-ipcserver-socketbinder -a 0770 /run/vm/by-id/${VM}/router-driver.sock
 fdmove -c 3 0
 
-s6-ipcserver-socketbinder -a 0770 /run/vm/by-id/${VM}/router-app.sock
+s6-ipcserver-socketbinder -a 0770 /run/router/${VM}
 fdmove -c 4 0
 
 # Notify readiness.
