@@ -1,0 +1,15 @@
+#!/bin/execlineb -PW
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
+
+s6-ipcserver-socketbinder -a 0700 /run/root-terminal
+
+fdmove 1 3
+s6-ipcserverd -1P
+
+exec -c
+/bin/export PATH /usr/bin
+/bin/export WAYLAND_DISPLAY ""
+s6-sudod
+cd /
+weston-terminal

@@ -15,6 +15,8 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/getty-tty2/run \
 	image/etc/s6-linux-init/run-image/service/getty-tty3/run \
 	image/etc/s6-linux-init/run-image/service/getty-tty4/run \
+	image/etc/s6-linux-init/run-image/service/root-terminal/notification-fd \
+	image/etc/s6-linux-init/run-image/service/root-terminal/run \
 	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/notification-fd \
 	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/run \
 	image/etc/s6-linux-init/run-image/service/s6-svscan-log/notification-fd \
@@ -54,6 +56,7 @@ FILES = \
 	image/etc/xdg/weston/weston.ini \
 	image/usr/bin/assign-devices \
 	image/usr/bin/create-vm-dependencies \
+	image/usr/bin/root-terminal \
 	image/usr/bin/run-appimage \
 	image/usr/bin/run-flatpak \
 	image/usr/bin/run-vmm \
