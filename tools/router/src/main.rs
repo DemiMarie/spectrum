@@ -1,47 +1,45 @@
 // SPDX-License-Identifier: EUPL-1.2+
 // SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
+// SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 
 pub(crate) mod packet;
 pub(crate) mod protocol;
 mod router;
 mod upstream;
 
-use std::path::PathBuf;
-
 use packet::*;
 use router::{InterfaceId, Router};
 use upstream::Upstream;
 
-use clap::Parser;
+use anyhow::bail;
 use futures_util::{SinkExt, TryStreamExt};
+use listenfd::ListenFd;
 use log::{error, info};
 use tokio::net::UnixListener;
 use vhost_device_net::{IncomingPacket, VhostDeviceNet};
 use vm_memory::GuestMemoryMmap;
 
-#[derive(Parser, Debug)]
-#[command()] //version = None, about = None, long_about = None)]
-struct Args {
-    #[arg(long)]
-    driver_listen_path: PathBuf,
-    #[arg(long)]
-    app_listen_path: PathBuf,
-}
-
 fn main() -> anyhow::Result<()> {
     env_logger::init();
-    let args = Args::parse();
 
-    for path in [&args.driver_listen_path, &args.app_listen_path] {
-        let _ = std::fs::remove_file(path);
-    }
-
-    run_router(args)
+    run_router()
 }
 #[tokio::main(flavor = "current_thread")]
-async fn run_router(args: Args) -> anyhow::Result<()> {
-    let app_listener = UnixListener::bind(&args.app_listen_path)?;
-    let driver_listener = UnixListener::bind(&args.driver_listen_path)?;
+async fn run_router() -> anyhow::Result<()> {
+    let mut listenfd = ListenFd::from_env();
+
+    let Some(driver_listener) = listenfd.take_unix_listener(0)? else {
+        bail!("not activated with driver socket");
+    };
+    let Some(app_listener) = listenfd.take_unix_listener(1)? else {
+        bail!("not activated with app socket");
+    };
+
+    driver_listener.set_nonblocking(true)?;
+    app_listener.set_nonblocking(true)?;
+
+    let driver_listener = UnixListener::from_std(driver_listener)?;
+    let app_listener = UnixListener::from_std(app_listener)?;
 
     let mut router = Router::<GuestMemoryMmap>::new(InterfaceId::Upstream);
 

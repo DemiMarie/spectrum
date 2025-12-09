@@ -1,14 +1,30 @@
 #!/bin/execlineb -P
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
+# SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 
 importas -i VM VM
+
+s6-ipcserver-socketbinder -a 0770 /run/vm/by-id/${VM}/router-driver.sock
+fdmove -c 3 0
+
+s6-ipcserver-socketbinder -a 0770 /run/vm/by-id/${VM}/router-app.sock
+fdmove -c 4 0
+
+# Notify readiness.
+if {
+  fdmove -c 5 1
+  echo
+}
+
+redirfd -r 0 /dev/null
 
 bwrap
   --unshare-all
   --unshare-user
   --dev-bind / /
   --setenv RUST_LOG spectrum-router=debug,info
+  --setenv LISTEN_FDS 2
   --tmpfs /tmp
   --dev /dev
   --tmpfs /dev/shm
@@ -19,6 +35,7 @@ bwrap
   --ro-bind /lib /lib
   --bind /run/vm/by-id/${VM} /run/vm/by-id/${VM}
   --
+
+getpid LISTEN_PID
+
 spectrum-router
-  --app-listen-path /run/vm/by-id/${VM}/router-app.sock
-  --driver-listen-path /run/vm/by-id/${VM}/router-driver.sock
