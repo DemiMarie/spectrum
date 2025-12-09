@@ -9,6 +9,7 @@ forx -po0 -E name { $names }
 
 backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
 backtick -E id { basename -- $dir }
+if { useradd -P /run -Urd / -s /bin/nologin gpu-${id} }
 
 if { ln -s -- ${dir} /run/vm/by-name/${1}.${name} }
 if { ln -s -- ${2}/${name} ${dir}/config }

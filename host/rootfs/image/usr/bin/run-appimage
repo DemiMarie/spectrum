@@ -4,6 +4,7 @@
 
 backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
 backtick -E id { basename -- $dir }
+if { useradd -P /run -Urd / -s /bin/nologin gpu-${id} }
 
 if { mkdir -p /run/configs/${id}/fs }
 

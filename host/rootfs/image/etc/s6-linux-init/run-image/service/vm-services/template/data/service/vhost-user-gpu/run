@@ -3,9 +3,16 @@
 # SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 
-s6-ipcserver -1a 0700 -c 1 -b 1 env/crosvm.sock
+s6-ipcserver-socketbinder -a 0700 -b 1 env/crosvm.sock
 
-importas -Si WAYLAND_DISPLAY
+multisubstitute {
+  importas -Siu VM
+  importas -Si WAYLAND_DISPLAY
+}
+
+s6-envuidgid gpu-${VM}
+s6-applyuidgid -UzG 15 # wayland
+s6-ipcserverd -1c 1
 
 bwrap
   --unshare-all
