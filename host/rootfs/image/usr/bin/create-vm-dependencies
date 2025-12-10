@@ -6,14 +6,14 @@ if { touch /run/vm/by-id/${1}/mount }
 if { mount --make-private --bind /run/vm/by-id/${1}/mount /run/vm/by-id/${1}/mount }
 
 if {
-  unshare --propagation=slave --mount=/run/vm/by-id/${1}/mount
+  mkdir -p
+    /run/vm/by-id/${1}/doc-run/doc
+    /run/vm/by-id/${1}/fs/config
+    /run/vm/by-id/${1}/fs/doc
+}
 
-  if {
-    mkdir -p
-      /run/vm/by-id/${1}/doc-run/doc
-      /run/vm/by-id/${1}/fs/config
-      /run/vm/by-id/${1}/fs/doc
-  }
+if {
+  unshare --propagation=slave --mount=/run/vm/by-id/${1}/mount
 
   if { mount --make-shared --rbind /run/vm/by-id/${1} /run/vm/by-id/${1} }
 
