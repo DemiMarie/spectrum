@@ -42,7 +42,7 @@ if {
 
 background { rm /dev/rootfs /dev/verity }
 
-if { mount /dev/mapper/root-verity /mnt/root }
+if { mount -o nosuid,nodev /dev/mapper/root-verity /mnt/root }
 wait { $mdevd_pid }
 
 if { mount --move /proc /mnt/root/proc }

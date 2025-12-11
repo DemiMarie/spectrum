@@ -6,7 +6,7 @@ s6-ipcserver-socketbinder -B build/virtiofsd.sock
 background {
   if { mkdir -p build/fs }
   unshare -rUm
-  if { mount -t tmpfs fs build/fs }
+  if { mount -t tmpfs -o nosuid,nodev fs build/fs }
   if { mkdir build/fs/config }
   if { importas -Si CONFIG mount --rbind -- ${CONFIG}/fs build/fs/config }
   importas -SsD virtiofsd VIRTIOFSD

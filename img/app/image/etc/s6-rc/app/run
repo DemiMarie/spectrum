@@ -17,7 +17,7 @@ foreground {
       if { modprobe loop }
       if {
         backtick -E offset { /run/virtiofs/virtiofs0/config/run --appimage-offset }
-        mount -o offset=${offset} /run/virtiofs/virtiofs0/config/run /mnt
+        mount -o offset=${offset},nodev /run/virtiofs/virtiofs0/config/run /mnt
       }
       s6-setuidgid user
       export APPIMAGE /run/virtiofs/virtiofs0/config/run
@@ -42,7 +42,7 @@ foreground {
     nix {
       if {
 	mount -t overlay
-	  -o ro,lowerdir=/nix/store:/run/virtiofs/virtiofs0/config/nix/store
+	  -o ro,nosuid,nodev,lowerdir=/nix/store:/run/virtiofs/virtiofs0/config/nix/store
 	  store /nix/store
       }
 

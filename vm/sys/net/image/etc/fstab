@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: CC0-1.0
-# SPDX-FileCopyrightText: 2020-2021 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2020-2021, 2025 Alyssa Ross <hi@alyssa.is>
 # SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
-proc	/proc		proc	defaults	0	0
-devpts	/dev/pts	devpts	gid=5,mode=620	0	0
-tmpfs	/dev/shm	tmpfs	defaults	0	0
-sysfs	/sys		sysfs	defaults	0	0
-bpffs	/sys/fs/bpf	bpf	defaults	0	0
+proc	/proc		proc	nosuid,nodev,noexec		0	0
+devpts	/dev/pts	devpts	nosuid,noexec,gid=5,mode=620	0	0
+tmpfs	/dev/shm	tmpfs	nosuid,nodev			0	0
+sysfs	/sys		sysfs	nosuid,nodev,noexec		0	0
+bpffs	/sys/fs/bpf	bpf	nosuid,nodev,noexec,mode=700	0	0
