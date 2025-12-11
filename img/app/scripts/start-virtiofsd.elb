@@ -11,5 +11,5 @@ background {
   if { importas -Si CONFIG mount --rbind -- ${CONFIG}/fs build/fs/config }
   unshare --map-user 1000 --map-group 1000
   importas -SsD virtiofsd VIRTIOFSD
-  $VIRTIOFSD --fd 0 --shared-dir build/fs --tag virtiofs0
+  $VIRTIOFSD --fd 0 --shared-dir build/fs --tag host
 }

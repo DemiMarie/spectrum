@@ -81,7 +81,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
             Err(e) => return Err(format!("reading directory {blk_dir:?}: {e}")),
         },
         fs: [FsConfig {
-            tag: "virtiofs0",
+            tag: "host",
             socket: format!(
                 "/run/service/vm-services/instance/{vm_name}/data/service/vhost-user-fs/env/virtiofsd.sock"
             ),

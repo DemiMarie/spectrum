@@ -28,7 +28,7 @@ fn main() -> std::io::Result<()> {
     assert!(disk1.readonly);
     assert_eq!(config.fs.len(), 1);
     let fs1 = &config.fs[0];
-    assert_eq!(fs1.tag, "virtiofs0");
+    assert_eq!(fs1.tag, "host");
     let expected =
         "/run/service/vm-services/instance/testvm/data/service/vhost-user-fs/env/virtiofsd.sock";
     assert_eq!(fs1.socket, expected);

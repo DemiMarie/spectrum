@@ -7,6 +7,6 @@ background {
   # virtiofs filesystems, so we only supported a single, hardcoded
   # filesystem tag for now.
   if { mkdir -p /run/virtiofs/virtiofs0 }
-  if { mount -t virtiofs -o nodev virtiofs0 /run/virtiofs/virtiofs0 }
+  if { mount -t virtiofs -o nodev host /run/virtiofs/virtiofs0 }
   /etc/mdev/listen virtiofs0
 }

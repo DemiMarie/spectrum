@@ -32,7 +32,7 @@ testers.nixosTest ({ lib, pkgs, ... }: {
     systemd.services.cloud-hypervisor = {
       after = [ "crosvm-gpu.service" "weston.service" ];
       requires = [ "crosvm-gpu.service" "weston.service" ];
-      serviceConfig.ExecStart = "${lib.getExe pkgs.cloud-hypervisor} --memory shared=on --disk path=${appvm}/lib/spectrum/img/appvm/blk/root.img,readonly=on --cmdline \"console=ttyS0 root=PARTLABEL=root\" --fs socket=/run/virtiofsd.sock,tag=virtiofs0 --gpu socket=/run/crosvm-gpu.sock --vsock cid=3,socket=/run/vsock.sock --serial tty --console null --kernel ${appvm}/lib/spectrum/img/appvm/vmlinux";
+      serviceConfig.ExecStart = "${lib.getExe pkgs.cloud-hypervisor} --memory shared=on --disk path=${appvm}/lib/spectrum/img/appvm/blk/root.img,readonly=on --cmdline \"console=ttyS0 root=PARTLABEL=root\" --fs socket=/run/virtiofsd.sock,tag=host --gpu socket=/run/crosvm-gpu.sock --vsock cid=3,socket=/run/vsock.sock --serial tty --console null --kernel ${appvm}/lib/spectrum/img/appvm/vmlinux";
     };
 
     systemd.services.crosvm = {
@@ -79,7 +79,7 @@ testers.nixosTest ({ lib, pkgs, ... }: {
     };
 
     systemd.services.virtiofsd = {
-      serviceConfig.ExecStart = "${lib.getExe pkgs.virtiofsd} --fd 3 --shared-dir /shared --tag virtiofs0";
+      serviceConfig.ExecStart = "${lib.getExe pkgs.virtiofsd} --fd 3 --shared-dir /shared --tag host";
       serviceConfig.Restart = "on-success";
       requires = [ "shared-config.mount" ];
       after = [ "shared-config.mount" ];

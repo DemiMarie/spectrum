@@ -99,7 +99,7 @@ run-qemu: $(imgdir)/appvm/blk/root.img start-vhost-user-net start-virtiofsd
 	    -netdev vhost-user,id=net0,chardev=vhost-user-net \
 	    -device virtio-net,netdev=net0,mac=02:00:00:00:00:01 \
 	    -chardev socket,id=virtiofsd,path=build/virtiofsd.sock \
-	    -device vhost-user-fs-pci,chardev=virtiofsd,tag=virtiofs0 \
+	    -device vhost-user-fs-pci,chardev=virtiofsd,tag=host \
 	    -device virtio-gpu-rutabaga-pci,cross-domain=on,hostmem=8G \
 	    -audio driver=pipewire,model=virtio \
 	    -object memory-backend-memfd,id=mem,size=256M,share=on \
@@ -117,7 +117,7 @@ run-cloud-hypervisor: $(imgdir)/appvm/blk/root.img start-vhost-user-gpu start-vh
 	    --api-socket path=build/vmm.sock \
 	    --memory size=1G,shared=on \
 	    --disk path=$(imgdir)/appvm/blk/root.img,readonly=on \
-	    --fs tag=virtiofs0,socket=build/virtiofsd.sock \
+	    --fs tag=host,socket=build/virtiofsd.sock \
 	    --gpu socket=build/vhost-user-gpu.sock \
 	    --vsock cid=3,socket=build/vsock.sock \
 	    --net mac=02:00:00:00:00:01,vhost_user=on,socket=build/vhost-user-net.sock \
