@@ -127,7 +127,7 @@ fn run(mut args: ArgsOs) -> Result<(), String> {
     let mut target_installation_dir = Root::from_fd(target_installation_dir);
     target_installation_dir.set_resolver_flags(ResolverFlags::NO_SYMLINKS);
 
-    let mut full_app_path = installation_path.join("app");
+    let mut full_app_path = PathBuf::from("app");
     full_app_path.push(&app);
     full_app_path.push("current");
     let arch_and_branch = source_installation_dir
@@ -172,7 +172,7 @@ fn run(mut args: ArgsOs) -> Result<(), String> {
     let runtime =
         extract_runtime(metadata).map_err(|e| format!("reading runtime from metadata: {e}"))?;
 
-    let mut full_runtime_path = installation_path.join("runtime");
+    let mut full_runtime_path = PathBuf::from("runtime");
     full_runtime_path.push(runtime);
     full_runtime_path.push("active");
     let runtime_commit = source_installation_dir
