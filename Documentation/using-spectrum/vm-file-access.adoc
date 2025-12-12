@@ -48,7 +48,7 @@ can be bind-mounted into it:
 +
 [listing]
 [source,shell]
-echo "Hello, world!" > /ext/example.txt
+echo "Hello, world!" > /media/4e43cdc2-82b2-4d94-8a90-b6c6189312d2/example.txt
 
 2. Create an empty file to bind mount over:
 +
@@ -60,5 +60,5 @@ touch /run/vm/by-name/user.appvm-example/fs/example.txt
 +
 [listing]
 [source,shell]
-mount --rbind /ext/example.txt /run/vm/by-name/user.appvm-example/fs/example.txt
+mount --rbind /media/4e43cdc2-82b2-4d94-8a90-b6c6189312d2/example.txt /run/vm/by-name/user.appvm-example/fs/example.txt
 ====

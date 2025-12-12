@@ -33,8 +33,8 @@ DIRS = \
 	etc/s6-linux-init/run-image/user \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \
-	ext \
 	home \
+	media \
 	proc \
 	run \
 	sys \

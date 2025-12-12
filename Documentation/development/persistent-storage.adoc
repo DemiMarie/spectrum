@@ -2,7 +2,7 @@
 :page-parent: Development
 :page-nav_order: 2
 
-// SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
 
 Spectrum's root filesystem is immutable, so if you want to be able to
@@ -10,8 +10,15 @@ persist data between sessions, you'll need to create a persistent
 storage partition.  Spectrum comes with `cryptsetup`, and in future is
 likely to assume that btrfs-specific features are available.
 
-Conventionally, the persistent storage partition is mounted on /ext
-after booting.  It's not mounted automatically, because generally the
-partition should be encrypted, meaning a key has to be supplied to
-mount it anyway, and because there might be multiple persistent data
-partitions to choose from.
+Persistent storage can be mounted as follows:
+
+[source,shell]
+----
+cryptsetup open /dev/sda1 userdata
+mount-userdata /dev/mapper/userdata
+----
+
+It's not mounted automatically, because generally the partition should
+be encrypted, meaning a key has to be supplied to mount it anyway, and
+because there might be multiple persistent data partitions to choose
+from.

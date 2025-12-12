@@ -56,6 +56,7 @@ FILES = \
 	image/etc/xdg/weston/weston.ini \
 	image/usr/bin/assign-devices \
 	image/usr/bin/create-vm-dependencies \
+	image/usr/bin/mount-userdata \
 	image/usr/bin/root-terminal \
 	image/usr/bin/run-appimage \
 	image/usr/bin/run-flatpak \

@@ -13,8 +13,9 @@ configurations are directories under a dedicated parent directory, and
 the name of each configuration directory determines the name of
 the VM.  After mounting the persistent storage partition, the
 configured VMs can be made available by running `vm-import user
-/ext/vms`, replacing /ext/vms with the directory containing the VM
-definitions.
+/media/4e43cdc2-82b2-4d94-8a90-b6c6189312d2/vms`, replacing
+/media/4e43cdc2-82b2-4d94-8a90-b6c6189312d2/vms with the directory
+containing the VM definitions.
 
 The directory can contain the following files:
 
