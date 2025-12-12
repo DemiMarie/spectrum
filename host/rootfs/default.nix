@@ -61,8 +61,8 @@ let
   # It doesn't get picked up from libsystemd-shared.so's RUNPATH due to
   # https://inbox.vuxu.org/musl/20251017-dlopen-use-rpath-of-caller-dso-v1-1-46c69eda1473@iscas.ac.cn/
   usrPackages = [
-    appvm dejavu_fonts kmod.lib mesa westonLite kernel.modules
-    firmware netvm systemd
+    appvm dejavu_fonts firmware kernel.modules kmod.lib mesa netvm
+    systemd westonLite
   ];
 
   appvms = {
