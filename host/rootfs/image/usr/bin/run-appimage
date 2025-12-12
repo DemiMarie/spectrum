@@ -2,36 +2,48 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
-backtick -E id {
+backtick id {
   backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
   basename -- $dir
 }
-if { useradd -P /run -Urd / -s /bin/nologin gpu-${id} }
-if { useradd -P /run -Urd / -s /bin/nologin xdp-spectrum-${id} }
-
-if { install -do fs /run/configs/${id}/fs }
 
 if {
-  ln -s /usr/lib/spectrum/img/appvm/blk /usr/lib/spectrum/img/appvm/vmlinux
-    /run/configs/${id}
+  importas -Siu id
+
+  if { useradd -P /run -Urd / -s /bin/nologin gpu-${id} }
+  if { useradd -P /run -Urd / -s /bin/nologin xdp-spectrum-${id} }
+
+  if { install -do fs /run/configs/${id}/fs }
+
+  if {
+    ln -s /usr/lib/spectrum/img/appvm/blk /usr/lib/spectrum/img/appvm/vmlinux
+      /run/configs/${id}
+  }
+
+  if { ln -s /run/configs/${id} /run/vm/by-id/${id}/config }
+
+  if { create-vm-dependencies $id }
 }
-
-if { ln -s /run/configs/${id} /run/vm/by-id/${id}/config }
-
-if { create-vm-dependencies $id }
 
 if {
   s6-envuidgid fs
   s6-applyuidgid -Uzu 0
+
+  multisubstitute {
+    importas -Siu id
+    importas -Siu 1
+  }
+
   nsenter --preserve-credentials -S0
     --mount=/run/vm/by-id/${id}/ns/mnt
     --user=/run/vm/by-id/${id}/ns/user
   cd /run/fs/${id}/config
   if { redirfd -w 1 type echo appimage }
   if { touch run }
-  importas -Siu 1
   mount --bind $1 run
 }
+
+importas -Siu id
 
 piperw 4 3
 background {
