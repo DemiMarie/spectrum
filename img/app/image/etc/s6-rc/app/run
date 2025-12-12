@@ -7,27 +7,27 @@ export TMPDIR /run
 export HOME /home/user
 cd /home/user
 
-if { /etc/mdev/wait virtiofs0 }
+if { /etc/mdev/wait virtiofs-host }
 
 foreground {
-  redirfd -r 0 /run/virtiofs/virtiofs0/config/type
+  redirfd -r 0 /host/config/type
   withstdinas -E type
   case $type {
     appimage {
       if { modprobe loop }
       if {
-        backtick -E offset { /run/virtiofs/virtiofs0/config/run --appimage-offset }
-        mount -o offset=${offset},nodev /run/virtiofs/virtiofs0/config/run /mnt
+        backtick -E offset { /host/config/run --appimage-offset }
+        mount -o offset=${offset},nodev /host/config/run /mnt
       }
       s6-setuidgid user
-      export APPIMAGE /run/virtiofs/virtiofs0/config/run
+      export APPIMAGE /host/config/run
       export APPDIR /mnt
       export ARGV0 /mnt/AppRun
       export LD_LIBRARY_PATH /lib64
       /mnt/AppRun
     }
     flatpak {
-      s6-envdir -fnL /run/virtiofs/virtiofs0/config/params
+      s6-envdir -fnL /host/config/params
       s6-setuidgid user
       multisubstitute {
         importas -iu id id
@@ -42,12 +42,12 @@ foreground {
     nix {
       if {
 	mount -t overlay
-	  -o ro,nosuid,nodev,lowerdir=/nix/store:/run/virtiofs/virtiofs0/config/nix/store
+	  -o ro,nosuid,nodev,lowerdir=/nix/store:/host/config/nix/store
 	  store /nix/store
       }
 
       s6-setuidgid user
-      /run/virtiofs/virtiofs0/config/run
+      /host/config/run
     }
   }
   fdmove -c 1 2

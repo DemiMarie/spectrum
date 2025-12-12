@@ -13,6 +13,6 @@ MatchPattern=Spectrum_@v_@u.verity
 
 [Target]
 Type=regular-file
-Path=/run/virtiofs/virtiofs0/updates
+Path=/host/updates
 MatchPattern=Spectrum_@v_@u.verity
 Mode=0644

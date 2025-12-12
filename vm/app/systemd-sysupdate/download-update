@@ -5,7 +5,7 @@
 export LC_ALL C
 export LANGUAGE C
 unshare -mr
-if { mount -toverlay -o nosuid,nodev,noexec,nosymfollow,lowerdir=/run/virtiofs/virtiofs0/etc:/etc -- overlay /etc }
+if { mount -toverlay -o nosuid,nodev,noexec,nosymfollow,lowerdir=/host/etc:/etc -- overlay /etc }
 backtick tmpdir { mktemp -d /tmp/sysupdate-XXXXXX }
 # Not a useless use of cat: if there are NUL bytes in the URL
 # busybox's awk might misbehave.
@@ -70,6 +70,6 @@ if {
 # they cause globbing in the curl command-line tool by default.  Use --globoff
 # to disable this feature.
 if { $CURL_PATH -L --proto-redir =http,https --globoff
-     -o /run/virtiofs/virtiofs0/updates/SHA256SUMS -- ${update_url}/SHA256SUMS }
+     -o /host/updates/SHA256SUMS -- ${update_url}/SHA256SUMS }
 $CURL_PATH -L --proto-redir =http,https --globoff
-     -o /run/virtiofs/virtiofs0/updates/SHA256SUMS.sha256.asc -- ${update_url}/SHA256SUMS.sha256.asc
+     -o /host/updates/SHA256SUMS.sha256.asc -- ${update_url}/SHA256SUMS.sha256.asc

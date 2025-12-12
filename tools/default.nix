@@ -101,7 +101,7 @@ stdenv.mkDerivation (finalAttrs: {
     (lib.mesonBool "app" appSupport)
     (lib.mesonBool "host" hostSupport)
     (lib.mesonBool "driver" driverSupport)
-    "-Dhostfsrootdir=/run/virtiofs/virtiofs0"
+    "-Dhostfsrootdir=/host"
     "-Dtests=false"
     "-Dunwind=false"
     "-Dwerror=true"

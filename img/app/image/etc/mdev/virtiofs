@@ -3,10 +3,6 @@
 # SPDX-FileCopyrightText: 2022-2023 Alyssa Ross <hi@alyssa.is>
 
 background {
-  # There's currently no kernel mechanism to let us enumerate available
-  # virtiofs filesystems, so we only supported a single, hardcoded
-  # filesystem tag for now.
-  if { mkdir -p /run/virtiofs/virtiofs0 }
-  if { mount -t virtiofs -o nodev host /run/virtiofs/virtiofs0 }
-  /etc/mdev/listen virtiofs0
+  if { mount -t virtiofs -o nodev host /host }
+  /etc/mdev/listen virtiofs-host
 }

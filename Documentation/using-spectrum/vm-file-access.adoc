@@ -37,10 +37,10 @@ the portal.
 When using an application that doesn't implement the File Chooser API,
 you can still give it access to files manually.  Each VM has
 xref:creating-custom-vms.adoc#filesystem[access] to the
-/run/vm/by-id/_VM ID_/fs directory on the host (mounted at
-/run/virtiofs/virtiofs0 in the default Spectrum VM image).  For the
-VM, this directory is read-only, but writeable files and directories
-can be bind-mounted into it:
+/run/vm/by-id/_VM ID_/fs directory on the host (mounted at /host in
+the default Spectrum VM image).  For the VM, this directory is
+read-only, but writeable files and directories can be bind-mounted
+into it:
 
 [example]
 ====
