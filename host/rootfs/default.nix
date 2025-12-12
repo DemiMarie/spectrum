@@ -12,8 +12,8 @@ pkgsMusl.callPackage (
 , lib, stdenvNoCC, nixos, runCommand, writeClosure, erofs-utils, s6-rc
 , btrfs-progs, bubblewrap, busybox, cloud-hypervisor, cosmic-files
 , crosvm, cryptsetup, dejavu_fonts, dbus, execline, foot, fuse3
-, iproute2, inotify-tools, jq, kmod, mdevd, mesa, mount-flatpak, s6
-, s6-linux-init, shadow, socat, systemd, util-linuxMinimal, virtiofsd
+, iproute2, inotify-tools, jq, kmod, lvm2, mdevd, mesa, mount-flatpak
+, s6, s6-linux-init, shadow, socat, systemd, util-linuxMinimal, virtiofsd
 , westonLite, xdg-desktop-portal, xdg-desktop-portal-gtk
 , xdg-desktop-portal-spectrum-host
 }:
@@ -61,8 +61,8 @@ let
   # It doesn't get picked up from libsystemd-shared.so's RUNPATH due to
   # https://inbox.vuxu.org/musl/20251017-dlopen-use-rpath-of-caller-dso-v1-1-46c69eda1473@iscas.ac.cn/
   usrPackages = [
-    appvm dejavu_fonts firmware kernel.modules kmod.lib mesa netvm
-    systemd westonLite
+    appvm dejavu_fonts firmware kernel.modules kmod.lib lvm2 mesa
+    netvm systemd westonLite
   ];
 
   appvms = {
