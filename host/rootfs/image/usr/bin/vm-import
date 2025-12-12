@@ -7,13 +7,15 @@ elglob -0 names *
 
 forx -po0 -E name { $names }
 
-backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
-backtick -E id { basename -- $dir }
+backtick -E id {
+  backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
+  basename -- $dir
+}
 if { useradd -P /run -Urd / -s /bin/nologin gpu-${id} }
 
-if { ln -s -- ${dir} /run/vm/by-name/${1}.${name} }
-if { ln -s -- ${2}/${name} ${dir}/config }
-if { ln -s -- /run/service/vmm/instance/${id} ${dir}/service }
+if { ln -s -- /run/vm/by-id/${id} /run/vm/by-name/${1}.${name} }
+if { ln -s -- ${2}/${name} /run/vm/by-id/${id}/config }
+if { ln -s -- /run/service/vmm/instance/${id} /run/vm/by-id/${id}/service }
 
 if { create-vm-dependencies $id }
 

@@ -2,8 +2,10 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
-backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
-backtick -E id { basename -- $dir }
+backtick -E id {
+  backtick -E dir { mktemp -d /run/vm/by-id/XXXXXX }
+  basename -- $dir
+}
 if { useradd -P /run -Urd / -s /bin/nologin gpu-${id} }
 
 if {
@@ -16,13 +18,13 @@ if {
       /run/configs/${id}
   }
 
-  if { ln -s /run/configs/${id} ${dir}/config }
+  if { ln -s /run/configs/${id} /run/vm/by-id/${id}/config }
 
   if { create-vm-dependencies $id }
 
   if {
-    nsenter --mount=${dir}/mount
-    cd ${dir}/fs/config
+    nsenter --mount=/run/vm/by-id/${id}/mount
+    cd /run/vm/by-id/${id}/fs/config
     if { redirfd -w 1 type echo flatpak }
     mount-flatpak $@
   }
@@ -43,6 +45,6 @@ if {
 
 if { s6-instance-delete -- /run/service/vm-services $id }
 
-if { umount ${dir}/mount } # mount namespace
-if { umount ${dir}/mount } # private bind mount
-rm -r $dir /run/configs/${id}
+if { umount /run/vm/by-id/${id}/mount } # mount namespace
+if { umount /run/vm/by-id/${id}/mount } # private bind mount
+rm -r /run/vm/by-id/${id} /run/configs/${id}
