@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: EUPL-1.2+
-// SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
 mod documents;
 mod file_chooser;
@@ -19,6 +19,10 @@ use async_executor::StaticExecutor;
 use async_io::Async;
 use futures_lite::prelude::*;
 use futures_lite::stream::StreamExt;
+use landlock::{
+    ABI, Access, AccessFs, AccessNet, CompatLevel, Compatible, Ruleset, RulesetAttr, RulesetError,
+    Scope,
+};
 use zbus::{AuthMechanism, Connection, MessageStream, connection};
 
 use file_chooser::FileChooser;
@@ -208,6 +212,17 @@ fn listening_vsock_path(connection: &UnixListener) -> Result<PathBuf, String> {
     Ok(OsString::from_vec(listening_addr).into())
 }
 
+fn set_up_landlock() -> Result<(), RulesetError> {
+    Ruleset::default()
+        .handle_access(AccessFs::from_all(ABI::V6))?
+        .handle_access(AccessNet::from_all(ABI::V6))?
+        .scope(Scope::from_all(ABI::V6))?
+        .create()?
+        .set_compatibility(CompatLevel::HardRequirement)
+        .restrict_self()?;
+    Ok(())
+}
+
 fn read_argv() {
     let mut args = args_os();
     args.next();
@@ -219,6 +234,8 @@ fn read_argv() {
 }
 
 fn run() -> Result<(), String> {
+    set_up_landlock().map_err(|e| format!("setting up landlock: {e}"))?;
+
     read_argv();
 
     async_io::block_on(EXECUTOR.run(async {
