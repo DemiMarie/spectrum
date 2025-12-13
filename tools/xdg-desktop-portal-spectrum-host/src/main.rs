@@ -262,10 +262,10 @@ fn run() -> Result<(), String> {
 }
 
 fn msg(e: &str) {
-    if let Some(prog) = args_os().next() {
-        if let Some(prog) = PathBuf::from(prog).file_name() {
-            eprint!("{}: ", prog.to_string_lossy());
-        }
+    if let Some(prog) = args_os().next()
+        && let Some(prog) = PathBuf::from(prog).file_name()
+    {
+        eprint!("{}: ", prog.to_string_lossy());
     }
     eprintln!("{e}");
 }
