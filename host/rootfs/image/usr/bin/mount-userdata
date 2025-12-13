@@ -15,8 +15,11 @@ multisubstitute {
 
 case $uuid {
   "" {
-    fdmove -c 1 2
-    printf "%s: '%s' does not have a UUID\n" $0 $1
+    if {
+      fdmove -c 1 2
+      printf "%s: '%s' does not have a UUID\n" $0 $1
+    }
+    exit 1
   }
 }
 
