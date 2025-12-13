@@ -3,7 +3,7 @@
 
 import ../../../lib/call-package.nix (
 { callSpectrumPackage, src, lib, stdenv, runCommand, writeShellScript
-, clang-tools, jq, meson, ninja, e2fsprogs, glib, tar2ext4, libressl, qemu_kvm
+, clang-tools, jq, meson, ninja, btrfs-progs, glib, libressl, qemu_kvm
 }:
 
 let
@@ -36,17 +36,16 @@ let
   };
 
   userData = runCommand "user-data.img" {
-    nativeBuildInputs = [ e2fsprogs tar2ext4 ];
+    nativeBuildInputs = [ btrfs-progs ];
     __structuredAttrs = true;
     unsafeDiscardReferences = { out = true; };
     dontFixup = true;
   } ''
-    tar -Pcvf root.tar \
-        --transform=s,^${appimage},test.appimage, ${appimage} \
-        --transform=s,^${ncVm},vms/nc, ${ncVm} \
-        --transform=s,^${portalVm},vms/portal, ${portalVm}
-    tar2ext4 -i root.tar -o $out
-    tune2fs -U a7834806-2f82-4faf-8ac4-4f8fd8a474ca $out
+    mkdir -p root/vms
+    cp ${appimage} root/test.appimage
+    cp -R ${ncVm} root/vms/nc
+    cp -R ${portalVm} root/vms/portal
+    mkfs.btrfs -U a7834806-2f82-4faf-8ac4-4f8fd8a474ca -r root $out
   '';
 in
 
