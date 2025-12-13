@@ -12,7 +12,7 @@ host terminal:
 
 `lsvm`:: List available VMs, along with whether they are currently running.
 `vm-console <name>`:: Open a terminal emulator for a VM's console.
-`vm-start <name>`:: Start a VM.
+`vm-start <name>`:: Start a manually configured or built-in VM.
 `vm-stop <name>`:: Stop a VM.
 
 == Transient VMs for AppImages
