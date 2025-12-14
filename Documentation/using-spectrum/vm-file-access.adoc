@@ -2,11 +2,38 @@
 :page-parent: Using Spectrum
 :page-nav_order: 1
 
-// SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
 
-Spectrum VMs start without any access to user data, but the user can
-grant VMs access to files while the VM is running.
+Spectrum VMs start without any access to user data, and with all
+application state being discarded when the VM exits, but these
+restrictions can be softened at runtime as required.
+
+== Persistent application data
+
+To make an application VM persistent, run, for example,
+`vm-set-persist gGKghi configured`, where "gGKghi" is the VM's ID (can
+be found using xref:running-vms.adoc#basic-vm-commands[`lsvm`]) and
+"configured" is the name to be given to this persistent application
+instance.  The VM's home directory will now be saved under the given
+name.  For now, names are scoped to only to a user data partition, not
+to an application, so you cannot create instances of different
+applications with the same name.
+
+Then, to start a VM with that persistent data in future, give the
+instance name to `run-appimage` or `run-flatpak` as an extra argument.
+This run of the application will also persist further changes to its
+home directory under the same name.
+
+Persistent application data is stored as directories prefixed with
+"persist." under Spectrum/data/spectrum/storage on the user data
+partition.  They can be manually renamed, and, as long as they are not
+being used by a currently running VM, removed.
+
+For manually configured VMs, persistence can optionally be enabled
+when the VM is imported, by providing the storage location as an extra
+argument to `vm-import`.  The name of each imported VM will be used as
+its instance name.
 
 == File chooser portal
 
