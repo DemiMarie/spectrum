@@ -58,7 +58,10 @@ if {
   mount --bind -- $diskdir /run/fs/${id}/disk
 }
 
-importas -Siu id
+multisubstitute {
+  importas -Siu diskdir
+  importas -Siu id
+}
 
 if {
   piperw 4 3
@@ -78,4 +81,4 @@ if {
 if { s6-instance-delete -- /run/service/vm-services $id }
 
 if { umount -R /run/vm/by-id/${id}/ns }
-rm -r /run/vm/by-id/${id} /run/configs/${id}
+rm -r -- $diskdir /run/vm/by-id/${id} /run/configs/${id}
