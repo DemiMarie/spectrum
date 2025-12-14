@@ -15,4 +15,5 @@ tape:x:13:
 kvm:x:14:
 wayland:x:15:wayland
 router:x:16:router
+vmm:x:17:
 fs:x:1000:

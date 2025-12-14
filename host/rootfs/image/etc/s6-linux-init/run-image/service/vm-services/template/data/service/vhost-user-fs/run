@@ -4,6 +4,9 @@
 
 s6-ipcserver-socketbinder -a 0700 -B env/virtiofsd.sock
 
+importas -i VM VM
+if { chown vmm-${VM} env/virtiofsd.sock }
+
 if { fdmove 1 3 echo }
 fdmove -c 3 0
 redirfd -r 0 /dev/null

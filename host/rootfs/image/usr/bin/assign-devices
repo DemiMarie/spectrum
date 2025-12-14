@@ -2,12 +2,37 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 
+backtick id {
+  backtick -E path { readlink -- /run/vm/by-name/sys.netvm }
+  basename -- $path
+}
+
 elglob -0 devices /sys/bus/pci/drivers/vfio-pci/????:??:??.?
-forx -pE device { $devices }
+forx -p device { $devices }
+
+if {
+  backtick iommu_group {
+    backtick -E iommu_group_path {
+      importas -Siu device
+      readlink -- ${device}/iommu_group
+    }
+    basename -- $iommu_group_path
+  }
+  multisubstitute {
+    importas -Siu id
+    importas -Siu iommu_group
+  }
+  chown -- vmm-${id} /dev/vfio/${iommu_group}
+}
+
+multisubstitute {
+  importas -Siu id
+  importas -Siu device
+}
 
 # This script is designed to be re-entrant and called multiple times.
 # This means we expect to sometimes get an error due to the device
 # already having been added.  If there's a different error,
 # cloud-hypervisor will probably log it itself anyway.
 redirfd -w 2 /dev/null
-ch-remote --api-socket /run/vm/by-name/sys.netvm/vmm add-device path=${device}
+ch-remote --api-socket /run/vm/by-id/${id}/vmm add-device path=${device}

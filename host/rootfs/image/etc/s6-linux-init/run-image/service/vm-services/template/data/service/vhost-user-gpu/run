@@ -10,6 +10,8 @@ multisubstitute {
   importas -Si WAYLAND_DISPLAY
 }
 
+if { chown vmm-${VM} env/crosvm.sock }
+
 s6-envuidgid gpu-${VM}
 s6-applyuidgid -UzG 15 # wayland
 s6-ipcserverd -1c 1

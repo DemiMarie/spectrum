@@ -54,6 +54,9 @@ redirfd -r 0 /dev/null
 
 s6-softlimit -H -l 18446744073709551615
 if { udevadm wait /dev/kvm }
+
+s6-envuidgid vmm-${1}
+s6-applyuidgid -Uz
 bwrap
   --unshare-all
   --unshare-user
@@ -84,4 +87,5 @@ bwrap
   --ro-bind /dev/null /proc/kallsyms
   --ro-bind /dev/null /proc/sysrq-trigger
   --
+
 cloud-hypervisor --api-socket fd=3

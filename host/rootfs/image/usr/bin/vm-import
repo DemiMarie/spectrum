@@ -12,7 +12,10 @@ backtick -E id {
   basename -- $dir
 }
 if { useradd -P /run -Urd / -s /bin/nologin gpu-${id} }
+if { useradd -P /run -Urd / -s /bin/nologin -G tty,vmm vmm-${id} }
 if { useradd -P /run -Urd / -s /bin/nologin xdp-spectrum-${id} }
+if { mkdir /run/vsock/${id} }
+if { chown vmm-${id} /run/vm/by-id/${id} /run/vsock/${id} }
 
 if { ln -s -- /run/vm/by-id/${id} /run/vm/by-name/${1}.${name} }
 if { ln -s -- ${2}/${name} /run/vm/by-id/${id}/config }

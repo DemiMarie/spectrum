@@ -13,6 +13,9 @@ fdmove -c 4 0
 
 redirfd -r 0 /dev/null
 
+if { chown -- vmm-${VM} /run/vm/by-id/${VM}/router-driver.sock }
+if { chgrp -- vmm /run/router/${VM} }
+
 # Notify readiness.
 if {
   fdmove -c 5 1

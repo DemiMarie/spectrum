@@ -35,6 +35,7 @@ DIRS = \
 	etc/s6-linux-init/run-image/user \
 	etc/s6-linux-init/run-image/vm/by-id \
 	etc/s6-linux-init/run-image/vm/by-name \
+	etc/s6-linux-init/run-image/vsock \
 	home \
 	media \
 	proc \
