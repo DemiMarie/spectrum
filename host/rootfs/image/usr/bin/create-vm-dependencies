@@ -30,8 +30,8 @@ if {
 
   # Needs to be shared so that additional mounts under config/ (e.g. from
   # mount-flatpak) will be propagated into the virtiofsd sandbox.
-  if { mount --make-shared --rbind -o nofail /proc/self/fd/3/fs /run/fs/${1}/config }
-  if { mount --rbind -o ro /run/fs/${1} /run/fs/${1} }
+  if { mount --make-shared --rbind -o ro /run/fs/${1} /run/fs/${1} }
+  if { mount --rbind -o nofail /proc/self/fd/3/fs /run/fs/${1}/config }
 
   # Needs to be shared so that when xdg-document-portal mounts its fuse
   # filesystem at /run/doc/${1}/doc, it will propagate to /run/fs/${1}/doc.
