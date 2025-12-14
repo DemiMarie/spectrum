@@ -29,13 +29,23 @@ if {
 }
 
 backtick diskdir {
-  s6-setuidgid fs
-
-  backtick -E mountpoint {
+  backtick mountpoint {
     importas -Siu 1
     findmnt -no TARGET -T $1
   }
 
+  if -tn {
+    redirfd -w 2 /dev/null
+    multisubstitute {
+      importas -Siu mountpoint
+      importas -Siu 2
+    }
+    printf "%s/Spectrum/data/spectrum/storage/persist.%s\n" $mountpoint $2
+  }
+
+  s6-setuidgid fs
+
+  importas -Siu mountpoint
   if { mkdir -p -- ${mountpoint}/Spectrum/data/spectrum/storage }
   mktemp -d -- ${mountpoint}/Spectrum/data/spectrum/storage/tmp.XXXXXX
 }

@@ -29,6 +29,15 @@ if {
 }
 
 backtick diskdir {
+  if -tn {
+    redirfd -w 2 /dev/null
+    multisubstitute {
+      importas -Siu 1
+      importas -Siu 4
+    }
+    printf "%s/Spectrum/data/spectrum/storage/persist.%s\n" $1 $4
+  }
+
   s6-setuidgid fs
 
   importas -Siu 1
@@ -44,7 +53,9 @@ if {
   multisubstitute {
     importas -Siu id
     importas -Siu diskdir
-    elgetpositionals
+    importas -Siu 1
+    importas -Siu 2
+    importas -Siu 3
   }
 
   nsenter --preserve-credentials -S0
@@ -53,7 +64,7 @@ if {
 
   cd /run/fs/${id}/config
   if { redirfd -w 1 type echo flatpak }
-  if { mount-flatpak $@ }
+  if { mount-flatpak $1 $2 $3 }
 
   mount --bind -- $diskdir /run/fs/${id}/disk
 }
