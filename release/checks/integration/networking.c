@@ -153,7 +153,7 @@ void test(struct config c)
 	          "s6-rc -bu change vmm-env && "
 	          "vm-import user /run/mnt/vms && "
 	          "vm-start \"$(basename \"$(readlink /run/vm/by-name/user.nc)\")\" && "
-	          "tail -Fc +0 /run/log/current /run/*.log &\n",
+	          "tail -Fc +0 /run/log/current /run/vm/by-id/*/serial &\n",
 	          vm_console_writer(vm)) == EOF) {
 		fputs("error writing to console\n", stderr);
 		exit(EXIT_FAILURE);

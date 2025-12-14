@@ -40,7 +40,7 @@ fn main() -> std::io::Result<()> {
     assert_eq!(config.memory.size, 0x40000000);
     assert!(config.memory.shared);
     assert_eq!(config.serial.mode, "File");
-    assert_eq!(config.serial.file.unwrap(), "/run/testvm.log");
+    assert_eq!(config.serial.file.unwrap(), "/run/vm/by-id/testvm/serial");
     assert_eq!(config.vsock.cid, 3);
     assert_eq!(config.vsock.socket, "/run/vsock/testvm/vsock");
 

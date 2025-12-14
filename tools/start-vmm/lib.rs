@@ -160,7 +160,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
         },
         serial: ConsoleConfig {
             mode: "File",
-            file: Some(format!("/run/{vm_name}.log")),
+            file: Some(format!("/run/vm/by-id/{vm_name}/serial")),
         },
         vsock: VsockConfig {
             cid: 3,
