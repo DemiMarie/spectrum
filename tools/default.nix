@@ -78,6 +78,7 @@ stdenv.mkDerivation (finalAttrs: {
       ./start-vmm
       ./subprojects
       ./updates-dir-check.c
+      ./vm-set-persist.c
     ] ++ lib.optionals driverSupport [
       ./xdp-forwarder
     ]));

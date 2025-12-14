@@ -37,6 +37,10 @@ if get_option('host')
   executable('updates-dir-check', 'updates-dir-check.c',
     c_args : '-D_GNU_SOURCE',
     install: true)
+
+  executable('vm-set-persist', 'vm-set-persist.c',
+    c_args : '-D_GNU_SOURCE',
+    install: true)
 endif
 
 if get_option('build')
