@@ -7,7 +7,7 @@ background {
   if { mkdir -p build/fs }
   unshare -rUm
   if { mount -t tmpfs -o nosuid,nodev fs build/fs }
-  if { mkdir build/fs/config }
+  if { mkdir build/fs/config build/fs/disk }
   if { importas -Si CONFIG mount --rbind -- ${CONFIG}/fs build/fs/config }
   unshare --map-user 1000 --map-group 1000
   importas -SsD virtiofsd VIRTIOFSD

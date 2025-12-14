@@ -1,4 +1,4 @@
-#!/bin/execlineb -S2
+#!/bin/execlineb -S3
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
 
@@ -22,5 +22,20 @@ if { ln -s -- ${2}/${name} /run/vm/by-id/${id}/config }
 if { ln -s -- /run/service/vmm/instance/${id} /run/vm/by-id/${id}/service }
 
 if { create-vm-dependencies $id }
+
+if {
+  case $# {
+    3 {
+      s6-envuidgid fs
+      s6-applyuidgid -Uzu 0
+      nsenter --preserve-credentials -S0
+	--mount=/run/vm/by-id/${id}/ns/mnt
+	--user=/run/vm/by-id/${id}/ns/user
+
+      if { mkdir -p -- ${3}/${name} }
+      mount --bind -- ${3}/${name} /run/fs/${id}/disk
+    }
+  }
+}
 
 s6-instance-create -- /run/service/vmm $id

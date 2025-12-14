@@ -28,21 +28,34 @@ if {
   if { create-vm-dependencies $id }
 }
 
+backtick diskdir {
+  s6-setuidgid fs
+
+  importas -Siu 1
+
+  if { mkdir -p -- ${1}/Spectrum/data/spectrum/storage }
+  mktemp -d -- ${1}/Spectrum/data/spectrum/storage/tmp.XXXXXX
+}
+
 if {
   s6-envuidgid fs
   s6-applyuidgid -Uzu 0
 
   multisubstitute {
     importas -Siu id
+    importas -Siu diskdir
     elgetpositionals
   }
 
   nsenter --preserve-credentials -S0
     --mount=/run/vm/by-id/${id}/ns/mnt
     --user=/run/vm/by-id/${id}/ns/user
+
   cd /run/fs/${id}/config
   if { redirfd -w 1 type echo flatpak }
-  mount-flatpak $@
+  if { mount-flatpak $@ }
+
+  mount --bind -- $diskdir /run/fs/${id}/disk
 }
 
 importas -Siu id

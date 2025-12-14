@@ -28,6 +28,18 @@ if {
   if { create-vm-dependencies $id }
 }
 
+backtick diskdir {
+  s6-setuidgid fs
+
+  backtick -E mountpoint {
+    importas -Siu 1
+    findmnt -no TARGET -T $1
+  }
+
+  if { mkdir -p -- ${mountpoint}/Spectrum/data/spectrum/storage }
+  mktemp -d -- ${mountpoint}/Spectrum/data/spectrum/storage/tmp.XXXXXX
+}
+
 if {
   s6-envuidgid fs
   s6-applyuidgid -Uzu 0
@@ -35,15 +47,17 @@ if {
   multisubstitute {
     importas -Siu id
     importas -Siu 1
+    importas -Siu diskdir
   }
 
   nsenter --preserve-credentials -S0
     --mount=/run/vm/by-id/${id}/ns/mnt
     --user=/run/vm/by-id/${id}/ns/user
-  cd /run/fs/${id}/config
-  if { redirfd -w 1 type echo appimage }
-  if { touch run }
-  mount --bind $1 run
+  cd /run/fs/${id}
+  if { redirfd -w 1 config/type echo appimage }
+  if { touch config/run }
+  if { mount --bind $1 config/run }
+  mount --bind -- $diskdir disk
 }
 
 importas -Siu id

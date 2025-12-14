@@ -4,10 +4,11 @@
 
 export TMPDIR /run
 
-export HOME /home/user
-cd /home/user
-
 if { /etc/mdev/wait virtiofs-host }
+
+if { install -do user -g user /host/disk/home }
+export HOME /host/disk/home
+cd /host/disk/home
 
 foreground {
   redirfd -r 0 /host/config/type

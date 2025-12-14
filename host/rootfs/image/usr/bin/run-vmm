@@ -1,6 +1,36 @@
-#!/bin/execlineb -s0
+#!/bin/execlineb
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
+
+if {
+  backtick -D "" mnt {
+    importas -Siu 1
+    nsenter --mount=/run/vm/by-id/${1}/ns/mnt
+    findmnt -no FSTYPE,SOURCE /run/fs/${1}/disk
+  }
+
+  multisubstitute {
+    importas -Siu mnt
+    importas -Siu 1
+  }
+
+  case $mnt {
+    "^$|^tmpfs fallback$" {
+      s6-envuidgid fs
+      s6-applyuidgid -Uzu 0
+      nsenter --preserve-credentials -S0
+        --mount=/run/vm/by-id/${1}/ns/mnt
+        --user=/run/vm/by-id/${1}/ns/user
+      foreground {
+        redirfd -w 2 /dev/null
+        umount -- /run/fs/${1}/disk
+      }
+      mount -t tmpfs -o mode=0700 -- fallback /run/fs/${1}/disk
+    }
+  }
+}
+
+elgetpositionals
 
 s6-ipcserver-socketbinder -B /run/vm/by-id/${1}/vmm
 

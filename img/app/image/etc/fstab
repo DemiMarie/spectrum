@@ -5,4 +5,3 @@ devpts	/dev/pts	devpts	nosuid,noexec,gid=5,mode=620	0	0
 tmpfs	/dev/shm	tmpfs	nosuid,nodev				0	0
 sysfs	/sys		sysfs	nosuid,nodev,noexec			0	0
 tmpfs	/tmp		tmpfs	nosuid,nodev				0	0
-tmpfs	/home/user	tmpfs	nodev,mode=0700,uid=1000,gid=1000	0	0

@@ -6,6 +6,7 @@ if {
   mkdir -p
     /run/doc/${1}/doc
     /run/fs/${1}/config
+    /run/fs/${1}/disk
     /run/fs/${1}/doc
     /run/vm/by-id/${1}/ns
 }

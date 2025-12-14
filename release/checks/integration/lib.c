@@ -195,6 +195,7 @@ struct vm *start_qemu(struct config c)
 		"-drive", nullptr,
 		"-drive", nullptr,
 		"-smbios", nullptr,
+		"-snapshot",
 		"-m", "4G",
 		"-nodefaults",
 		"-machine", "virtualization=on",
@@ -242,7 +243,7 @@ struct vm *start_qemu(struct config c)
 
 		if (asprintf(efi_arg, "file=%s,format=raw,if=pflash,readonly=true", c.drives.efi) == -1 ||
 		    asprintf(img_arg, "file=%s,format=raw,if=virtio,readonly=true", c.drives.img) == -1 ||
-		    asprintf(user_data_arg, "file=%s,format=raw,if=virtio,readonly=true", c.drives.user_data) == -1 ||
+		    asprintf(user_data_arg, "file=%s,format=raw,if=virtio", c.drives.user_data) == -1 ||
 		    asprintf(console_arg, "type=11,value=io.systemd.stub.kernel-cmdline-extra=%s%s",
 		             c.serial.console ? "console=" : "",
 		             c.serial.console ? c.serial.console : "") == -1) {
