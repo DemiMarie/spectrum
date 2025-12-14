@@ -41,6 +41,6 @@ redirfd -r 0 /dev/tty1
 importas -i home HOME
 cd $home
 if { udevadm wait /dev/dri/card0 }
-unshare --cgroup --ipc --net --uts
+unshare --cgroup --ipc --uts
 s6-setuidgid wayland
 weston -S $WAYLAND_DISPLAY
