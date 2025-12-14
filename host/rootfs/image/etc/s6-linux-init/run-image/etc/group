@@ -14,5 +14,5 @@ cdrom:x:12:
 tape:x:13:
 kvm:x:14:
 wayland:x:15:wayland
-router:x:16::router
+router:x:16:router
 fs:x:1000:
