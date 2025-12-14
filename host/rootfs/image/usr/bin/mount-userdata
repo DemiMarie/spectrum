@@ -7,21 +7,35 @@ backtick -D "" uuid {
   blkid -o value -s UUID -- $1
 }
 
-multisubstitute {
-  importas -Siu 0
-  importas -Siu 1
-  importas -Siu uuid
-}
-
-case $uuid {
-  "" {
-    if {
-      fdmove -c 1 2
-      printf "%s: '%s' does not have a UUID\n" $0 $1
-    }
-    exit 1
+if {
+  multisubstitute {
+    importas -Siu 0
+    importas -Siu 1
+    importas -Siu uuid
   }
+
+  case $uuid {
+    "" {
+      if {
+        fdmove -c 1 2
+        printf "%s: '%s' does not have a UUID\n" $0 $1
+      }
+      exit 1
+    }
+  }
+
+  mount -m -t btrfs -o nosuid,nodev,noexec,nosymfollow -- $1 /media/${uuid}
 }
 
-if { mount -m -t btrfs -o nosuid,nodev,noexec,nosymfollow -- $1 /media/${uuid} }
+importas -Siu uuid
+
+foreground {
+  if -t { test -d /media/${uuid}/Spectrum/data/spectrum/storage }
+  find /media/${uuid}/Spectrum/data/spectrum/storage
+    -mindepth 1
+    -maxdepth 1
+    -name tmp.*
+    -exec rm -rf -- {} ;
+}
+
 printf "%s\n" /media/${uuid}
