@@ -6,7 +6,7 @@ import ../lib/call-package.nix (
 { callSpectrumPackage, config, runCommand, stdenv }:
 
 let
-  efi = import ../host/efi.nix {};
+  efi = callSpectrumPackage ../host/efi.nix {};
 in
 runCommand "spectrum-update-directory" {
   __structuredAttrs = true;
