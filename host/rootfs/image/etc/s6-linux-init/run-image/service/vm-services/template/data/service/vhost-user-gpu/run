@@ -40,7 +40,6 @@ bwrap
   --tmpfs /proc/irq
   --remount-ro /proc/irq
   --ro-bind /dev/null /proc/timer_list
-  --ro-bind /dev/null /proc/kcore
   --ro-bind /dev/null /proc/kallsyms
   --ro-bind /dev/null /proc/sysrq-trigger
   --
