@@ -112,9 +112,7 @@ bwrap
   --remount-ro /proc/fs
   --tmpfs /proc/irq
   --remount-ro /proc/irq
-  --ro-bind /dev/null /proc/timer_list
   --ro-bind /dev/null /proc/kallsyms
-  --ro-bind /dev/null /proc/sysrq-trigger
   --
 
 cloud-hypervisor --api-socket fd=3
