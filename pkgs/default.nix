@@ -72,6 +72,9 @@ let
         ../host/rootfs/build
         ../img/app/build
         ../release/live/build
+        ../tools/mount-flatpak/target
+        ../tools/router/target
+        ../tools/xdg-desktop-portal-spectrum-host/target
         ../vm/sys/net/build
       ]));
 
