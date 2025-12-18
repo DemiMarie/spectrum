@@ -12,14 +12,14 @@
 #include <arpa/inet.h>
 #include <net/if.h>
 
-#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <linux/if_addr.h>
 #include <linux/ipv6.h>
+#include <linux/rtnetlink.h>
 
 static int setup_server(void)
 {
 	int fd;
-	struct ifreq ifr;
-	struct in6_ifreq ifr6;
 
 	struct sockaddr_in6 addr = {
 		.sin6_family = AF_INET6,
@@ -27,30 +27,83 @@ static int setup_server(void)
 		.sin6_addr = { .s6_addr = { 0xfd, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 } },
 	};
 
-	sprintf(ifr.ifr_name, "lo");
+	struct {
+		struct nlmsghdr nh;
+		struct ifaddrmsg ifa;
+		struct rtattr attr;
+		struct in6_addr addr;
+	} newaddr_req = {
+		{
+			.nlmsg_len = sizeof newaddr_req,
+			.nlmsg_type = RTM_NEWADDR,
+			.nlmsg_flags = NLM_F_ACK | NLM_F_REQUEST,
+		},
+		{
+			.ifa_family = AF_INET6,
+			.ifa_prefixlen = 128,
+			.ifa_flags = IFA_F_NODAD,
+			.ifa_index = 1,
+		},
+		{
+			.rta_len = sizeof newaddr_req.attr + sizeof newaddr_req.addr,
+			.rta_type = IFA_ADDRESS,
+		},
+		addr.sin6_addr,
+	};
 
-	ifr6.ifr6_ifindex = 1;
-	ifr6.ifr6_addr = addr.sin6_addr;
-	ifr6.ifr6_prefixlen = 128;
+	struct {
+		struct nlmsghdr nh;
+		struct ifinfomsg ifi;
+	} newlink_req = {
+		{
+			.nlmsg_len = sizeof newlink_req,
+			.nlmsg_type = RTM_NEWLINK,
+			.nlmsg_flags = NLM_F_ACK | NLM_F_REQUEST,
+		},
+		{
+			.ifi_index = 1,
+			.ifi_flags = IFF_UP,
+			.ifi_change = IFF_UP,
+		},
+	};
 
-	if ((fd = socket(AF_INET6, SOCK_STREAM|SOCK_CLOEXEC, 0)) == -1) {
+	struct {
+		struct nlmsghdr nh;
+		struct nlmsgerr err;
+	} res;
+
+	if ((fd = socket(AF_NETLINK, SOCK_DGRAM|SOCK_CLOEXEC, NETLINK_ROUTE)) == -1) {
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
 
-	if (ioctl(fd, SIOCGIFFLAGS, &ifr) == -1) {
-		perror("SIOCGIFFLAGS");
+	if (send(fd, &newaddr_req, sizeof newaddr_req, 0) == -1) {
+		perror("send");
 		exit(EXIT_FAILURE);
 	}
 
-	ifr.ifr_flags |= IFF_UP;
-	if (ioctl(fd, SIOCSIFFLAGS, &ifr) == -1) {
-		perror("SIOCSIFFLAGS");
+	if (recv(fd, &res, sizeof res, 0) == -1) {
+		perror("recv");
 		exit(EXIT_FAILURE);
 	}
 
-	if (ioctl(fd, SIOCSIFADDR, &ifr6) == -1) {
-		perror("SIOCSIFADDR");
+	if (res.err.error) {
+		fprintf(stderr, "RTM_NEWADDR: %s", strerror(-res.err.error));
+		exit(EXIT_FAILURE);
+	}
+
+	if (send(fd, &newlink_req, sizeof newlink_req, 0) == -1) {
+		perror("send");
+		exit(EXIT_FAILURE);
+	}
+
+	if (recv(fd, &res, sizeof res, 0) == -1) {
+		perror("recv");
+		exit(EXIT_FAILURE);
+	}
+
+	if (res.err.error) {
+		fprintf(stderr, "RTM_NEWLINK: %s", strerror(-res.err.error));
 		exit(EXIT_FAILURE);
 	}
 
@@ -61,11 +114,9 @@ static int setup_server(void)
 		exit(EXIT_FAILURE);
 	}
 
-	int tries = 0;
-	while (bind(fd, &addr, sizeof addr) == -1) {
+	if (bind(fd, &addr, sizeof addr) == -1) {
 		perror("bind");
-		if (tries++ >= 5)
-			exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	if (listen(fd, 1) == -1) {
