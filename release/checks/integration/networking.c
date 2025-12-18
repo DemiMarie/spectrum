@@ -54,6 +54,8 @@ static int setup_server(void)
 		exit(EXIT_FAILURE);
 	}
 
+	close(fd);
+
 	if ((fd = socket(AF_INET6, SOCK_STREAM|SOCK_CLOEXEC, 0)) == -1) {
 		perror("socket");
 		exit(EXIT_FAILURE);
