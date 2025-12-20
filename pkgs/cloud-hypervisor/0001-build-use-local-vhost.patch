@@ -1,4 +1,4 @@
-From 93478629e43db5317ed2c0ad665b242972fa8bee Mon Sep 17 00:00:00 2001
+From db2a2941878d368a8ea7152de8c4059525ed5a19 Mon Sep 17 00:00:00 2001
 From: Alyssa Ross <alyssa.ross@unikie.com>
 Date: Wed, 28 Sep 2022 12:18:19 +0000
 Subject: [PATCH 1/2] build: use local vhost
@@ -14,19 +14,19 @@ Signed-off-by: Alyssa Ross <hi@alyssa.is>
  2 files changed, 2 insertions(+), 6 deletions(-)
 
 diff --git a/Cargo.lock b/Cargo.lock
-index 118b60cea..64ca9af39 100644
+index 62bbf709f..39df61015 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
-@@ -2262,8 +2262,6 @@ dependencies = [
+@@ -2304,8 +2304,6 @@ dependencies = [
  [[package]]
  name = "vhost"
  version = "0.14.0"
 -source = "registry+https://github.com/rust-lang/crates.io-index"
 -checksum = "2a4dcad85a129d97d5d4b2f3c47a4affdeedd76bdcd02094bcb5d9b76cac2d05"
  dependencies = [
-  "bitflags 2.9.4",
+  "bitflags 2.10.0",
   "libc",
-@@ -2275,8 +2273,6 @@ dependencies = [
+@@ -2317,8 +2315,6 @@ dependencies = [
  [[package]]
  name = "vhost-user-backend"
  version = "0.20.0"
@@ -36,10 +36,10 @@ index 118b60cea..64ca9af39 100644
   "libc",
   "log",
 diff --git a/Cargo.toml b/Cargo.toml
-index 1d03f3968..fd081cc1b 100644
+index b738dde5b..1118f1eb1 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -116,8 +116,8 @@ seccompiler = "0.5.0"
+@@ -55,8 +55,8 @@ seccompiler = "0.5.0"
  vfio-bindings = { version = "0.6.0", default-features = false }
  vfio-ioctls = { version = "0.5.1", default-features = false }
  vfio_user = { version = "0.1.1", default-features = false }
