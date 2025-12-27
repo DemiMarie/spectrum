@@ -23,6 +23,7 @@ let
   inherit (lib)
     concatMapStringsSep concatStrings escapeShellArgs fileset mapAttrsToList
     mkForce trivial;
+  inherit (lib.strings) hasPrefix;
 
   packages = [
     btrfs-progs bubblewrap cloud-hypervisor cosmic-files crosvm cryptsetup dbus
@@ -49,7 +50,27 @@ let
     system.stateVersion = trivial.release;
   });
 
+  badConfig = old_config: let (
+    hasPrefix "NF" name ||
+    hasPrefix "BT_" name ||
+    hasPrefix "EXT2_" name ||
+    hasPrefix "IP" name ||
+    hasPrefix "INET" name ||
+    hasPrefix "L2TP" name ||
+    hasPrefix "NET" name ||
+    hasPrefix "NFS" name ||
+    hasPrefix "CEPH" name ||
+    hasPrefix "CIFS" name ||
+    name == "AX25" ||
+    name == "SWIOTLB_XEN") then mkForce unset else value;
+
+  filtered_config =
+    let config = linux_latest.configfile.structuredConfig; in
+    lib.filterAttrs config (builtins.filter unwantedAttrs (builtins.attrNames config));
+
   kernel = linux_latest.override {
+    structuredConfig = filtered_config;
+    moduleStructuredConfig = filtered_config;
     structuredExtraConfig = with lib.kernel; {
       SCSI_PROC_FS = no;
 
@@ -59,6 +80,9 @@ let
       # No IP networking!
       INET = lib.mkForce no;
 
+      # No kTLS
+      TLS = lib.mkForce no;
+
       # No Bluetooth
       BT = lib.mkForce no;
 
@@ -67,6 +91,7 @@ let
 
       # No wireless on the host, please.
       WIRELESS = lib.mkForce no;
+      WLAN = lib.mkForce no;
 
       # No spanning tree.
       MRP = no;
@@ -81,13 +106,11 @@ let
       # No unused filesystems
       XFS_FS = mkForce no;
       EXT2_FS = mkForce no;
-      EXT3_FS = mkForce no;
       EXT4_FS = mkForce no;
       NTFS_FS = mkForce no;
       NTFS3_FS = mkForce no;
       OCFS2_FS = mkForce no;
       JFS_FS = mkForce no;
-      NFS_FS = mkForce no;
 
       # No ATM
       ATM = mkForce no;
@@ -178,12 +201,14 @@ let
 
       # No amateur radio.
       HAMRADIO = mkForce no;
+      AX25 = mkForce unset;
 
       # No X.25 protocol
       X25 = mkForce no;
 
       # No AF_XDP as there are no network devices for it to run on.
       XDP_SOCKETS = mkForce no;
+      XDP_SOCKETS_DIAG = mkForce unset;
 
       # No trivial DMA attacks
       FIREWIRE = mkForce no;
@@ -235,9 +260,6 @@ let
       # No machine learning accelerators.  Spectrum's host has no userspace for them.
       DRM_ACCEL = mkForce no;
 
-      # No SCSI targets
-      ISCSI_TARGET = mkForce no;
-
       # Spectrum can't run under Xen (because it needs virtualization).
       XEN = mkForce no;
       XEN_BALLOON = mkForce unset;
@@ -254,13 +276,6 @@ let
       BONDING = mkForce unset;
       BPF_STREAM_PARSER = mkForce unset;
       BRIDGE_VLAN_FILTERING = mkForce unset;
-      BT_HCIUART_QCA = mkForce unset;
-      BT_HCIUART_SERDEV = mkForce unset;
-      BT_HCIBTUSB_AUTOSUSPEND = mkForce unset;
-      BT_HCIBTUSB_MTK = mkForce unset;
-      BT_HCIBTUSB_QCA = mkForce unset;
-      BT_HCIBTUSB_SERDEV = mkForce unset;
-      BT_QCA = mkForce unset;
       CLS_U32_MARK = mkForce unset;
       CLS_U32_PERF = mkForce unset;
 
