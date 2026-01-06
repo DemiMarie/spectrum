@@ -77,7 +77,7 @@ start-vhost-user-gpu:
 	$(CROSVM_DEVICE_GPU) \
 	    --socket build/vhost-user-gpu.sock \
 	    --wayland-sock "$$XDG_RUNTIME_DIR/$$WAYLAND_DISPLAY" \
-	    --params '{"context-types":"cross-domain"}' &
+	    --params '{"context-types":"cross-domain:drm"}' &
 	while ! [ -S build/vhost-user-gpu.sock ] && sleep .1; do :; done
 .PHONY: start-vhost-user-gpu
 

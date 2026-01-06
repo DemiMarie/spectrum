@@ -1,18 +1,10 @@
 #!/bin/execlineb -P
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2023-2024 Alyssa Ross <hi@alyssa.is>
-#
-# Directory creation (if it's copyrightable):
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2022 Unikie
-
-foreground { mkdir /tmp/.X11-unix }
+# SPDX-FileCopyrightText: 2026 Demi Marie Obenour <demiobenour@gmail.com>
 
 s6-ipcserver-socketbinder -B /run/wayland
 fdmove -c 3 0
-
-s6-ipcserver-socketbinder -B /tmp/.X11-unix/X0
-fdmove -c 4 0
 
 redirfd -r 0 /dev/null
 
@@ -21,11 +13,12 @@ if { fdmove 1 5 echo }
 fdclose 5
 
 if { /etc/mdev/wait card0 }
+if { /etc/mdev/wait renderD128 }
 
-export LISTEN_FDS 2
-export LISTEN_FDNAMES wayland:x11
+export LISTEN_FDS 1
+export LISTEN_FDNAMES wayland
 getpid LISTEN_PID
 
 s6-setuidgid user
 
-wayland-proxy-virtwl --virtio-gpu --x-display=0
+wl-cross-domain-proxy --listen-fd

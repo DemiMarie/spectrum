@@ -5,10 +5,20 @@ import ../../lib/call-package.nix (
 { spectrum-app-tools, spectrum-build-tools, src, terminfo
 , lib, appimageTools, buildFHSEnv, runCommand, stdenvNoCC, writeClosure
 , erofs-utils, jq, s6-rc, util-linux, xorg
-, cacert, linux_latest
+, cacert, linux_latest, rustPlatform, fetchgit
 }:
 
 let
+  wl-cross-domain-proxy = rustPlatform.buildRustPackage rec {
+    pname = "wl-cross-domain-proxy";
+    version = "0.0.0";
+    src = fetchgit {
+      url = "https://codeberg.org/drakulix/wl-cross-domain-proxy";
+      rev = "167b5ade788d297cd19929c2f367484a09a87316";
+      hash = "";
+    };
+    cargoHash = "";
+  };
   kernelTarget =
     if stdenvNoCC.hostPlatform.isx86 then
       # vmlinux.bin is the stripped version of vmlinux.
@@ -75,7 +85,6 @@ let
       pkgs.s6-rc
       pkgs.socat
       pkgs.systemd
-      pkgs.wayland-proxy-virtwl
       pkgs.wireplumber
       pkgs.xdg-desktop-portal
       pkgs.xdg-desktop-portal-gtk
@@ -84,6 +93,7 @@ let
       kernel.modules
       spectrum-app-tools
       terminfo
+      wl-cross-domain-proxy
     ];
   })).fhsenv;
 

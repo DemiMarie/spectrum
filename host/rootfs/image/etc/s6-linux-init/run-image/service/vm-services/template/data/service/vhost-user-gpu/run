@@ -42,4 +42,4 @@ bwrap
 crosvm --no-syslog device gpu
   --fd 0
   --wayland-sock $WAYLAND_DISPLAY
-  --params "{\"context-types\":\"cross-domain\"}"
+  --params "{\"context-types\":\"cross-domain:drm\"}"
