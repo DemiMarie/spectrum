@@ -53,7 +53,7 @@ testers.nixosTest ({ lib, pkgs, ... }: {
             systemd-notify --ready --no-block
         ) &
         exec ${lib.getExe pkgs.crosvm} device gpu \
-            --socket /run/crosvm-gpu.sock \
+            --socket-path /run/crosvm-gpu.sock \
             --wayland-sock /run/wayland-1 \
             --params '{"context-types":"cross-domain"}'
       '';

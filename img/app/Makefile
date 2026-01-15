@@ -75,7 +75,7 @@ debug:
 start-vhost-user-gpu:
 	rm -f build/vhost-user-gpu.sock
 	$(CROSVM_DEVICE_GPU) \
-	    --socket build/vhost-user-gpu.sock \
+	    --socket-path build/vhost-user-gpu.sock \
 	    --wayland-sock "$$XDG_RUNTIME_DIR/$$WAYLAND_DISPLAY" \
 	    --params '{"context-types":"cross-domain"}' &
 	while ! [ -S build/vhost-user-gpu.sock ] && sleep .1; do :; done
