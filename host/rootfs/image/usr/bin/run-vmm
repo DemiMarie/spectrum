@@ -104,8 +104,6 @@ bwrap
   --bind /run /run
   --proc /proc
   --ro-bind /proc/sys /proc/sys
-  --tmpfs /proc/acpi
-  --remount-ro /proc/acpi
   --tmpfs /proc/fs
   --remount-ro /proc/fs
   --tmpfs /proc/irq
