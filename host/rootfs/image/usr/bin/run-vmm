@@ -16,6 +16,7 @@ if {
 
   case $mnt {
     "^$|^tmpfs fallback$" {
+      if { udevadm wait /dev/null }
       s6-envuidgid fs
       s6-applyuidgid -Uzu 0
       nsenter --preserve-credentials -S0

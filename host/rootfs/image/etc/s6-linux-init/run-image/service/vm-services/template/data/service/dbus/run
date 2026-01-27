@@ -26,6 +26,8 @@ unshare --cgroup --ipc --net --uts
 export LISTEN_FDS 1
 getpid LISTEN_PID
 
+if { udevadm wait /dev/null }
+
 dbus-daemon
   --config-file ${dir}/data/dbus.conf
   --print-address 4
