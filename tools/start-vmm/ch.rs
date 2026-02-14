@@ -74,14 +74,14 @@ pub struct VmConfig {
     pub console: ConsoleConfig,
     pub disks: Vec<DiskConfig>,
     pub fs: [FsConfig; 1],
-    pub gpu: Vec<GpuConfig>,
+    pub gpu: [GpuConfig; 1],
     pub memory: MemoryConfig,
     pub net: Vec<NetConfig>,
     pub payload: PayloadConfig,
     pub serial: ConsoleConfig,
     pub vsock: VsockConfig,
     pub landlock_enable: bool,
-    pub landlock_rules: Vec<LandlockConfig>,
+    pub landlock_rules: [LandlockConfig; 2],
 }
 
 fn command(vm_dir: &Path, s: impl AsRef<OsStr>) -> Command {

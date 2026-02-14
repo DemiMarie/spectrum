@@ -86,7 +86,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                 "/run/service/vm-services/instance/{vm_name}/data/service/vhost-user-fs/env/virtiofsd.sock"
             ),
         }],
-        gpu: vec![GpuConfig {
+        gpu: [GpuConfig {
             socket: format!(
                 "/run/service/vm-services/instance/{vm_name}/data/service/vhost-user-gpu/env/crosvm.sock"
             ),
@@ -167,7 +167,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
             socket: format!("/run/vsock/{vm_name}/vsock"),
         },
         landlock_enable: true,
-        landlock_rules: vec![
+        landlock_rules: [
             LandlockConfig {
                 path: "/sys/devices",
                 access: "rw",
