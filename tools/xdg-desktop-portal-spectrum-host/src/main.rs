@@ -23,6 +23,7 @@ use landlock::{
     ABI, Access, AccessFs, AccessNet, CompatLevel, Compatible, Ruleset, RulesetAttr, RulesetError,
     Scope,
 };
+use tracing_subscriber::EnvFilter;
 use zbus::{AuthMechanism, Connection, MessageStream, connection};
 
 use file_chooser::FileChooser;
@@ -235,6 +236,10 @@ fn read_argv() {
 
 fn run() -> Result<(), String> {
     set_up_landlock().map_err(|e| format!("setting up landlock: {e}"))?;
+
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .init();
 
     read_argv();
 

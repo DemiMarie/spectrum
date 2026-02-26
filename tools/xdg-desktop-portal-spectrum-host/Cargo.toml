@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-# SPDX-FileCopyrightText: 2024 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
 [package]
 name = "xdg-desktop-portal-spectrum-host"
@@ -13,5 +13,11 @@ futures-lite = "2.3.0"
 landlock = "0.4.4"
 percent-encoding = "2.3.1"
 rustix = "1.0"
+tracing = "0.1.43"
 url = "2.5.0"
 zbus = "5.1.1"
+
+[dependencies.tracing-subscriber]
+version = "0.3.22"
+default-features = false
+features = ["env-filter", "fmt"]
