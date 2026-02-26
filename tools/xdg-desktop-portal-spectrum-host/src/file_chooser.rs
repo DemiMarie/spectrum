@@ -8,12 +8,12 @@ use std::path::PathBuf;
 use std::sync::OnceLock;
 
 use percent_encoding::percent_decode;
+use tracing::error;
 use url::Url;
 use zbus::zvariant::{Array, ObjectPath, OwnedValue, Value};
 use zbus::{Connection, interface};
 
 use crate::documents::share_file;
-use crate::msg;
 
 const XDG_DESKTOP_PORTAL_RESPONSE_SUCCESS: u32 = 0;
 const XDG_DESKTOP_PORTAL_RESPONSE_CANCELLED: u32 = 1;
@@ -50,7 +50,7 @@ impl FileChooser {
             Ok(Some(results)) => Ok((XDG_DESKTOP_PORTAL_RESPONSE_SUCCESS, results)),
             Ok(None) => Ok((XDG_DESKTOP_PORTAL_RESPONSE_CANCELLED, BTreeMap::new())),
             Err(e) => {
-                msg(&e);
+                error!("{e}");
                 Ok((XDG_DESKTOP_PORTAL_RESPONSE_OTHER, BTreeMap::new()))
             }
         }
@@ -71,7 +71,7 @@ impl FileChooser {
             Ok(Some(results)) => Ok((XDG_DESKTOP_PORTAL_RESPONSE_SUCCESS, results)),
             Ok(None) => Ok((XDG_DESKTOP_PORTAL_RESPONSE_CANCELLED, BTreeMap::new())),
             Err(e) => {
-                msg(&e);
+                error!("{e}");
                 Ok((XDG_DESKTOP_PORTAL_RESPONSE_OTHER, BTreeMap::new()))
             }
         }

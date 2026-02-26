@@ -23,6 +23,7 @@ use landlock::{
     ABI, Access, AccessFs, AccessNet, CompatLevel, Compatible, Ruleset, RulesetAttr, RulesetError,
     Scope,
 };
+use tracing::{error, info};
 use tracing_subscriber::EnvFilter;
 use zbus::{AuthMechanism, Connection, MessageStream, connection};
 
@@ -158,7 +159,7 @@ async fn run_guest_connection(mut conn: Async<UnixStream>) -> Result<(), String>
     {
         let e = format!("sending setup response to guest: {e}");
         if guest_dbus_conn_result.is_err() {
-            msg(&e);
+            error!("{e}");
         } else {
             return Err(e);
         }
@@ -167,7 +168,7 @@ async fn run_guest_connection(mut conn: Async<UnixStream>) -> Result<(), String>
     drop(conn);
     let guest_dbus_conn = guest_dbus_conn_result?;
 
-    msg("Created org.freedesktop.impl.portal.desktop.spectrum.host on guest bus");
+    info!("Created org.freedesktop.impl.portal.desktop.spectrum.host on guest bus");
 
     let mut guest_messages = MessageStream::from(guest_dbus_conn);
     loop {
@@ -229,7 +230,7 @@ fn read_argv() {
     args.next();
 
     if args.next().is_some() {
-        msg("too many arguments");
+        error!("too many arguments");
         exit(1);
     }
 }
@@ -258,7 +259,7 @@ fn run() -> Result<(), String> {
             let (conn, _) = match stdin.accept().await {
                 Ok(conn) => conn,
                 Err(e) => {
-                    msg(&format!("accepting connection from guest: {e}"));
+                    error!("accepting connection from guest: {e}");
                     continue;
                 }
             };
@@ -275,7 +276,7 @@ fn run() -> Result<(), String> {
             EXECUTOR
                 .spawn(async move {
                     if let Err(e) = run_guest_connection(conn).await {
-                        msg(&format!("guest connection error: {e}"));
+                        error!("guest connection error: {e}");
                     }
                 })
                 .detach();
@@ -283,18 +284,9 @@ fn run() -> Result<(), String> {
     }))
 }
 
-fn msg(e: &str) {
-    if let Some(prog) = args_os().next()
-        && let Some(prog) = PathBuf::from(prog).file_name()
-    {
-        eprint!("{}: ", prog.to_string_lossy());
-    }
-    eprintln!("{e}");
-}
-
 fn main() {
     if let Err(e) = run() {
-        msg(&e);
+        error!("{e}");
         exit(1);
     }
 }
