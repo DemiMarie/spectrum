@@ -40,4 +40,5 @@ foreground {
 }
 
 # Block until the active consoles change, then let s6 restart us.
+unexport EXECLINE_STRICT # https://skarnet.org/lists/skaware/2246.html
 wait -- $inotifywait_pid
