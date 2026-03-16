@@ -7,8 +7,8 @@ pkgsMusl.callPackage (
 
 { lib, stdenvNoCC, nixos, runCommand, writeClosure
 , erofs-utils, jq, s6-rc, util-linux, xorg
-, busybox, dbus, execline, iwd, kmod, linux_latest, mdevd, nftables
-, s6, s6-linux-init, spectrum-driver-tools, xdp-tools
+, busybox, dbus, execline, iwd, kmod, linuxPackagesFor, linux_latest
+, mdevd, nftables, s6, s6-linux-init, spectrum-driver-tools, xdp-tools
 }:
 
 let
@@ -95,6 +95,8 @@ let
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
+
+    boot.kernelPackages = linuxPackagesFor kernel;
 
     system.stateVersion = lib.trivial.release;
   });

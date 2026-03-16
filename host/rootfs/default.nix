@@ -4,7 +4,7 @@
 
 import ../../lib/call-package.nix (
 { callSpectrumPackage, config, spectrum-build-tools
-, src, pkgsMusl, inkscape, linux_latest, xorg
+, src, pkgsMusl, inkscape, linuxPackagesFor, linux_latest, xorg
 }:
 pkgsMusl.callPackage (
 
@@ -45,6 +45,8 @@ let
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
+
+    boot.kernelPackages = linuxPackagesFor kernel;
 
     system.stateVersion = trivial.release;
   });
