@@ -94,9 +94,9 @@ let
   '';
 
   nixosAllHardware = nixos ({ modulesPath, ... }: {
-    imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
-
     boot.kernelPackages = linuxPackagesFor kernel;
+
+    hardware.enableAllHardware = true;
 
     system.stateVersion = lib.trivial.release;
   });
