@@ -1,4 +1,4 @@
-From db2a2941878d368a8ea7152de8c4059525ed5a19 Mon Sep 17 00:00:00 2001
+From fca364182f5c4e595384297316e9c74069ca5169 Mon Sep 17 00:00:00 2001
 From: Alyssa Ross <alyssa.ross@unikie.com>
 Date: Wed, 28 Sep 2022 12:18:19 +0000
 Subject: [PATCH 1/2] build: use local vhost
@@ -51,5 +51,5 @@ index b738dde5b..1118f1eb1 100644
  virtio-queue = "0.16.0"
  vm-fdt = "0.3.0"
 -- 
-2.51.0
+2.53.0
 
