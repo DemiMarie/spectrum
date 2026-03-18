@@ -195,6 +195,7 @@ struct vm *start_qemu(struct config c)
 		"-drive", nullptr,
 		"-drive", nullptr,
 		"-smbios", nullptr,
+		"-name", program_invocation_short_name,
 		"-snapshot",
 		"-m", "4G",
 		"-nodefaults",
