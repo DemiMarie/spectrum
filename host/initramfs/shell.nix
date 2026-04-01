@@ -3,7 +3,7 @@
 
 import ../../lib/call-package.nix (
 { callSpectrumPackage, rootfs, pkgsStatic, stdenv
-, cryptsetup, jq, qemu_kvm, tar2ext4, util-linux
+, cryptsetup, jq, qemu_kvm, util-linux
 , config
 }:
 
@@ -13,7 +13,7 @@ in
 
 initramfs.overrideAttrs ({ nativeBuildInputs ? [], env ? {}, ... }: {
   nativeBuildInputs = nativeBuildInputs ++ [
-    cryptsetup jq qemu_kvm tar2ext4 util-linux
+    cryptsetup jq qemu_kvm util-linux
   ];
 
   env = env // {
