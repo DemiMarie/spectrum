@@ -31,7 +31,6 @@ Add the following configuration to /etc/nixos/configuration.nix:
 {
   nix.settings.substituters = [ "https://cache.dataaturservice.se/spectrum/" ];
   nix.settings.trusted-public-keys = [
-    "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
     "spectrum-os.org-2:foQk3r7t2VpRx92CaXb5ROyy/NBdRJQG2uX2XJMYZfU="
   ];
 }
@@ -49,8 +48,8 @@ Add the following configuration to /etc/nix/nix.conf:
 
 [source]
 ----
-substituters = https://cache.dataaturservice.se/spectrum/ https://cache.nixos.org/
-trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= spectrum-os.org-2:foQk3r7t2VpRx92CaXb5ROyy/NBdRJQG2uX2XJMYZfU=
+extra-substituters = https://cache.dataaturservice.se/spectrum/
+extra-trusted-public-keys = spectrum-os.org-2:foQk3r7t2VpRx92CaXb5ROyy/NBdRJQG2uX2XJMYZfU=
 ----
 
 Run `systemctl restart nix-daemon.service` after making any changes in the Nix
