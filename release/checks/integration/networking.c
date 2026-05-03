@@ -129,9 +129,10 @@ static int setup_server(void)
 
 static void expect_connection(int listener)
 {
-	int conn, r;
+	int conn;
 	char msg[7];
 	size_t len;
+	ssize_t r;
 
 	for (;;) {
 		len = 0;
