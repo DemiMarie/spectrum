@@ -4,5 +4,6 @@
 
 background {
   importas -Si INTERFACE
+  if { grep -q ^02:00: /sys/class/net/${INTERFACE}/address }
   ip link set $INTERFACE up
 }
