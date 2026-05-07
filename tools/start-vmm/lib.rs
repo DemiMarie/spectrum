@@ -75,6 +75,8 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                     Ok(DiskConfig {
                         path: entry,
                         readonly: true,
+                        disable_io_uring: true,
+                        disable_aio: true,
                     })
                 })
                 .collect::<Result<_, _>>()?,

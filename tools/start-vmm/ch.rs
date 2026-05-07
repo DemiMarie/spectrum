@@ -24,6 +24,8 @@ pub struct ConsoleConfig {
 pub struct DiskConfig {
     pub path: String,
     pub readonly: bool,
+    pub disable_io_uring: bool,
+    pub disable_aio: bool,
 }
 
 #[derive(Serialize)]
