@@ -23,6 +23,7 @@ let
 
       fileSystems.${storeDir} = {
         device = "/dev/disk/by-partuuid/${installerPartUuid}";
+        fsType = "squashfs";
       };
     };
   };
