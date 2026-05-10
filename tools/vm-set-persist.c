@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2025-2026 Alyssa Ross <hi@alyssa.is>
 // SPDX-License-Identifier: EUPL-1.2+
 
 #include <err.h>
@@ -142,11 +142,12 @@ static void do_rename(int mnt, const char dir_name[static 1],
 
 int main(int argc, char *argv[])
 {
-	int mnt;
+	int mnt, r;
 	mode_t mode;
 	uint64_t mnt_id;
 	char *disk_path, *dir_name, *old_name, *new_name,
-	     mnt_root[MNT_ROOT_MAX_LEN], source[SOURCE_MAX_LEN];
+	     mnt_root[MNT_ROOT_MAX_LEN], mnt_root_copy[MNT_ROOT_MAX_LEN],
+	     source[SOURCE_MAX_LEN];
 
 	if (argc != 3) {
 		fprintf(stderr, "Usage: vm-set-persist ID INSTANCE\n");
@@ -168,10 +169,13 @@ int main(int argc, char *argv[])
 	do_statx(disk_path, &mode, &mnt_id);
 	do_statmount(mnt_id, mnt_root, source);
 
-	if (!(dir_name = strdup(mnt_root)))
-		err(EXIT_FAILURE, "strdup");
-	dir_name = dirname(dir_name);
-	old_name = basename(mnt_root);
+	r = snprintf(mnt_root_copy, sizeof mnt_root_copy, "%s", mnt_root);
+	if (r == -1)
+		err(EXIT_FAILURE, "snprintf");
+	if ((size_t)r >= sizeof mnt_root_copy)
+		errx(EXIT_FAILURE, "mnt_root longer than mnt_root_copy");
+	dir_name = dirname(mnt_root);
+	old_name = basename(mnt_root_copy);
 
 	mnt = do_mount(source);
 
