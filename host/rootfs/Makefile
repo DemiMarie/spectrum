@@ -125,11 +125,11 @@ debug:
 	    $(VMLINUX)
 .PHONY: debug
 
-run: build/live.img $(ROOTFS_VERITY_ROOTHASH)
+run: build/empty build/live.img $(ROOTFS_VERITY_ROOTHASH)
 	@set -x && \
 	ext="$$(mktemp build/spectrum-rootfs-extfs.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$ext" && \
-	mkfs.btrfs "$$ext" && \
+	unshare --map-user 1000 --map-group 1000 mkfs.btrfs -r build/empty "$$ext" && \
 	exec 3<>"$$ext" && \
 	rm -f "$$ext" && \
 	set +x && \

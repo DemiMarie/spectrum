@@ -24,11 +24,14 @@ build/boot.fat: $(SYSTEMD_BOOT_EFI) $(SPECTRUM_EFI)
 	$(MCOPY) -i $@ $(SPECTRUM_EFI) ::/EFI/Linux/'Spectrum_$(VERSION).efi'
 	$(MCOPY) -i $@ $(SYSTEMD_BOOT_EFI) ::/EFI/BOOT/$(EFINAME)
 
+build/empty:
+	mkdir -p $@
+
 clean:
 	rm -rf build
 .PHONY: clean
 
-run: $(dest)
+run: build/empty $(dest)
 	@set -xueo pipefail && \
 	img="$$(mktemp build/spectrum-rootfs.XXXXXXXXX.img)" && \
 	cp $(dest) "$$img" && \
@@ -36,7 +39,7 @@ run: $(dest)
 	rm -f "$$img" && \
 	userdata="$$(mktemp build/spectrum-userdata.XXXXXXXXXX.img)" && \
 	truncate -s 10G "$$userdata" && \
-	mkfs.btrfs "$$userdata" && \
+	unshare --map-user 1000 --map-group 1000 mkfs.btrfs -r build/empty "$$userdata" && \
 	exec 4<>"$$userdata" && \
 	rm -f "$$userdata" && \
 	set +x && \
