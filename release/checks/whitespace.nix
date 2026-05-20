@@ -9,6 +9,6 @@ runCommand "spectrum-whitespace" {
     fileset = srcWithNix;
   };
 } ''
-  grep --color=always --exclude='*.patch' -r "[[:space:]]$" $src || touch $out
+  grep --color=always --exclude='*.patch' -Ir "[[:space:]]$" $src || touch $out
 ''
 ) (_: {})
