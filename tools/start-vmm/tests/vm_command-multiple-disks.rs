@@ -19,7 +19,7 @@ fn main() -> std::io::Result<()> {
     create_dir(vm_config_dir.join("blk"))?;
 
     let image_paths: BTreeSet<_> = (1..=2)
-        .map(|n| vm_config_dir.join(format!("blk/disk{n}.img")))
+        .map(|n| vm_config_dir.join(format!("blk/pmem{n}.img")))
         .collect();
 
     for image_path in &image_paths {
@@ -27,13 +27,13 @@ fn main() -> std::io::Result<()> {
     }
 
     let config = vm_config(vm_config_dir.parent().unwrap()).unwrap();
-    assert_eq!(config.disks.len(), 2);
-    assert!(config.disks.iter().all(|disk| disk.readonly));
+    assert_eq!(config.pmem.len(), 2);
+    assert!(config.pmem.iter().all(|pmem| pmem.discard_writes));
 
     let actual_paths: BTreeSet<_> = config
-        .disks
+        .pmem
         .into_iter()
-        .map(|disk| PathBuf::from(disk.path))
+        .map(|pmem| PathBuf::from(pmem.file))
         .collect();
 
     assert_eq!(actual_paths, image_paths);

@@ -15,8 +15,8 @@ use std::io::ErrorKind;
 use std::path::Path;
 
 use ch::{
-    ConsoleConfig, DiskConfig, FsConfig, GpuConfig, LandlockConfig, MemoryConfig, NetConfig,
-    PayloadConfig, VmConfig, VsockConfig,
+    ConsoleConfig, FsConfig, GpuConfig, LandlockConfig, MemoryConfig, NetConfig, PayloadConfig,
+    PmemConfig, VmConfig, VsockConfig,
 };
 use net::MacAddress;
 
@@ -51,7 +51,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
             mode: "Pty",
             file: None,
         },
-        disks: match blk_dir.read_dir() {
+        pmem: match blk_dir.read_dir() {
             Ok(entries) => entries
                 .into_iter()
                 .map(|result| {
@@ -72,9 +72,9 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                         return Err(format!("illegal ',' character in path {entry:?}"));
                     }
 
-                    Ok(DiskConfig {
-                        path: entry,
-                        readonly: true,
+                    Ok(PmemConfig {
+                        file: entry,
+                        discard_writes: true,
                     })
                 })
                 .collect::<Result<_, _>>()?,

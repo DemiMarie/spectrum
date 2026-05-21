@@ -22,10 +22,10 @@ fn main() -> std::io::Result<()> {
     let mut config = vm_config(&vm_dir).unwrap();
 
     assert_eq!(config.console.mode, "Pty");
-    assert_eq!(config.disks.len(), 1);
-    let disk1 = config.disks.pop().unwrap();
-    assert_eq!(PathBuf::from(disk1.path), image_path);
-    assert!(disk1.readonly);
+    assert_eq!(config.pmem.len(), 1);
+    let pmem1 = config.pmem.pop().unwrap();
+    assert_eq!(PathBuf::from(pmem1.file), image_path);
+    assert!(pmem1.discard_writes);
     assert_eq!(config.fs.len(), 1);
     let fs1 = &config.fs[0];
     assert_eq!(fs1.tag, "host");

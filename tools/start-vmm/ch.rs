@@ -21,9 +21,9 @@ pub struct ConsoleConfig {
 }
 
 #[derive(Serialize)]
-pub struct DiskConfig {
-    pub path: String,
-    pub readonly: bool,
+pub struct PmemConfig {
+    pub file: String,
+    pub discard_writes: bool,
 }
 
 #[derive(Serialize)]
@@ -72,7 +72,7 @@ pub struct LandlockConfig {
 #[derive(Serialize)]
 pub struct VmConfig {
     pub console: ConsoleConfig,
-    pub disks: Vec<DiskConfig>,
+    pub pmem: Vec<PmemConfig>,
     pub fs: [FsConfig; 1],
     pub gpu: [GpuConfig; 1],
     pub memory: MemoryConfig,
