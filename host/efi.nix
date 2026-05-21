@@ -35,6 +35,6 @@ runCommand "spectrum-efi" {
       --linux ${kernel} \
       --initrd ${initramfs} \
       --os-release $'NAME="Spectrum"\n' \
-      --cmdline "ro intel_iommu=on roothash=$roothash"
+      --cmdline "ro intel_iommu=on roothash=$roothash amdgpu.dcdebugmask=0x10"
   ''
 ) (_: {})
