@@ -129,7 +129,7 @@ run-cloud-hypervisor: $(imgdir)/appvm/blk/root.img start-vhost-user-gpu start-vh
 
 run-crosvm: $(imgdir)/appvm/blk/root.img start-vhost-user-gpu start-virtiofsd
 	../../scripts/with-taps.elb $(CROSVM_RUN) \
-	    --disk $(imgdir)/appvm/blk/root.img \
+	    -b path=$(imgdir)/appvm/blk/root.img,ro=true \
 	    -p "console=ttyS0 root=PARTLABEL=root" \
 	    --net tap-name=tap0,mac=02:00:00:00:00:01 \
 	    --vhost-user fs,socket=build/virtiofsd.sock \

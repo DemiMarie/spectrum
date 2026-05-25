@@ -95,7 +95,7 @@ run-cloud-hypervisor: $(vmdir)/netvm/blk/root.img start-vhost-user-net
 
 run-crosvm: $(vmdir)/netvm/blk/root.img
 	../../../scripts/with-taps.elb $(CROSVM_RUN) \
-	    --disk $(vmdir)/netvm/blk/root.img \
+	    -b path=$(vmdir)/netvm/blk/root.img,ro=true \
 	    -p "console=ttyS0 root=PARTLABEL=root" \
 	    --net tap-name=tap0 \
 	    --net tap-name=tap1,mac=02:01:00:00:00:01 \
