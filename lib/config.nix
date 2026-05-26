@@ -17,6 +17,9 @@ let
   callConfig = config: if builtins.typeOf config == "lambda" then config {
     inherit default;
   } else config;
+  finalConfig = default // callConfig config;
 in
-
-default // callConfig config
+  if !builtins.isList (builtins.match "^[A-Za-z0-9.~^+-]+$" config.version) then
+    builtins.abort "Version string ${builtins.toJSON config.version} is invalid (did you use _ instead of +?)"
+  else
+    finalConfig
