@@ -1,0 +1,13 @@
+{% comment %}
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2016 Patrick Marsceill
+SPDX-FileCopyrightText: 2026 Valentin Gagarin <valentin@gagarin.work>
+
+Override of: https://github.com/just-the-docs/just-the-docs/blob/v0.10.1/_includes/title.html
+{% endcomment %}
+{% if site.logo %}
+  <div class="site-logo" role="img" aria-label="{{ site.title }}"></div>
+{% endif %}
+{% if site.title %}
+  {{ site.title }}
+{% endif %}

@@ -1,5 +1,6 @@
-// SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>
 // SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>
+// SPDX-FileCopyrightText: 2026 Valentin Gagarin <valentin@gagarin.work>
 
 .main-content {
 	// Just the Docs puts titles next to definitions, rather than on
@@ -19,4 +20,24 @@
 	dd {
 		margin-left: 2ch;
 	}
+}
+
+// Make the logo and title fit the site header.
+.site-header {
+  .site-logo {
+    width: 3rem;
+  }
+
+  // Just the Docs displays a sidebar at the "medium size" `md` breakpoint and above.
+  // Use the upstream `mq` media query mixin to target that breakpoint.
+  // https://just-the-docs.com/docs/utilities/responsive-modifiers/
+  // https://github.com/just-the-docs/just-the-docs/blob/v0.10.1/_sass/support/mixins/_layout.scss#L3-L8
+  @include mq(md) {
+    .site-logo {
+      width: 5.5rem;
+    }
+    .site-title {
+      font-size: 1.25rem !important;
+    }
+  }
 }
