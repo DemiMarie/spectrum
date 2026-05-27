@@ -1,0 +1,180 @@
+<!doctype html>
+<!-- SPDX-FileCopyrightText: 2019-2020, 2022, 2024 Alyssa Ross <hi@alyssa.is> -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 OR GFDL-1.3-no-invariants-or-later -->
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link rel="icon" href="../../logo/logo_html.svg">
+<link rel="stylesheet" href="../../style.css">
+
+<title>Cloud Hypervisor with virtio-gpu support</title>
+
+<body>
+
+<nav>
+  <a href="../..">Spectrum</a>
+</nav>
+
+<h1>Cloud Hypervisor with virtio-gpu support</h1>
+
+<p>
+This is a patchset for <a href="https://cloudhypervisor.org/">Cloud
+Hypervisor</a> support providing a virtio-gpu device to guests,
+using <a href="https://crosvm.dev/">crosvm</a>’s virtio-gpu
+implementation
+over <a href="https://www.qemu.org/docs/master/interop/vhost-user.html">vhost-user</a>.
+
+<p>
+If this patchset is useful to you, please consider donating to support
+its continued development via
+either <a href="https://github.com/sponsors/alyssais">GitHub
+Sponsors</a> or <a href="https://liberapay.com/qyliss">LiberaPay</a>.
+
+<p>
+The patches as developed as part of <a href="../..">Spectrum</a>, a
+compartmentalized desktop operating system project.
+
+<h2>Building</h2>
+
+It’s necessary to patch both Cloud Hypervisor itself, and
+the <a href="https://github.com/rust-vmm/vhost/tree/main/vhost">vhost</a>
+crate.  The Cloud Hypervisor patches expect to find the patched vhost
+source tree under the same parent directory as Cloud Hypervisor’s.
+
+<ol>
+  <li>
+  Clone the repositories
+  for <a href="https://github.com/cloud-hypervisor/cloud-hypervisor">Cloud
+  Hypervisor</a>
+  and <a href="https://github.com/rust-vmm/vhost">vhost</a>.  Make
+  sure the revision of the vhost repository you have checked out
+  contains the versions of the vhost and vhost-user-backend crates
+  expected by your version of Cloud Hypervisor.
+
+  <li>
+  Download and apply the patches for the correct versions of Cloud
+  Hypervisor and vhost.
+
+  <li>
+  Use <code>cargo build</code> in the Cloud Hypervisor source tree as
+  normal.
+</ol>
+
+<h2>Usage example</h2>
+
+Start the crosvm GPU device:
+
+<pre><code>crosvm device gpu --socket gpu.sock</code></pre>
+
+Connect to the GPU device with cloud-hypervisor:
+
+<pre><code>cloud-hypervisor --gpu socket=gpu.sock …</code></pre>
+
+<h2>Downloads</h2>
+
+<ol reversed style="list-style-type: none; padding-left: 0;">
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-50.0-spectrum0-patches.tar.gz">cloud-hypervisor-50.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/18bc84d003e04108d973a5233f0c6f3b2039d756">18bc84d00</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-49.0-spectrum0-patches.tar.gz">cloud-hypervisor-49.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/f6de423867b914a59d86c54d102831bccc7ed2c8">f6de42386</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-48.0-spectrum0-patches.tar.gz">cloud-hypervisor-48.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/3202c663eaa555678bd142320d51c63acce266bc">3202c663e</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-47.0-spectrum0-patches.tar.gz">cloud-hypervisor-47.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/940eaae7246300bb01e1efb8c3d21ea93e0e63cd">940eaae72</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-46.0-spectrum0-patches.tar.gz">cloud-hypervisor-46.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/581ccb06d726b037fd75f64ef964b3d0eb989e33">581ccb06d</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-45.0-spectrum0-patches.tar.gz">cloud-hypervisor-45.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/6b75e831de4d5f44a362142d25b77d9c4d7988aa">6b75e831d</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-44.0-spectrum0-patches.tar.gz">cloud-hypervisor-44.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/d8e0f16c287b962505c8746c3be08323492186c9">d8e0f16c2</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-43.0-spectrum0-patches.tar.gz">cloud-hypervisor-43.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/9d42f918373f962b7d035ff52a1629e184cb496e">9d42f9183</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-42.0-spectrum0-patches.tar.gz">cloud-hypervisor-42.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/b7fd753b43baf2da422a1fe5e2c6d05180f7cd0b">b7fd753b4</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-40.0-spectrum0-patches.tar.gz">cloud-hypervisor-40.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/6a7ff1ecb7fad6820d3bbfe8b11e65854059aba5">6a7ff1ecb</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-39.0-spectrum1-patches.tar.gz">cloud-hypervisor-39.0-spectrum1-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/bc2900b9ccbdf37b780a63888ca94437fd7dd6af">bc2900b9c</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-39.0-spectrum0-patches.tar.gz">cloud-hypervisor-39.0-spectrum0-patches.tar.gz</a>
+  (tested with crosvm <a href="https://chromium.googlesource.com/chromiumos/platform/crosvm/+/7c75ad6185893b4cc26676b6a0eb9fbdf9ed5b72">7c75ad618</a>)
+
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-38.0-spectrum0-patches.tar.xz">cloud-hypervisor-38.0-spectrum0-patches.tar.xz</a>
+  <li><a href="https://spectrum-os.org/software/cloud-hypervisor/cloud-hypervisor-37.0-spectrum0-patches.tar.xz">cloud-hypervisor-37.0-spectrum0-patches.tar.xz</a>
+</ol>
+
+<h2>Contributing</h2>
+
+<p>
+The patches are maintained
+in <a href="https://spectrum-os.org/git/spectrum">Spectrum’s git
+repository</a>.  Please refer to the documentation
+for <a href="https://spectrum-os.org/doc/contributing/">contributing
+to Spectrum</a>.
+
+<h2>Can these patches be upstreamed?</h2>
+
+<p>
+I don’t think so.  The Cloud Hypervisor developers
+are <a href="https://github.com/cloud-hypervisor/cloud-hypervisor/issues/3212#issuecomment-937823742">not
+very interested</a> in GPU support — although perhaps an
+implementation that was just a vfio-user frontend implementation,
+deletaging all of the complexity of rendering, input handling, etc. to
+another process would be light enough to overcome that — but on top of
+that, communicating with crosvm’s GPU device requires using
+non-standard commands that are not part of
+the <a href="https://www.qemu.org/docs/master/interop/vhost-user.html">vhost-user
+specification</a>.
+
+<p>
+It’s possible that, in future, it might be possible to use an external
+virtual GPU device with an unmodified Cloud Hypervisor
+using <a href="https://spdk.io/news/2021/05/04/vfio-user/">vfio-user</a>
+or <a href="https://lore.kernel.org/qemu-devel/20230901110018.3704459-1-alex.bennee@linaro.org/"><code>VHOST_USER_PROTOCOL_F_PROBE</code></a>,
+or that at least the custom vhost-user commands could be standardized.
+
+<p>
+Other Cloud Hypervisor work is
+regularly <a href="https://github.com/cloud-hypervisor/cloud-hypervisor/commits?author=alyssais">upstreamed</a>
+as part of the Spectrum project.
+
+<h2>Bug reports and other questions</h2>
+
+<p>
+Bug reports for and other questions about the patchset are welcome!
+You can send mail to
+the <a href="mailto:discuss@spectrum-os.org">discuss@spectrum-os.org</a>
+<a href="https://spectrum-os.org/doc/contributing/communication.html#mailing-lists">mailing
+list</a>, or ask in the
+Spectrum <a href="https://spectrum-os.org/doc/contributing/communication.html#chat">Matrix
+chat</a>.
+
+<hr>
+
+<p>
+<small>Permission is granted to copy, distribute and/or modify this
+document under either the terms of the
+<a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative
+Commons Attribution-ShareAlike 4.0 International License</a>, or the
+<a href="https://www.gnu.org/licenses/fdl-1.3.html">GNU Free
+Documentation License, Version 1.3</a> or any later version published
+by the Free Software Foundation; with no Invariant Sections, no
+Front-Cover Texts, and no Back-Cover Texts.</small>
+
+<p>
+<a href="../../impressum.html" lang="de"><small>Impressum</small></a>

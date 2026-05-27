@@ -1,0 +1,59 @@
+<!-- SPDX-FileCopyrightText: 2020 hazelnot -->
+<!-- SPDX-FileCopyrightText: 2020 Alyssa Ross <hi@alyssa.is> -->
+<!-- SPDX-License-Identifier: CC0-1.0 -->
+<!-- Design by hazelnot, SVG implementation by Alyssa Ross. -->
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 100 100">
+  <defs>
+    <filter id="ring-shadow" x="-10" y="-10" width="120" height="120" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+      <feComposite in="SourceGraphic" in2="offset" operator="over" />
+    </filter>
+
+    <filter id="center-shadow" x="-10" y="-10" width="120" height="120" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="1" flood-color="#DDD" result="flood" />
+      <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1" />
+      <feGaussianBlur in="composite1" stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" result="composite2" />
+    </filter>
+
+    <meshgradient id="ring-gradient" x="1.5" y="0.5">
+      <meshrow>
+        <meshpatch>
+          <stop path="L 1 -0.36603" stop-color="red" />
+          <stop path="L 0.5 0.5" stop-color="yellow" />
+          <stop path="L 0.5 0.5" stop-color="yellow" />
+          <stop path="L 1 0.5" stop-color="red" />
+        </meshpatch>
+        <meshpatch>
+          <stop path="L 0 -0.36603" />
+          <stop path="L 0.5 0.5" stop-color="lime" />
+          <stop path="L 0.5 0.5" stop-color="lime" />
+        </meshpatch>
+        <meshpatch>
+          <stop path="L -0.5 0.5" />
+          <stop path="L 0.5 0.5" stop-color="cyan" />
+          <stop path="L 0.5 0.5" stop-color="cyan" />
+        </meshpatch>
+        <meshpatch>
+          <stop path="L 0 1.36603" />
+          <stop path="L 0.5 0.5" stop-color="blue" />
+          <stop path="L 0.5 0.5" stop-color="blue" />
+        </meshpatch>
+        <meshpatch>
+          <stop path="L 1 1.36603" />
+          <stop path="L 0.5 0.5" stop-color="magenta" />
+          <stop path="L 0.5 0.5" stop-color="magenta" />
+        </meshpatch>
+        <meshpatch>
+          <stop path="L 1.5 0.5" />
+          <stop path="L 0.5 0.5" stop-color="red" />
+          <stop path="L 0.5 0.5" stop-color="red" />
+        </meshpatch>
+      </meshrow>
+    </meshgradient>
+  </defs>
+
+  <circle cx="50" cy="50" r="36" fill="none" stroke="url(#ring-gradient)" stroke-width="5" filter="url(#ring-shadow)" />
+
+  <circle cx="50" cy="50" r="27" fill="white" filter="url(#center-shadow)" />
+</svg>

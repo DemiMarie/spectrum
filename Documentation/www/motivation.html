@@ -1,0 +1,137 @@
+<!doctype html>
+<!-- SPDX-FileCopyrightText: 2019-2020, 2022 Alyssa Ross <hi@alyssa.is> -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 OR GFDL-1.3-no-invariants-or-later -->
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link rel="icon" href="logo/logo_html.svg">
+<link rel="stylesheet" href="style.css">
+
+<title>Motivation for Spectrum</title>
+
+<body>
+
+<nav>
+  <a href=".">Spectrum</a>
+</nav>
+
+<h1>Motivation for Spectrum</h1>
+
+<p>
+Existing attempts to improve on the security of Unix-like operating
+systems for everyday personal use have been hampered by complexity,
+bugs, and security theatre. The concept of isolating applications by
+giving them what appears to be a dedicated computer to run in is a
+solid one, because it allows virtually all existing software to run
+without modification. However, allowing all these isolated computers
+to persist state leads to large maintenance costs — you now
+have <var>n</var> stateful computers to maintain, not one.
+
+<p>
+By minimizing the persistent state these computers are allowed to
+store to a well-defined absolute minimum required by the software
+running inside them, not only do we improve maintainability by
+minimising side effects and even allowing the computers to be
+regenerated without data loss if required, we also massively reduce
+the avenues to persisting malware.
+
+<p>
+Mutable state, then, across the whole system could be isolated into
+two locations on the host: a global state store, which is broken down
+by application instance, and a global configuration file defining all
+configuration for the host, and the isolated environments for each
+application instance. Aside from these two locations, the host
+computer should prevent persistent state as much as possible. This
+means that it is possible to restore the host computer, along with all
+the isolated application environments, simply by restoring a copy of
+the global state store and configuration file. After an audit of the
+global configuration, a potentially compromised host could be safely
+restored onto a new computer without risk of the new host inheriting
+the infection from the old one, since the only mutable data affecting
+the host is the global configuration file. (Of course, this does not
+prevent the new host from being compromised shortly afterward through
+the same methods.)
+
+<p>
+This system is Spectrum.
+
+<h2>Existing implementations of security by
+compartmentalization</h2>
+
+<h3>Qubes OS</h3>
+
+<p>
+<a href="https://www.qubes-os.org/">Qubes OS</a> is a distribution of
+the <a href="https://xenproject.org/">Xen</a> hypervisor that isolates
+IO and user applications inside their own dedicated virtual
+machines. Many people interested in secure computing are aware of
+Qubes, however they are often hampered by usability issues:
+
+<ul>
+
+  <li><p>
+  Hardware compatibility is extremely limited. People often have
+  to buy a new computer just to use Qubes, and even then it can be a
+  struggle to set up.
+
+  <li><p>
+  People are reluctant to use Xen on their computer for power
+  management etc. reasons.
+
+  <li><p>
+  VMs are heavy, and there is no isolation between applications in the
+  same domain (VM).
+
+  <li><p>
+  GUI applications are buggy, command line tools are mostly
+  undocumented.
+
+  <li><p>
+  Maintaining many different TemplateVMs with persistent state is
+  difficult. (Qubes
+  can <a href="https://doc.qubes-os.org/en/latest/user/advanced-topics/salt.html">use</a>
+  <a href="https://docs.saltproject.io/en/latest/contents.html">Salt</a>
+  to mitigate this.)
+
+</ul>
+
+<p>
+It is important to note, however, that the Qubes developers have
+created utilities for using compartmentalized environments that could
+be very useful to other implementations. For example,
+Qubes <a href="https://doc.qubes-os.org/en/latest/user/how-to-guides/how-to-copy-and-paste-text.html">allows</a>
+clipboard data to be safely shared between isolated environments with
+explicit user action on both ends,
+and <a href="https://doc.qubes-os.org/en/latest/user/security-in-qubes/split-gpg.html">Qubes
+Split GPG</a> allows one environment to perform operations using a GPG
+key stored in another environment, with permission granted on a
+per-operation basis.
+
+<h3>Subgraph OS</h3>
+
+<p>
+<a href="https://subgraph.com/sgos/">Subgraph OS</a> only provides
+isolation to the 22 applications they have manually containerized. Any
+other software is still run as normal. This should be considered a
+major security issue.
+
+<p>
+The last release of SubgraphOS was an alpha in 2017.
+
+<p>
+<small>Permission is granted to copy, distribute and/or modify this
+document under either the terms of the
+<a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative
+Commons Attribution-ShareAlike 4.0 International License</a>, or the
+<a href="https://www.gnu.org/licenses/fdl-1.3.html">GNU Free
+Documentation License, Version 1.3</a> or any later version published
+by the Free Software Foundation; with no Invariant Sections, no
+Front-Cover Texts, and no Back-Cover Texts.</small>
+
+<p>
+<a href="impressum.html" lang="de"><small>Impressum</small></a>
