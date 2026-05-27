@@ -2,7 +2,7 @@ SPDX-FileCopyrightText: 2019 Alyssa Ross <hi@alyssa.is>
 SPDX-License-Identifier: CC0-1.0
 
 These files contain the static portion of the website accessible at
-<https://spectrum-os.org/>.  CGit, Mailman, etc, are run seperately.
+<https://spectrum-os.org/>.  CGit, Mailman, etc, are run separately.
 
 If you would like to propose changes to the web site, please see the
 CONTRIBUTING file.
