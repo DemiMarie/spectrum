@@ -17,10 +17,12 @@ stdenvNoCC.mkDerivation {
 
   buildPhase = ''
     runHook preBuild
-    jekyll build --disable-disk-cache -b /doc -d $out
+    jekyll build --disable-disk-cache -d $out
     runHook postBuild
   '';
 
+  # The fixup phase would move `doc` to `share/doc` and we don't want that.
+  dontFixup = true;
   dontInstall = true;
 
   nativeBuildInputs = [ (callSpectrumPackage ./jekyll.nix {}) ];

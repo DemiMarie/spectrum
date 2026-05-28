@@ -1,2 +1,32 @@
+These files contain the static portion of the website accessible at
+<https://spectrum-os.org/>.  Skit, Mailman, etc, are run separately.
+
+If you would like to contribute to the Spectrum operating system itself, please
+refer to the contributing.html file.
+
 If you'd like to contribute to the documentation,
 see building-documentation.adoc for how to get started.
+
+Design tweaks, content updates, fixes (both factual and grammatical),
+and new content for the Spectrum website are all welcomed.
+
+Try to keep lines at around 70 characters, HTML out of the way as much
+as possible while still being valid (did you know <p> can
+self-close?), and CSS to a minimum.  We want to optimise for the
+website being as nice as possible to navigate in a text editor, to
+encourage people to edit and improve the website.
+
+For any changes that are likely to be copyrightable (i.e. those that
+involve any amount of creative input from you), please add an
+SPDX-FileCopyrightText header to the file so we can keep track of
+copyright holders.  Every file should already have at least one
+example of these that you can use as a template.  If you'd rather not
+list your email address in the copyright notice, it's fine to omit
+that.
+
+The content of these web pages may be redistributed under the terms of
+either the CC-BY-SA license (version 4.0 or later), or the GNU Free
+Documentation License (version 1.2 or later), at your option.
+
+The source code of these web pages may be redistributed under the
+terms of the GNU General Public License (version 3.0 or later).

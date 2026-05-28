@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>
 ---
 title: Spectrum documentation
-logo: "https://spectrum-os.org/logo/logo_html.svg"
+logo: /logo/logo_html.svg
 theme: just-the-docs
 aux_links:
   Home:
@@ -15,7 +15,6 @@ exclude:
   - '*.license'
   - '*.nix'
   - /scripts
-  - /www
   - README
   - result*
 asciidoctor:
