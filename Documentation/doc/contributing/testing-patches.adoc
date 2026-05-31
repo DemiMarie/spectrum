@@ -14,7 +14,7 @@ list.
 == Apply Patch
 
 . Find the patch series you want to test on
-  https://spectrum-os.org/lists/archives/spectrum-devel/[public-inbox].
+  https://inbox.spectrum-os.org/spectrum-devel/[public-inbox].
 . Navigate to the "permalink" page for any patch in the series.
 . Copy the Message-Id for the patch, as shown on the permalink page, e.g.
   \20220511092352.70E54C980@atuin.qyliss.net.

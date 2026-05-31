@@ -45,8 +45,8 @@ git send-email origin/master --to devel@spectrum-os.org
 You will be CCed on replies to your posts, so you do not even have to
 be subscribed to the mailing list if you are worried about too much
 traffic.  There are also
-https://spectrum-os.org/lists/archives/spectrum-devel/[archives]
-available that you can use to browse the mailing list online.
+https://inbox.spectrum-os.org/spectrum-devel/[archives] available that
+you can use to browse the mailing list online.
 
 Add a Signed-off-by line to each patch you submit, to indicate your
 certification of the https://spectrum-os.org/git/spectrum/tree/DCO-1.1.txt[Developer's Certificate of Origin] for that patch.

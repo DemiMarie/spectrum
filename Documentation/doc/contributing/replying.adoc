@@ -19,8 +19,8 @@ copy of in your mail client, because you are not subscribed to the
 list or because you subscribed after the message was sent.
 
 To do this, find the message you want to reply to in the
-https://spectrum-os.org/lists/archives[public-inbox list archives],
-click on the "reply" link at the bottom of the message, then click the
-"mbox" link.  Save the result to a file, then open it in your mail
-client.  This should import the message and allow you to Reply All to
-it as normal.
+https://inbox.spectrum-os.org[public-inbox list archives], click on
+the "reply" link at the bottom of the message, then click the "mbox"
+link.  Save the result to a file, then open it in your mail client.
+This should import the message and allow you to Reply All to it as
+normal.

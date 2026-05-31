@@ -51,7 +51,7 @@ git send-email --to devel@spectrum-os.org --confirm=always origin/main
 For each message, you will be prompted for confirmation, and then the
 change will be submitted to the Spectrum development mailing list.
 They will appear shortly in the
-https://spectrum-os.org/lists/archives/spectrum-devel/[archives].
+https://inbox.spectrum-os.org/spectrum-devel/[archives].
 
 [#cover-letter]
 TIP: If you're submitting multiple changes, and you'd like to provide

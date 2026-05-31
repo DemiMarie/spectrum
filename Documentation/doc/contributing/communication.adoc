@@ -33,9 +33,9 @@ If you are interested in participating in the project, or even just
 following along with it, the best thing to do is subscribe to one or
 more of the Spectrum mailing lists.
 
-Each list has https://spectrum-os.org/lists/archives/[archives] that
-can also be accessed via the web, NNTP or Atom. If you have the
-capacity to mirror them, please do!
+Each list has https://inbox.spectrum-os.org/[archives] that can also
+be accessed via the web, NNTP or Atom. If you have the capacity to
+mirror them, please do!
 
 [#spectrum-announce]
 === announce@spectrum-os.org
