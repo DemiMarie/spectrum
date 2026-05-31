@@ -6,7 +6,7 @@ logo: /logo/logo_html.svg
 theme: just-the-docs
 aux_links:
   Home:
-    - "https://spectrum-os.org/"
+    - /
   Git:
     - "https://spectrum-os.org/git/"
 plugins:
