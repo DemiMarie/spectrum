@@ -10,8 +10,7 @@ FILES = \
 	image/etc/nftables.conf \
 	image/etc/passwd \
 	image/etc/s6-linux-init/run-image/service/getty-hvc0/run \
-	image/etc/s6-linux-init/scripts/rc.init \
-	image/etc/sysctl.conf
+	image/etc/s6-linux-init/scripts/rc.init
 
 LINKS = \
 	image/bin \
@@ -33,7 +32,4 @@ S6_RC_FILES = \
 	image/etc/s6-rc/nftables/type \
 	image/etc/s6-rc/nftables/up \
 	image/etc/s6-rc/ok-all/contents.d/mdevd-coldplug \
-	image/etc/s6-rc/ok-all/contents.d/sysctl \
-	image/etc/s6-rc/ok-all/type \
-	image/etc/s6-rc/sysctl/type \
-	image/etc/s6-rc/sysctl/up
+	image/etc/s6-rc/ok-all/type
