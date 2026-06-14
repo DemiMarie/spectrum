@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2026 Demi Marie Obenour <demiobenour@gmail.com>
+
+[package]
+name = "cgroup-setup"
+edition = "2024"
+
+[dependencies]
+libc = "0.2.177"
+rustix = { version = "1.1.2", features = ["fs"] }

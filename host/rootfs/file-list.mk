@@ -79,6 +79,8 @@ LINKS = \
 	image/etc/s6-linux-init/run-image/service/vmm/template/run \
 	image/lib \
 	image/sbin \
+	image/usr/bin/cgroup-purge \
+	image/usr/bin/cgroup-s6-finish \
 	image/usr/bin/systemd-udevd
 
 S6_RC_FILES = \

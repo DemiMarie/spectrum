@@ -51,6 +51,7 @@ let
       driverSupport = true;
     };
     spectrum-router = self.callSpectrumPackage ../tools/router {};
+    spectrum-cgroup-setup = self.callSpectrumPackage ../tools/cgroup-setup {};
     xdg-desktop-portal-spectrum-host =
       self.callSpectrumPackage ../tools/xdg-desktop-portal-spectrum-host {};
 
