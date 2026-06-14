@@ -12,4 +12,8 @@ if { /bin/ln -s /proc/self/fd/2 /dev/stderr }
 if { /bin/mount --make-shared / }
 if { /bin/mount -a --mkdir }
 
+# Enable subtree control of all cgroups and move
+# process to a child cgroup.
+/usr/bin/cgroup-setup --init-subtree .
+
 /bin/s6-linux-init -c /etc/s6-linux-init -s /run/param -- $@
