@@ -1,0 +1,34 @@
+#!/usr/bin/execlineb -WS1
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2026 Demi Marie Obenour <demiobenour@gmail.com>
+
+# Substitute all of the needed environment variables
+# into both this script and its arguments
+# (the subsequent command to run).  This substitutes
+# the *caller*'s arguments.
+multisubstitute {
+  importas -iS VM
+  importas -iS "#"
+  importas -iS "1"
+  importas -iS WAYLAND_DISPLAY
+}
+
+# Check that the VM name and service are reasonable.
+# Then run the cgroup-setup program and the provided
+# command line.  Avoid premature substitution by
+# escaping ${#} and ${1} with backslashes.  Otherwise,
+# they would be values for this script, not for the caller.
+case -- "\\${#}@${VM}@\\${1}" {
+  # s6-supervise might start passing extra arguments in the future, but
+  # 0 arguments is not okay.
+  "[1-9][0-9]*@[A-Za-z0-9_][A-Za-z0-9_.-]*@[A-Za-z_][A-Za-z0-9_-]*" {
+    # The caller has been migrated from using -WS1 to using -Wp.
+    # Pop the environment to preserve the original behavior.
+    emptyenv -P cgroup-setup --leaf -- "\\${1}" $@
+  }
+}
+fdmove -c 1 2
+if { printf "Wrong VM name %s, \
+parent argument count %s, or parent argument %s\n"
+     $VM "\\$#" "\\${1}" }
+exit 100

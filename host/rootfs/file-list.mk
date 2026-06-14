@@ -65,6 +65,7 @@ FILES = \
 	image/usr/bin/spectrum-update \
 	image/usr/bin/vm-console \
 	image/usr/bin/vm-import \
+	image/usr/bin/vm-service-run \
 	image/usr/bin/vm-start \
 	image/usr/bin/vm-stop \
 	image/usr/bin/xdg-open \
