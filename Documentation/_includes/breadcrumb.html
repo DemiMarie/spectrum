@@ -1,0 +1,21 @@
+{% comment %}
+SPDX-License-Identifier: GPL-3.0-or-later
+SPDX-FileCopyrightText: 2026 Valentin Gagarin <valentin@gagarin.work>
+{% endcomment %}
+{%- unless page.url == '/' -%}
+<nav aria-label="Breadcrumb">
+  <a href="/">Spectrum</a>
+  {%- assign parts = page.url | split: '/' -%}
+  {%- assign acc = '' -%}
+  {%- for part in parts offset: 1 -%}
+    {%- assign acc = acc | append: '/' | append: part -%}
+    {%- assign parent_url = acc | append: '/' -%}
+    {%- if parent_url == page.url -%}{%- continue -%}{%- endif -%}
+    {%- assign parent = site.pages | where: 'url', parent_url | first -%}
+    {%- if parent %}
+    / <a href="{{ parent.url }}">{{ parent.title }}</a>
+    {%- endif -%}
+  {%- endfor %}
+  / <span aria-current="page">{{ page.title }}</span>
+</nav>
+{%- endunless -%}

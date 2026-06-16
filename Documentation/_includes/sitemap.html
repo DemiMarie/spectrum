@@ -18,6 +18,10 @@ which we assume if it is constructed by a directory and contains an index file.
   {%- assign candidates = site.html_pages
         | where_exp: "p", "p.url contains prefix"
         | where_exp: "p", "p.url != prefix" -%}
+  {%- if prefix == default_root -%}
+    {%- assign list_with_root_page = site.html_pages | where: "url", prefix -%}
+    {%- assign candidates = list_with_root_page | concat: candidates -%}
+  {%- endif -%}
   {%- comment %}
   Ordered pages first, ascending.  The rest after, in URL order, so output is deterministic.
   {%- endcomment %}
@@ -35,9 +39,10 @@ which we assume if it is constructed by a directory and contains an index file.
       {%- assign without_slashes = suffix | replace: "/", "" -%}
       {%- assign slashes = suffix.size | minus: without_slashes.size -%}
       {%- assign is_index = false -%}
-      {%- if p.name == "index.adoc" -%}{%- assign is_index = true -%}{%- endif -%}
+      {%- if p.name == "index.adoc" or p.name == "index.html" -%}{%- assign is_index = true -%}{%- endif -%}
       {%- assign is_page = false -%}
       {%- if is_index == false and slashes == 0 -%}{%- assign is_page = true -%}{%- endif -%}
+      {%- if is_index and suffix == "" -%}{%- assign is_page = true -%}{%- endif -%}
       {%- assign is_section = false -%}
       {%- if is_index and slashes == 1 -%}{%- assign is_section = true -%}{%- endif -%}
       {%- if is_page or is_section %}

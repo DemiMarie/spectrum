@@ -26,6 +26,10 @@ var {
     background: yellow;
 }
 
+footer {
+	font-size: small;
+}
+
 :root {
 	--bg: Canvas;
 	--code-bg: whitesmoke;
