@@ -1,0 +1,31 @@
+{% comment %}
+SPDX-License-Identifier: GPL-3.0-or-later
+SPDX-FileCopyrightText: 2026 Valentin Gagarin <valentin@gagarin.work>
+{% endcomment %}
+<!doctype html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+{% include favicon.html %}
+<link rel="stylesheet" href="/style.css">
+
+<title>{{ page.title }}</title>
+
+<body>
+
+<nav aria-label="Breadcrumb">
+  <a href="/">Spectrum</a>
+  /
+  <a href="/doc/">Documentation</a>
+  /
+  <span aria-current="page">{{ page.title }}</span>
+</nav>
+
+{{ content }}
+
+{% include footer_custom.html %}
+</html>

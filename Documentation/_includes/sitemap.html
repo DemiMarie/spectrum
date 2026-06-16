@@ -1,0 +1,58 @@
+{% comment %}
+SPDX-License-Identifier: GPL-3.0-or-later
+SPDX-FileCopyrightText: 2026 Valentin Gagarin <valentin@gagarin.work>
+
+Render a nested sitemap rooted at a given URL prefix.  Hierarchy is
+derived from URL structure: a page is a direct child of prefix P iff
+its URL starts with P, is not P itself, and contains no further path
+segments below P.
+{% endcomment %}
+
+{%- assign default_root = "/" -%}
+{% comment %}
+`prefix` is the URL of the section to list children of.  It must end with "/",
+which we assume if it is constructed by a directory and contains an index file.
+{% endcomment %}
+{%- assign prefix = include.prefix | default: default_root -%}
+{%- capture inner -%}
+  {%- assign candidates = site.html_pages
+        | where_exp: "p", "p.url contains prefix"
+        | where_exp: "p", "p.url != prefix" -%}
+  {%- comment %}
+  Ordered pages first, ascending.  The rest after, in URL order, so output is deterministic.
+  {%- endcomment %}
+  {%- assign ordered = candidates | where_exp: "p", "p.nav_order" | sort: "nav_order" -%}
+  {%- assign unordered = candidates | where_exp: "p", "p.nav_order == nil" | sort: "url" -%}
+  {%- assign sorted = ordered | concat: unordered -%}
+  {%- for p in sorted -%}
+    {%- comment %}
+    `assign` is page-global.  A recursive include below may have overwritten `prefix`.
+    {%- endcomment %}
+    {%- assign prefix = include.prefix | default: default_root -%}
+    {%- assign url_start = p.url | slice: 0, prefix.size -%}
+    {%- if url_start == prefix -%}
+      {%- assign suffix = p.url | slice: prefix.size, p.url.size -%}
+      {%- assign without_slashes = suffix | replace: "/", "" -%}
+      {%- assign slashes = suffix.size | minus: without_slashes.size -%}
+      {%- assign is_index = false -%}
+      {%- if p.name == "index.adoc" -%}{%- assign is_index = true -%}{%- endif -%}
+      {%- assign is_page = false -%}
+      {%- if is_index == false and slashes == 0 -%}{%- assign is_page = true -%}{%- endif -%}
+      {%- assign is_section = false -%}
+      {%- if is_index and slashes == 1 -%}{%- assign is_section = true -%}{%- endif -%}
+      {%- if is_page or is_section %}
+      <li>
+        <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
+        {%- if is_section -%}
+          {%- include sitemap.html prefix=p.url -%}
+        {%- endif -%}
+      </li>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- assign trimmed = inner | strip -%}
+{%- if trimmed != "" %}
+<ul>{{ inner }}
+</ul>
+{%- endif -%}

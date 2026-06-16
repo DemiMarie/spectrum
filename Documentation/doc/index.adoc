@@ -1,5 +1,6 @@
 = Spectrum Documentation
 :page-nav_exclude: true
+:page-liquid:
 
 // SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>
 // SPDX-FileCopyrightText: 2022 Unikie
@@ -30,3 +31,9 @@ Once you are up and running, see
 
 If you are thinking of contributing to the Spectrum code or docs, see
  xref:contributing/index.adoc[Contributing].
+
+== Documentation index
+
+++++
+{% include sitemap.html prefix="/doc/" %}
+++++
