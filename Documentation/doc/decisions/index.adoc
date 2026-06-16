@@ -1,6 +1,4 @@
 = Architecture Decision Records
-:page-has_children: true
-:page-parent: About Spectrum
 
 // SPDX-FileCopyrightText: 2022 Unikie
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0

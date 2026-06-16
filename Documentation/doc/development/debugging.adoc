@@ -1,5 +1,4 @@
 = Debugging
-:page-parent: Development
 :page-nav_order: 4
 
 // SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>

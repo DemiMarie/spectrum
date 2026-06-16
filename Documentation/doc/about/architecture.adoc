@@ -1,5 +1,4 @@
 = Architecture
-:page-parent: About Spectrum
 
 // SPDX-FileCopyrightText: 2022 Unikie
 // SPDX-FileCopyrightText: 2022, 2024 Alyssa Ross <hi@alyssa.is>

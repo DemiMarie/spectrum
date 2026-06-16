@@ -1,7 +1,5 @@
 = Build and Run
-:description: How to download and install Spectrum OS.
 :page-nav_order: 2
-:page-has_children: true
 :page-has_toc: false
 
 // SPDX-FileCopyrightText: 2022 Unikie

@@ -2,13 +2,6 @@
 # SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>
 ---
 title: Spectrum documentation
-logo: /logo/logo_html.svg
-theme: just-the-docs
-aux_links:
-  Home:
-    - /
-  Git:
-    - "https://spectrum-os.org/git/"
 plugins:
   - jekyll-asciidoc
 exclude:

@@ -1,7 +1,5 @@
 = Communication in Spectrum
-:description: Channels, announcements and so on.
 :page-nav_order: 1
-:page-parent: Contributing
 
 // SPDX-FileCopyrightText: 2019-2024 Alyssa Ross <hi@alyssa.is>
 // SPDX-FileCopyrightText: 2023 Unikie

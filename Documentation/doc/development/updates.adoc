@@ -1,5 +1,4 @@
 = Updating the OS
-:page-parent: Development
 
 // SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0

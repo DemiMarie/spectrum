@@ -1,7 +1,5 @@
 = Working with Patches
-:page-parent: Contributing
 :page-nav_order: 2
-:page-has_children: true
 
 // SPDX-FileCopyrightText: 2022 Unikie
 // SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>

@@ -1,5 +1,4 @@
 = Persistent storage
-:page-parent: Development
 :page-nav_order: 2
 
 // SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>

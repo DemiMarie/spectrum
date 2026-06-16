@@ -1,5 +1,4 @@
 = Setting Up Binary Cache
-:page-parent: Build and Run
 :page-nav_order: 1
 
 // SPDX-FileCopyrightText: 2022-2024 Alyssa Ross <hi@alyssa.is>

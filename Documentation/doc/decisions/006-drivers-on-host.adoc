@@ -1,6 +1,4 @@
 = 006 Drivers on Host
-:page-parent: Architecture Decision Records
-:page-grand_parent: About Spectrum
 
 // SPDX-FileCopyrightText: 2022 Unikie
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0

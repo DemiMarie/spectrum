@@ -1,5 +1,4 @@
 = Building Documentation
-:page-parent: Contributing
 :page-nav_order: 4
 
 // SPDX-FileCopyrightText: 2022 Unikie

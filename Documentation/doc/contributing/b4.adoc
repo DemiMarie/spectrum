@@ -1,6 +1,4 @@
 = Installing and Configuring b4
-:page-parent: Working with Patches
-:page-grand_parent: Contributing
 :page-nav_order: 1
 
 // SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>

@@ -1,7 +1,5 @@
 = About Spectrum
-:description: Some words about Spectrum as the operating system, not a project. Highlights the differences between common Linux distributions and Spectrum.
 :page-nav_order: 1
-:page-has_children: true
 
 // SPDX-FileCopyrightText: 2022 Unikie
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0

@@ -1,7 +1,5 @@
 = Contributing
-:description: How to contribute changes to the Spectrum source repository.
 :page-nav_order: 5
-:page-has_children: true
 
 // SPDX-FileCopyrightText: 2023 Unikie
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0

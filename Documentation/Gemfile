@@ -6,4 +6,3 @@ source "https://rubygems.org"
 
 gem "jekyll"
 gem "jekyll-asciidoc"
-gem "just-the-docs", "~> 0.10.0"

@@ -1,5 +1,4 @@
 = Configuring the Build
-:page-parent: Development
 :page-nav_order: 1
 :example-caption: Test
 

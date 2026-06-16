@@ -1,5 +1,4 @@
 = UUID Reference
-:page-parent: Development
 :page-nav_order: 6
 
 // SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>

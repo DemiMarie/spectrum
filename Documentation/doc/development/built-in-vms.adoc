@@ -1,5 +1,4 @@
 = Developing Built-in Application VMs
-:page-parent: Development
 :page-nav_order: 3
 
 // SPDX-FileCopyrightText: 2023-2025 Alyssa Ross <hi@alyssa.is>
