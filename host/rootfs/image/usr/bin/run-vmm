@@ -93,6 +93,7 @@ bwrap
   --unshare-user
   --dev /dev
   --dev-bind /dev/kvm /dev/kvm
+  --dev-bind /dev/pts /dev/pts
   --dev-bind /dev/vfio /dev/vfio
   --tmpfs /dev/shm
   --tmpfs /tmp
