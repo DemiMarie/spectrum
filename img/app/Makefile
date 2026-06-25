@@ -84,6 +84,7 @@ start-vhost-user-gpu:
 start-vhost-user-net:
 	mkdir -p build
 	../../scripts/start-passt.elb
+.PHONY: start-vhost-user-net
 
 start-virtiofsd: scripts/start-virtiofsd.elb
 	mkdir -p build

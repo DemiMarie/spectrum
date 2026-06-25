@@ -63,6 +63,7 @@ debug:
 start-vhost-user-net:
 	mkdir -p build
 	../../../scripts/start-passt.elb
+.PHONY: start-vhost-user-net
 
 run-qemu: $(vmdir)/netvm/blk/root.img
 	@../../../scripts/run-qemu.sh -m 256 -cpu max -kernel $(KERNEL) -vga none \
@@ -93,11 +94,11 @@ run-cloud-hypervisor: $(vmdir)/netvm/blk/root.img start-vhost-user-net
 	    --serial file=build/serial.log
 .PHONY: run-cloud-hypervisor
 
-run-crosvm: $(vmdir)/netvm/blk/root.img
+run-crosvm: $(vmdir)/netvm/blk/root.img start-vhost-user-net
 	../../../scripts/with-taps.elb $(CROSVM_RUN) \
 	    -b path=$(vmdir)/netvm/blk/root.img,ro=true \
 	    -p "console=ttyS0 root=PARTLABEL=root" \
-	    --net tap-name=tap0 \
+	    --vhost-user net,socket=build/vhost-user-net.sock \
 	    --net tap-name=tap1,mac=02:01:00:00:00:01 \
 	    --serial type=file,hardware=serial,path=build/serial.log \
 	    --serial type=stdout,hardware=virtio-console,stdin=true \
