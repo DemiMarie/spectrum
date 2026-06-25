@@ -40,7 +40,7 @@ redirfd -r 0 /dev/tty1
 
 importas -i home HOME
 cd $home
-if { udevadm wait /dev/dri/card0 }
+if { udevadm settle }
 s6-setuidgid wayland
 bwrap
   # no --unshare-net, breaks udev hotplug
