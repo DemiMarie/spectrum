@@ -32,6 +32,11 @@ fn main() -> std::io::Result<()> {
     let expected =
         "/run/service/vm-services/instance/testvm/data/service/vhost-user-fs/env/virtiofsd.sock";
     assert_eq!(fs1.socket, expected);
+    assert_eq!(config.gpu.len(), 1);
+    let gpu1 = &config.gpu[0];
+    let expected =
+        "/run/service/vm-services/instance/testvm/data/service/vhost-user-gpu/env/crosvm.sock";
+    assert_eq!(gpu1.socket, expected);
     assert_eq!(PathBuf::from(config.payload.kernel), kernel_path);
     #[cfg(target_arch = "x86_64")]
     assert_eq!(config.payload.cmdline, "console=ttyS0 root=PARTLABEL=root");
