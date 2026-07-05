@@ -1,6 +1,15 @@
 #!/bin/execlineb -Ws0
 # SPDX-License-Identifier: EUPL-1.2+
-# SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2020-2022, 2024 Alyssa Ross <hi@alyssa.is>
 
 /bin/setpriv --no-new-privs --
+
+if { /bin/ln -s /proc/self/fd /dev }
+if { /bin/ln -s /proc/self/fd/0 /dev/stdin }
+if { /bin/ln -s /proc/self/fd/1 /dev/stdout }
+if { /bin/ln -s /proc/self/fd/2 /dev/stderr }
+
+if { /bin/mount --make-shared / }
+if { /bin/mount -a --mkdir }
+
 /bin/s6-linux-init -c /etc/s6-linux-init -s /run/param -- $@
