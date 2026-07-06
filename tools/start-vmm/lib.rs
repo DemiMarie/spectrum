@@ -62,8 +62,7 @@ pub fn vm_config(vm_dir: &Path) -> Result<VmConfig, String> {
                 .filter(|result| {
                     result
                         .as_ref()
-                        .map(|entry| entry.extension() == Some(OsStr::new("img")))
-                        .unwrap_or(true)
+                        .map_or(true, |entry| entry.extension() == Some(OsStr::new("img")))
                 })
                 .map(|result: Result<_, String>| {
                     let entry = result?.to_str().unwrap().to_string();
