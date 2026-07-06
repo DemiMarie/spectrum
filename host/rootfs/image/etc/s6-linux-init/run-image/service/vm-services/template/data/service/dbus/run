@@ -21,12 +21,12 @@ nsenter --preserve-credentials -S0
   --mount=/run/vm/by-id/${VM}/ns/mnt
   --user=/run/vm/by-id/${VM}/ns/user
 
+if { udevadm wait /dev/null }
+
 unshare --cgroup --ipc --net --uts
 
 export LISTEN_FDS 1
 getpid LISTEN_PID
-
-if { udevadm wait /dev/null }
 
 dbus-daemon
   --config-file ${dir}/data/dbus.conf
