@@ -18,9 +18,9 @@ void test(struct config c)
 	          "mount \"$(findfs UUID=a7834806-2f82-4faf-8ac4-4f8fd8a474ca)\" /run/mnt ; "
 	          "s6-rc -bu change vmm-env ; "
 	          "vm-import user /run/mnt/vms /run/mnt/storage ; "
-	          "tail -Fc +0 /run/vm/by-id/*/serial & "
 	          "s6-svc -O /run/vm/by-name/user.portal/service ; "
 	          "vm-start \"$(basename \"$(readlink /run/vm/by-name/user.portal)\")\" ; "
+	          "tail -Fc +0 /run/vm/by-id/*/serial & "
 	          "s6-svwait -d /run/vm/by-name/user.portal/service\n",
 	          vm_console_writer(vm)) == EOF) {
 		fputs("error writing to console\n", stderr);
