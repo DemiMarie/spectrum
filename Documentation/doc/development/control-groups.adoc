@@ -1,0 +1,88 @@
+= Control groups in Spectrum
+
+// SPDX-FileCopyrightText: 2026 Demi Marie Obenour <demiobenour@gmail.com>
+// SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
+
+Linux control groups (cgroups) can be used for several purposes:
+
+1. They allow waiting for a group of processes to exit.
+2. They allow terminating a group of processes.
+3. They allow limiting a group of processes' access to resources.
+
+Spectrum currently uses the first two.  The third is not yet used,
+but will be in the future.
+
+== Control Group Hierarchy
+
+Spectrum uses the following cgroup hierarchy:
+
+1. There is a `/vm-services.slice` cgroup that contains all the per-VM
+   services on the system.
+2. The per-VM services for each VM are under `/vm-services.slice/vm-${VM}.slice`,
+   where `${VM}` is replaced by the VM's ID.
+3. Each per-VM service is under `/vm-services.slice/vm-${VM}.slice/${SERVICE_NAME}`,
+   where `${VM}` is replaced by the VM's ID and `${SERVICE_NAME}` is replaced by
+   the name of the service.
+4. The VMM runs under `/vm-services.slice/vm-${VM}.slice/vmm`.
+
+If a cgroup contains child cgroups, it likely contains a `$inner.service`
+cgroup.  This is where programs that would otherwise run in the cgroup itself
+are placed.  Generally, these programs are instances of `s6-svscan` and/or
+`s6-supervise`.
+
+== Using Control Groups
+
+When adding a new s6 service, one should carefully consider whether it
+should be placed in a control group.  Most services should be placed in
+a control group, with only a few exceptions:
+
+1. Services, such as `getty`, that spawn background processes.
+2. Loggers.
+3. Trivial services that don't do anything.
+
+Generally, it's best to set the control group up as the first thing
+the service does.  To do that, use `cgroup-setup --leaf -- $1 COMMAND_LINE`,
+where `$1` should be the service name and `COMMAND_LINE` is the program
+to run in a cgroup.
+
+If you use execline for your run script, this is as simple as:
+
+.run
+....
+#!/bin/execlineb -WS1
+
+cgroup-setup --leaf -- $1
+# rest of script comes here
+....
+
+If the service exits, it's usually best to terminate any programs left
+behind with SIGKILL and remove the control group.  In Spectrum, this is
+called "purging" the cgroup.  To purge the cgroup when a service exits,
+make the `finish` script invoke `/usr/bin/cgroup-s6-finish`.  The first
+two command line arguments must be the first two arguments passed to the
+`finish` script.  The third argument must be the path to the cgroup to
+be purged relative to the cgroup the program itself is in.  This is
+usually, but not always, the third argument to the `finish` script.
+
+When invoked as `cgroup-s6-finish`, `cgroup-setup` checks if
+the service exited due to a signal that caused it to dump core.  If it
+did, `cgroup-s6-finish` exits with status 125, ensuring that
+`s6-supervise` will *not* restart it.  This is intentional: if a service
+crashes due to a fatal signal, this is possibly a sign of memory
+corruption.  Restarting the service in this case can turn an unreliable
+memory corruption exploit into a reliable one.  Rust panics do not cause
+core dumps, so the service will be restarted afterwards.
+
+One can also use `cgroup-purge` to purge a cgroup explicitly.  This is
+used to stop the VMM and all per-VM services when a VM is shut down.
+
+== Future plans
+
+Control groups are designed around a single writer process controlling each
+of them.  Many Linux distros use systemd for this, but Spectrum doesn't use
+systemd.  The only persistent per-service process is s6-supervise, but that
+doesn't have control group support.
+
+Instead, the plan is to have a database containing this information.
+Whether this will be in the `data/` subdirectory of the service directory
+or a separate system-wide database has not yet been determined.
