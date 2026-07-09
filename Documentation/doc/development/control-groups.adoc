@@ -1,0 +1,108 @@
+= Control groups in Spectrum
+
+// SPDX-FileCopyrightText: 2026 Demi Marie Obenour <demiobenour@gmail.com>
+// SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
+
+https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html[Linux control groups] (cgroups) can be used for several purposes:
+
+1. Waiting for a group of processes to exit.
+2. Terminating a group of processes.
+3. Limiting a group of processes' access to resources.
+
+Spectrum currently uses the first two.  The third is not yet used,
+but will be in the future.
+
+== Control Group Hierarchy
+
+Spectrum uses the following cgroup hierarchy:
+
+1. There is a `+/vm-services.slice+` cgroup that contains all the per-VM
+   services on the system.
+2. The per-VM services for each VM are under `+/vm-services.slice/vm-${VM}.slice+`,
+   where `+${VM}+` is replaced by the VM's ID.
+3. Each per-VM service is under `+/vm-services.slice/vm-${VM}.slice/${SERVICE_NAME}+`,
+   where `+${VM}+` is replaced by the VM's ID and `+${SERVICE_NAME}+` is replaced by
+   the name of the service.
+4. The virtual machine monitor (VMM) runs under `+/vm-services.slice/vm-${VM}.slice/vmm+`.
+
+If a cgroup contains child cgroups, it likely contains a `$inner.service`
+cgroup.  This is where programs that would otherwise run in the cgroup itself
+are placed.  Generally, these programs are instances of
+https://skarnet.org/software/s6/s6-svscan.html[`s6-svscan`] or
+https://skarnet.org/software/s6/s6-supervise.html[`s6-supervise`].
+
+== Using Control Groups
+
+Most services should be placed in a control group, with only a few
+exceptions:
+
+1. Services, such as `getty`, that spawn background processes.
+2. Loggers.
+3. Trivial services where cgroups are unnecessary.
+
+=== Setting Up Control Groups
+
+Generally, it's best to set the control group up as the first thing
+the service does using Spectrum's https://spectrum-os.org/git/spectrum/tree/tools/cgroup-setup[`cgroup-setup`] tool.
+
+The most common case is:
+
+1. The service runs in a cgroup that is a direct child of the parent
+   cgroup.
+
+2. If there is a program running in the cgroup, the cgroup manager
+   should wait for it to exit before spawning a new instance.
+
+In this case, use `+cgroup-setup -- $1 COMMAND_LINE+`, where `+$1+`
+should be the service name and `+COMMAND_LINE+` is the program
+to run in a cgroup.
+
+If you need to put the program in a different cgroup, you can use
+a different name.  If the control group starts with `+/+`, it is
+interpreted as a path relative to `+/sys/fs/cgroup+`.  Otherwise,
+it is relative to the current control group the program is in.
+
+If you don't want to wait for existing programs in the cgroup to
+exit, use `+--no-wait+`.  This is rare.
+
+For example, using https://skarnet.org/software/execline/[execline] for your run script:
+
+[source,execline]
+....
+#!/bin/execlineb -WS1
+
+# Often, your cgroup is just the parent cgroup
+# with the name of the service ($1) appended.
+cgroup-setup -- $1
+# The rest of the script goes here.
+....
+
+=== Purging Control Groups
+
+If the service exits, it's usually best to terminate any programs left
+behind with `SIGKILL` and remove the control group.  To do this,
+make the `finish` script invoke `cgroup-purge`.  Its sole command-line
+argument is the cgroup to remove.
+
+[source,execline]
+....
+#!/bin/execlineb -WS3
+
+# Use the same path you used in the run script.
+cgroup-purge $3
+# The rest of the script goes here.
+....
+
+One can also use `cgroup-purge` to purge a cgroup explicitly.  This is
+used to stop the VMM and all per-VM services when a VM is shut down.
+
+== Future plans
+
+Control groups are designed around a single writer process controlling each
+of them.  Many Linux distros use systemd for this, but Spectrum doesn't use
+systemd.  The only persistent per-service process is s6-supervise, but that
+doesn't have control group support.
+
+Instead, the plan is to have a database containing this information.
+Whether this will be in the `data/` subdirectory of the service directory
+or a separate system-wide database has not yet been determined.
