@@ -106,6 +106,7 @@ S6_RC_FILES = \
 	image/etc/s6-rc/systemd-udevd-coldplug/dependencies.d/systemd-udevd \
 	image/etc/s6-rc/systemd-udevd-coldplug/type \
 	image/etc/s6-rc/systemd-udevd-coldplug/up \
+	image/etc/s6-rc/systemd-udevd/finish \
 	image/etc/s6-rc/systemd-udevd/notification-fd \
 	image/etc/s6-rc/systemd-udevd/run \
 	image/etc/s6-rc/systemd-udevd/type \

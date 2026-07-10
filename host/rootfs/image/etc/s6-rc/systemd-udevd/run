@@ -1,7 +1,8 @@
-#!/bin/execlineb -WP
+#!/bin/execlineb -WS1
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2025 Demi Marie Obenour <demiobenour@gmail.com>
-s6-setlock /run/sd-notify-wrapper/systemd-udevd.lock
+
+cgroup-setup --delegate --child-name udev -- $1
 s6-ipcserver-socketbinder -b0 -m -a 0600 /run/sd-notify-wrapper/systemd-udevd.sock
 background -d {
    fdmove 1 3
