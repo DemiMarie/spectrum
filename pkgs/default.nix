@@ -13,7 +13,7 @@ let
     project:
     let dir = project + "/subprojects"; in
     fileset.difference dir (fileset.fromSource (sourceByRegex dir [
-      ".*\.wrap"
+      ".*\\.wrap"
       "packagefiles(/.*)?"
     ]));
 
