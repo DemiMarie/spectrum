@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 
+# cgroups make no sense here
 s6-ipcserver-socketbinder -a 0700 /run/root-terminal
 
 if { chown wayland /run/root-terminal }

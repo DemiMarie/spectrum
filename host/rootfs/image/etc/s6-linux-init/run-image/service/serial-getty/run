@@ -2,4 +2,5 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
 
+# No need for a cgroup here.
 s6-svscan -d3 instance
