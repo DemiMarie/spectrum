@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 
+# Move into the cgroup with all per-VM services
+# Do not wait for the existing processes in the slice to finish.
+cgroup-setup --no-wait -- /vm-services.slice/vm-${1}.slice
+
 export VM $1
 
 s6-svscan -d3 data/service
