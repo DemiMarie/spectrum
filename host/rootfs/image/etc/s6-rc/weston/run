@@ -1,8 +1,13 @@
-#!/bin/execlineb -WP
+#!/bin/execlineb -Wp
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2021, 2025 Alyssa Ross <hi@alyssa.is>
 
-importas -Siu WAYLAND_DISPLAY
+multisubstitute {
+  importas -Siu WAYLAND_DISPLAY
+  importas -Si 1
+}
+
+cgroup-setup --leaf --no-wait -- $1
 
 piperw 4 3
 background {

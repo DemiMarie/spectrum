@@ -119,6 +119,7 @@ S6_RC_FILES = \
 	image/etc/s6-rc/vmm-env/contents.d/systemd-udevd-coldplug \
 	image/etc/s6-rc/vmm-env/type \
 	image/etc/s6-rc/weston/dependencies.d/systemd-udevd-coldplug \
+	image/etc/s6-rc/weston/finish \
 	image/etc/s6-rc/weston/notification-fd \
 	image/etc/s6-rc/weston/run \
 	image/etc/s6-rc/weston/type
