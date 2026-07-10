@@ -44,6 +44,7 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/run \
 	image/etc/s6-linux-init/run-image/service/vmm/notification-fd \
 	image/etc/s6-linux-init/run-image/service/vmm/run \
+	image/etc/s6-linux-init/run-image/service/vmm/template/finish \
 	image/etc/s6-linux-init/run-image/service/vmm/template/notification-fd \
 	image/etc/s6-linux-init/scripts/rc.init \
 	image/etc/s6-linux-init/scripts/rc.shutdown \
