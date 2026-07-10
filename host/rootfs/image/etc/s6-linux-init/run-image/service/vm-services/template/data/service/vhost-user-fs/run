@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2021-2025 Alyssa Ross <hi@alyssa.is>
 
+cgroup-setup -- $1
+
 s6-ipcserver-socketbinder -a 0700 -B env/virtiofsd.sock
 
 importas -i VM VM
