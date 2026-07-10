@@ -1,0 +1,5 @@
+#!/usr/bin/execlineb -WS3
+# SPDX-License-Identifier: EUPL-1.2+
+# SPDX-FileCopyrightText: 2026 Demi Marie Obenour <demiobenour@gmail.com>
+
+cgroup-s6-finish $@

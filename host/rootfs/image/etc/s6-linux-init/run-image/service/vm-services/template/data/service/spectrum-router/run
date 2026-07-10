@@ -1,9 +1,9 @@
-#!/bin/execlineb -WP
+#!/bin/execlineb -Wp
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2025 Yureka Lilian <yureka@cyberchaos.dev>
 # SPDX-FileCopyrightText: 2025 Alyssa Ross <hi@alyssa.is>
 
-importas -i VM VM
+vm-service-run
 
 s6-ipcserver-socketbinder -a 0770 /run/vm/by-id/${VM}/router-driver.sock
 fdmove -c 3 0
