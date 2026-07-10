@@ -1,0 +1,5 @@
+#!/usr/bin/execlineb -WP
+# SPDX-FileCopyrightText: 2026 Demi Marie Obenour <demiobenour@gmail.com>
+# SPDX-License-Identifier: EUPL-1.2+
+
+cgroup-purge spectrum-router
