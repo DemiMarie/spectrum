@@ -1,5 +1,5 @@
 These files contain the static portion of the website accessible at
-<https://spectrum-os.org/>.  Skit, Mailman, etc, are run separately.
+<https://spectrum-os.org/>.  cgit, Mailman, etc, are run separately.
 
 If you would like to contribute to the Spectrum operating system itself, please
 refer to the contributing.html file.
