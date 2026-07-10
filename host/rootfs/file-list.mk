@@ -40,6 +40,7 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-gpu/finish \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-gpu/notification-fd \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/vhost-user-gpu/run \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/xdg-desktop-portal-spectrum-host/finish \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/xdg-desktop-portal-spectrum-host/notification-fd \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/xdg-desktop-portal-spectrum-host/run \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/finish \

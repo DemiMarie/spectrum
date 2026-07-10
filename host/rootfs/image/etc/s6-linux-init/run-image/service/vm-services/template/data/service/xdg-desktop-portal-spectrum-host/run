@@ -1,8 +1,8 @@
-#!/bin/execlineb -WS1
+#!/bin/execlineb -Wp
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
-importas -i VM VM
+vm-service-run
 
 export DBUS_SESSION_BUS_ADDRESS unix:path=/run/portal-bus/${VM}
 
