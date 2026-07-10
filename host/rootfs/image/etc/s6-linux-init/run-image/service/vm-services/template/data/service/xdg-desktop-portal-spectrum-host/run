@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
+cgroup-setup -- $1
+
 importas -i VM VM
 
 export DBUS_SESSION_BUS_ADDRESS unix:path=/run/portal-bus/${VM}
