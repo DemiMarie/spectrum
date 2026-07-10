@@ -2,4 +2,7 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
 
-ch-remote --api-socket /run/vm/by-id/${1}/vmm shutdown
+foreground { ch-remote --api-socket /run/vm/by-id/${1}/vmm shutdown }
+if { cgroup-purge /vm-services.slice/vm-${1}.slice/vmm }
+importas -iS ?
+exit $?

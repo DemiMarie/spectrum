@@ -1,5 +1,5 @@
 #!/usr/bin/execlineb -WS3
-# SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2026 Demi Marie Obenour <demiobenour@gmail.com>
+# SPDX-License-Identifier: EUPL-1.2+
 
-cgroup-s6-finish $@
+cgroup-s6-finish $1 $2 /vm-services.slice/vm-${3}.slice

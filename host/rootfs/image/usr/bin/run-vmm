@@ -5,6 +5,7 @@
 if {
   backtick -D "" mnt {
     importas -Siu 1
+    if { cgroup-setup --no-wait /vm-services.slice/vm-${1}.slice }
     nsenter --mount=/run/vm/by-id/${1}/ns/mnt
     findmnt -no FSTYPE,SOURCE /run/fs/${1}/disk
   }
@@ -32,6 +33,8 @@ if {
 }
 
 elgetpositionals
+
+if { rm -f /run/vsock/${1}/vsock }
 
 s6-ipcserver-socketbinder -B /run/vm/by-id/${1}/vmm
 
@@ -86,6 +89,7 @@ redirfd -r 0 /dev/null
 s6-softlimit -H -l 18446744073709551615
 if { udevadm wait /dev/kvm }
 
+cgroup-setup --leaf /vm-services.slice/vm-${1}.slice/vmm
 s6-envuidgid vmm-${1}
 s6-applyuidgid -Uz
 bwrap
