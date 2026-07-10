@@ -21,6 +21,7 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/s6-linux-init-shutdownd/run \
 	image/etc/s6-linux-init/run-image/service/s6-svscan-log/notification-fd \
 	image/etc/s6-linux-init/run-image/service/s6-svscan-log/run \
+	image/etc/s6-linux-init/run-image/service/serial-getty-generator/finish \
 	image/etc/s6-linux-init/run-image/service/serial-getty-generator/run \
 	image/etc/s6-linux-init/run-image/service/serial-getty/notification-fd \
 	image/etc/s6-linux-init/run-image/service/serial-getty/run \
