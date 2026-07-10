@@ -4,6 +4,8 @@
 
 importas -i VM VM
 
+cgroup-setup dbus
+
 if {
   redirfd -w 1 data/dbus.conf
   sed "s/@XDP_SPECTRUM_USER@/xdp-spectrum-${VM}/g" /etc/dbus-portal.conf.in
