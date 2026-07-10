@@ -2,4 +2,5 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2020-2021 Alyssa Ross <hi@alyssa.is>
 
+# no cgroups so that nohup works
 getty -i -n -l /etc/login 0 tty2 linux

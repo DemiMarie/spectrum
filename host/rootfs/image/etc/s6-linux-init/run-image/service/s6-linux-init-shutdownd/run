@@ -2,4 +2,5 @@
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
 
+# cgroups make no sense for shutdownd
 s6-linux-init-shutdownd -Bc /etc/s6-linux-init

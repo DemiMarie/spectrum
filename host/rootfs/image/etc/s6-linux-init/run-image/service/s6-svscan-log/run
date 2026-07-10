@@ -2,5 +2,6 @@
 # SPDX-License-Identifier: ISC
 # SPDX-FileCopyrightText: Copyright (c) 2015-2024 Laurent Bercot <ska-skaware@skarnet.org>
 
+# cgroups make no sense for a logger
 redirfd -rnb 0 fifo
 s6-log -bpd3 -- T /run/log
