@@ -1,7 +1,9 @@
-#!/bin/execlineb -WP
+#!/bin/execlineb -WS1
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2024-2025 Alyssa Ross <hi@alyssa.is>
 
+# avoid concurrent operation
+cgroup-setup --leaf -- $1
 piperw 3 4
 background {
   fdclose 3
