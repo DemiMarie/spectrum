@@ -4,6 +4,10 @@
 
 importas -Siu WAYLAND_DISPLAY
 
+# Use --no-wait because Weston spawns
+# child processes that should outlive it.
+cgroup-setup --no-wait weston
+
 piperw 4 3
 background {
   fdclose 3
