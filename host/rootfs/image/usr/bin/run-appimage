@@ -89,7 +89,12 @@ fdclose 4
 foreground { run-vmm $id }
 fdclose 3
 
-if { s6-instance-delete /run/service/vm-services $id }
+if {
+  # Even if s6-instance-delete fails, cgroup-purge is enough
+  # to ensure that the VMM and all per-VM services are killed.
+  foreground { s6-instance-delete /run/service/vm-services $id }
+  cgroup-purge /vm-services.slice/vm-${id}.slice
+}
 
 if { umount -R /run/vm/by-id/${id}/ns }
 rm -r -- $diskdir /run/vm/by-id/${id} /run/configs/${id}
