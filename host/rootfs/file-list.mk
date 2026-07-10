@@ -28,6 +28,7 @@ FILES = \
 	image/etc/s6-linux-init/run-image/service/serial-getty/template/run \
 	image/etc/s6-linux-init/run-image/service/vm-services/notification-fd \
 	image/etc/s6-linux-init/run-image/service/vm-services/run \
+	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/dbus/finish \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/dbus/notification-fd \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/dbus/run \
 	image/etc/s6-linux-init/run-image/service/vm-services/template/data/service/spectrum-router/down \
