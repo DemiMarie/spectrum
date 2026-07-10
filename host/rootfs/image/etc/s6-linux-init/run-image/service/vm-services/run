@@ -1,5 +1,8 @@
 #!/bin/execlineb -WP
 # SPDX-License-Identifier: EUPL-1.2+
 # SPDX-FileCopyrightText: 2023 Alyssa Ross <hi@alyssa.is>
+# SPDX-FileCopyrightText: 2026 Demi Marie Obenour <demiobenour@gmail.com>
 
+# Set up the parent cgroup of all VMMs and VM services
+cgroup-setup --no-wait -- /vm-services.slice
 s6-svscan -d3 instance
