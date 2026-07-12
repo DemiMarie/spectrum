@@ -43,6 +43,8 @@ GEM
     jekyll-asciidoc (3.0.1)
       asciidoctor (>= 1.5.0, < 3.0.0)
       jekyll (>= 3.0.0)
+    jekyll-redirect-from (0.16.0)
+      jekyll (>= 3.3, < 5.0)
     jekyll-sass-converter (3.1.0)
       sass-embedded (~> 1.75)
     jekyll-watch (2.2.1)
@@ -81,6 +83,7 @@ PLATFORMS
 DEPENDENCIES
   jekyll
   jekyll-asciidoc
+  jekyll-redirect-from
 
 BUNDLED WITH
    2.7.2

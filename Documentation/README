@@ -1,12 +1,6 @@
 These files contain the static portion of the website accessible at
 <https://spectrum-os.org/>.  cgit, Mailman, etc, are run separately.
 
-If you would like to contribute to the Spectrum operating system itself, please
-refer to the contributing.html file.
-
-If you'd like to contribute to the documentation,
-see building-documentation.adoc for how to get started.
-
 Design tweaks, content updates, fixes (both factual and grammatical),
 and new content for the Spectrum website are all welcomed.
 

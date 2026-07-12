@@ -6,3 +6,5 @@ source "https://rubygems.org"
 
 gem "jekyll"
 gem "jekyll-asciidoc"
+
+gem "jekyll-redirect-from"

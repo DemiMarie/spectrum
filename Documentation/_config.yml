@@ -4,6 +4,7 @@
 title: Spectrum documentation
 plugins:
   - jekyll-asciidoc
+  - jekyll-redirect-from
 exclude:
   - '*.license'
   - '*.nix'
