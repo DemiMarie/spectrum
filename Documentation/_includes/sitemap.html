@@ -17,7 +17,9 @@ which we assume if it is constructed by a directory and contains an index file.
 {%- capture inner -%}
   {%- assign candidates = site.html_pages
         | where_exp: "p", "p.url contains prefix"
-        | where_exp: "p", "p.url != prefix" -%}
+        | where_exp: "p", "p.url != prefix"
+        | where_exp: "p", "p.sitemap != false"
+  -%}
   {%- if prefix == default_root -%}
     {%- assign list_with_root_page = site.html_pages | where: "url", prefix -%}
     {%- assign candidates = list_with_root_page | concat: candidates -%}
