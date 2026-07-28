@@ -9,16 +9,17 @@
 Our primary communication channels are instant messaging and email.
 
 [#chat]
-== Matrix Chat
+== Instant messaging
 
-There is a single Matrix chat room,
-https://matrix.to/#/#spectrum:fairydust.space[#spectrum:fairydust.space],
-for all kinds of Spectrum discussion.
+For quick, informal exchange:
 
-You can also join through IRC —
-link:ircs://irc.libera.chat:6697/spectrum[#spectrum] on
-https://libera.chat/[Libera.Chat].
+Matrix::
+https://matrix.to/#/#spectrum:fairydust.space[#spectrum:fairydust.space]
 
+IRC::
+link:ircs://irc.libera.chat:6697/spectrum[#spectrum] on https://libera.chat/[Libera.Chat]
+
+NOTE: Matrix and IRC are https://matrix.org/docs/matrix-concepts/elements-of-matrix/#bridges[bridged].
 
 == Mailing Lists
 
