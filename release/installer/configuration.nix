@@ -11,7 +11,9 @@ in
   imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
 
   boot.consoleLogLevel = lib.mkDefault 2;
-  boot.kernelParams = [ "udev.log_priority=5" ];
+  # quiet keeps KERN_INFO boot chatter and the stage-1 script off the video
+  # console, and holds systemd status output to errors only.
+  boot.kernelParams = [ "udev.log_priority=5" "quiet" ];
   boot.initrd.verbose = false;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
