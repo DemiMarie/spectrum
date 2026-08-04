@@ -1,6 +1,6 @@
 = Documentation
 :page-liquid:
-:page-nav_order: 100
+:page-nav_order: 500
 
 // SPDX-FileCopyrightText: 2022 Alyssa Ross <hi@alyssa.is>
 // SPDX-FileCopyrightText: 2022 Unikie

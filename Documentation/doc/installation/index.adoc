@@ -1,5 +1,5 @@
 = Build and Run
-:page-nav_order: 2
+:page-nav_order: 200
 :page-has_toc: false
 
 // SPDX-FileCopyrightText: 2022 Unikie

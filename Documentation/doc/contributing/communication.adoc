@@ -1,5 +1,5 @@
 = Communication channels
-:page-nav_order: 1
+:page-nav_order: 100
 
 // SPDX-FileCopyrightText: 2019-2024 Alyssa Ross <hi@alyssa.is>
 // SPDX-FileCopyrightText: 2023 Unikie

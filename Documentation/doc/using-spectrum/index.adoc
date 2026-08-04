@@ -1,5 +1,5 @@
 = Using Spectrum
-:page-nav_order: 3
+:page-nav_order: 300
 :page-has_toc: false
 
 // SPDX-FileCopyrightText: 2022 Unikie

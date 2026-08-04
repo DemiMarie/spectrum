@@ -1,5 +1,5 @@
 = Contributing
-:page-nav_order: 5
+:page-nav_order: 500
 :page-redirect_from: ["/contributing.html"]
 
 // SPDX-FileCopyrightText: 2023 Unikie

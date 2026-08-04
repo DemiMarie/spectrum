@@ -1,5 +1,5 @@
 = Documentation Style Guide
-:page-nav_order: 3
+:page-nav_order: 800
 
 // SPDX-FileCopyrightText: 2023 Unikie
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0

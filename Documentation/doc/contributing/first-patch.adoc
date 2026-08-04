@@ -1,5 +1,5 @@
 = Sending Your Patch
-:page-nav_order: 1
+:page-nav_order: 200
 
 // SPDX-FileCopyrightText: 2022 Unikie
 // SPDX-License-Identifier: GFDL-1.3-no-invariants-or-later OR CC-BY-SA-4.0
