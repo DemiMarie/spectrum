@@ -82,6 +82,7 @@ background -d {
 unexport !
 fdmove -c 3 0
 redirfd -r 0 /dev/null
+redirfd -a 4 /run/vm/by-id/${1}/serial
 
 s6-softlimit -H -l 18446744073709551615
 if { udevadm wait /dev/kvm }
